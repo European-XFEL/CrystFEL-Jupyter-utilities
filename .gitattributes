@@ -1,0 +1,2 @@
+magic-cell_explorer.ipynb filter=lfs diff=lfs merge=lfs -text
+*.stream filter=lfs diff=lfs merge=lfs -text
