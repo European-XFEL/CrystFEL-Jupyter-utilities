@@ -52,36 +52,19 @@ class CellExplorer:
         # Starting with 2 after pressing +/- keys.
         # Pressing + or - chages the binning by factor of 2.
         # The histograms:
+        self.histogram_list = []
+        for hist_indx, hist_name in enumerate(self.histogram_order):
+            temp_label = 'Angstrem[Å]'
+            if hist_name == 'alfa':
+                temp_label = 'deg'
+            self.histogram_list.append(Histogram(axs=self.axs_list[hist_indx], title="Histogram of "+hist_name,
+                                                 xlabel=temp_label, data_excluded=[],
+                                                 data_to_histogram=self.dict_data_histogram[hist_name],
+                                                 colors=self.dict_color_histogram, bins=self.bins))
 
-        a = Histogram(axs=self.axs_list[0], title="Histogram of a",
-                      xlabel='Angstrem[Å]', data_excluded=[],
-                      data_to_histogram=self.dict_data_histogram['a'],
-                      colors=self.dict_color_histogram, bins=self.bins)
-        b = Histogram(axs=self.axs_list[1], title="Histogram of b",
-                      xlabel='Angstrem[Å]', data_excluded=[],
-                      data_to_histogram=self.dict_data_histogram['b'],
-                      colors=self.dict_color_histogram, bins=self.bins)
-        c = Histogram(axs=self.axs_list[2], title="Histogram of c",
-                      xlabel='Angstrem[Å]', data_excluded=[],
-                      data_to_histogram=self.dict_data_histogram['c'],
-                      colors=self.dict_color_histogram, bins=self.bins)
-        alfa = Histogram(axs=self.axs_list[3], title="Histogram of alfa",
-                         xlabel='deg', data_excluded=[],
-                         data_to_histogram=self.dict_data_histogram['alfa'],
-                         colors=self.dict_color_histogram, bins=self.bins)
-        beta = Histogram(axs=self.axs_list[4], title="Histogram of beta",
-                         xlabel='deg', data_excluded=[],
-                         data_to_histogram=self.dict_data_histogram['beta'],
-                         colors=self.dict_color_histogram, bins=self.bins)
-        gamma = Histogram(axs=self.axs_list[5], title="Histogram of gamma",
-                          xlabel='deg', data_excluded=[],
-                          data_to_histogram=self.dict_data_histogram['gamma'],
-                          colors=self.dict_color_histogram, bins=self.bins)
-        # Fix spacing
         plt.subplots_adjust(hspace=0.5)
         plt.subplots_adjust(wspace=0.1)
         # Histograms list
-        self.histogram_list = [a, b, c, alfa, beta, gamma]
         # Buttons below; string list is the colour to which the button
         # and hist. changes after clicking.
         # Using intertool for looping to change color
