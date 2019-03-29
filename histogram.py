@@ -26,70 +26,36 @@ class Histogram():
         self.range_green_space = [None, None]
         # Try/except necessary - not all histograms contain values depending
         # on centering type.
-        try:
-            data_p = data_to_histogram['P']
-        except KeyError:
-            data_p = []
-        try:
-            data_a = data_to_histogram['A']
-        except KeyError:
-            data_a = []
-        try:
-            data_b = data_to_histogram['B']
-        except KeyError:
-            data_b = []
-        try:
-            data_c = data_to_histogram['C']
-        except KeyError:
-            data_c = []
-        try:
-            data_i = data_to_histogram['I']
-        except KeyError:
-            data_i = []
-        try:
-            data_f = data_to_histogram['F']
-        except KeyError:
-            data_f = []
-        try:
-            data_h = data_to_histogram['H']
-        except KeyError:
-            data_h = []
-        try:
-            data_r = data_to_histogram['R']
-        except KeyError:
-            data_r = []
-
-        self.data_included = data_a + data_b + data_c + \
-            data_p + data_i + data_h + \
-            data_r + data_f
+        self.cryst_list = ['P', 'A', 'B', 'C', 'I', 'F', 'H', 'R']
+        self.list_data = []
+        self.data_included = []
+        for k, a_cryst in enumerate(self.cryst_list):
+            try:
+                self.list_data.append(data_to_histogram[a_cryst])
+            except KeyError:
+                self.list_data.append([])
+            self.data_included+=self.list_data[k]
+        
         try:
             self.data_excluded = data_excluded
         except KeyError:
             self.data_excluded = []
-
-        self.list_data = [data_p, data_a, data_b, data_c,
-                          data_i, data_f, data_h, data_r, self.data_excluded]
+        
+        self.list_data.append(self.data_excluded)
 
         self.max = max(self.data_included + self.data_excluded)
         self.min = min(self.data_included + self.data_excluded)
 
-        color_p = colors['P']
-        color_a = colors['A']
-        color_b = colors['B']
-        color_c = colors['C']
-        color_i = colors['I']
-        color_f = colors['F']
-        color_h = colors['H']
-        color_r = colors['R']
         color_exclude = 'lightgray'
-        self.list_colors = [color_p, color_a, color_b, color_c,
-                            color_i, color_f, color_h, color_r, color_exclude]
+
+        self.list_colors = [colors[color] for color in self.cryst_list]
+        self.list_colors.append(color_exclude)
 
         self.axs.set_title(self.title)
         self.axs.set_xlabel(self.xlabel)
 
         _, _, self.patches = self.axs.hist(x=self.list_data, bins=self.bins,
-                                           normed=1, stacked=True, alpha=0.9,
+                                           density=1, stacked=True, alpha=0.9,
                                            range=(self.min, self.max),
                                            color=self.list_colors,
                                            histtype='stepfilled')
@@ -173,48 +139,20 @@ class Histogram():
         Try/Except needed for none crystals in selection.
         """
         try:
-            data_p = data_to_histogram['P']
-        except KeyError:
-            data_p = []
-        try:
-            data_a = data_to_histogram['A']
-        except KeyError:
-            data_a = []
-        try:
-            data_b = data_to_histogram['B']
-        except KeyError:
-            data_b = []
-        try:
-            data_c = data_to_histogram['C']
-        except KeyError:
-            data_c = []
-        try:
-            data_i = data_to_histogram['I']
-        except KeyError:
-            data_i = []
-        try:
-            data_f = data_to_histogram['F']
-        except KeyError:
-            data_f = []
-        try:
-            data_h = data_to_histogram['H']
-        except KeyError:
-            data_h = []
-        try:
-            data_r = data_to_histogram['R']
-        except KeyError:
-            data_r = []
-
-        self.data_included = data_a + data_b + data_c + \
-            data_p + data_i + data_h + data_r + data_f
-
-        try:
             self.data_excluded = data_excluded
         except KeyError:
             self.data_excluded = []
+        
+        self.list_data = []
+        self.data_included = []
+        for k, a_cryst in enumerate(self.cryst_list):
+            try:
+                self.list_data.append(data_to_histogram[a_cryst])
+            except KeyError:
+                self.list_data.append([])
+            self.data_included += self.list_data[k]
+        self.list_data.append(self.data_excluded)
 
-        self.list_data = [data_p, data_a, data_b, data_c,
-                          data_i, data_f, data_h, data_r, self.data_excluded]
 
     def set_cololor(self, colors):
         """
@@ -274,7 +212,7 @@ class Histogram():
         self.axs.set_xlabel(self.xlabel)
         # Draw histogram
         _, _, self.patches = self.axs.hist(x=self.list_data, bins=self.bins,
-                                           normed=1, stacked=True, alpha=0.9,
+                                           density=1, stacked=True, alpha=0.9,
                                            range=(self.min, self.max),
                                            color=self.list_colors,
                                            histtype='stepfilled')
