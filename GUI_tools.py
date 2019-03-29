@@ -46,6 +46,8 @@ class CellExplorer:
         self.dict_color_histogram = {'P': 'gray', 'A': 'cyan', 'B': 'darkblue',
                                      'C': 'royalblue', 'H': "firebrick",
                                      'F': "magenta", 'I': 'lime', 'R': 'olive'}
+        self.histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
+        self.cryst_list = ['P', 'A', 'B', 'C', 'I', 'F', 'H', 'R']
         self.bins = 16
         # Starting with 2 after pressing +/- keys.
         # Pressing + or - chages the binning by factor of 2.
@@ -84,71 +86,32 @@ class CellExplorer:
         # and hist. changes after clicking.
         # Using intertool for looping to change color
         # list_color is our cyclic list
-        btn1 = Bttn(axs=plt.axes([0.95, 0.95, 0.015, 0.025]), fig=self.fig,
-                    label="R", list_color=['olive', 'gray', 'lightgrey'],
-                    histogram_list=self.histogram_list,
-                    dict_color_histogram=self.dict_color_histogram)
-        btn2 = Bttn(axs=plt.axes([0.935, 0.95, 0.015, 0.025]), fig=self.fig,
-                    label="H", list_color=['firebrick', 'gray', 'lightgrey'],
-                    histogram_list=self.histogram_list,
-                    dict_color_histogram=self.dict_color_histogram)
-        btn3 = Bttn(axs=plt.axes([0.92, 0.95, 0.015, 0.025]), fig=self.fig,
-                    label="F", list_color=['magenta', 'gray', 'lightgrey'],
-                    histogram_list=self.histogram_list,
-                    dict_color_histogram=self.dict_color_histogram)
-        btn4 = Bttn(axs=plt.axes([0.905, 0.95, 0.015, 0.025]), fig=self.fig,
-                    label="I", list_color=['lime', 'gray', 'lightgrey'],
-                    histogram_list=self.histogram_list,
-                    dict_color_histogram=self.dict_color_histogram)
-        btn5 = Bttn(axs=plt.axes([0.89, 0.95, 0.015, 0.025]), fig=self.fig,
-                    label="C", list_color=['royalblue', 'gray', 'lightgrey'],
-                    histogram_list=self.histogram_list,
-                    dict_color_histogram=self.dict_color_histogram)
-        btn6 = Bttn(axs=plt.axes([0.875, 0.95, 0.015, 0.025]), fig=self.fig,
-                    label="B", list_color=['darkblue', 'gray', 'lightgrey'],
-                    histogram_list=self.histogram_list,
-                    dict_color_histogram=self.dict_color_histogram)
-        btn7 = Bttn(axs=plt.axes([0.86, 0.95, 0.015, 0.025]), fig=self.fig,
-                    label="A", list_color=['cyan', 'gray', 'lightgrey'],
-                    histogram_list=self.histogram_list,
-                    dict_color_histogram=self.dict_color_histogram)
-        btn8 = Bttn(axs=plt.axes([0.845, 0.95, 0.015, 0.025]), fig=self.fig,
-                    label="P", list_color=['gray', 'lightgrey'],
-                    histogram_list=self.histogram_list,
-                    dict_color_histogram=self.dict_color_histogram)
+
+
         # Buttols list:
-        self.buttons_list = [btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8]
         # All Spans include reference for crystals list which were refused
         # or not included (?) changes in 1 Span is visible by others.
         # all_crystals_list has all crystals that are finded
         # crystals_excluded_list has all crystal that has not set they are gray
         # index is used to locate which histogram applies
-        span1 = Span(crystals_excluded_list=self.crystals_excluded_list,
-                     fig=self.fig, index=0, name='a',
-                     all_crystals_list=self.all_crystals_list,
-                     histogram_list=self.histogram_list)
-        span2 = Span(crystals_excluded_list=self.crystals_excluded_list,
-                     fig=self.fig, index=1, name='b',
-                     all_crystals_list=self.all_crystals_list,
-                     histogram_list=self.histogram_list)
-        span3 = Span(crystals_excluded_list=self.crystals_excluded_list,
-                     fig=self.fig, index=2, name='c',
-                     all_crystals_list=self.all_crystals_list,
-                     histogram_list=self.histogram_list)
-        span4 = Span(crystals_excluded_list=self.crystals_excluded_list,
-                     fig=self.fig, index=3, name='alfa',
-                     all_crystals_list=self.all_crystals_list,
-                     histogram_list=self.histogram_list)
-        span5 = Span(crystals_excluded_list=self.crystals_excluded_list,
-                     fig=self.fig, index=4, name='beta',
-                     all_crystals_list=self.all_crystals_list,
-                     histogram_list=self.histogram_list)
-        span6 = Span(crystals_excluded_list=self.crystals_excluded_list,
-                     fig=self.fig, index=5, name='gamma',
-                     all_crystals_list=self.all_crystals_list,
-                     histogram_list=self.histogram_list)
 
-        self.span_list = (span1, span2, span3, span4, span5, span6)
+        button_x_pos = [0.95,0.935,0.92,0.905,0.89,0.875,0.86,0.845]
+        self.buttons_list = []
+        for cryst_indx, cryst_symb in enumerate(self.cryst_list):
+            self.buttons_list.append(Bttn(axs=plt.axes([button_x_pos[-1-cryst_indx], 0.95, 0.015, 0.045]), fig=self.fig,
+                                            label=cryst_symb, list_color=[
+                                                self.dict_color_histogram[cryst_symb], 'gray', 'lightgrey'],
+                                            histogram_list=self.histogram_list,
+                                            dict_color_histogram=self.dict_color_histogram))
+
+        self.span_list = []
+        for hist_indx, hist_name in enumerate(self.histogram_order):
+            self.span_list.append(Span(crystals_excluded_list=self.crystals_excluded_list,
+                                       fig=self.fig, index=hist_indx, name=hist_name,
+                                       all_crystals_list=self.all_crystals_list,
+                                       histogram_list=self.histogram_list))
+
+        # self.span_list = (span1, span2, span3, span4, span5, span6)
         self.fig.canvas.mpl_connect('key_press_event', self.press)
         self.fig.canvas.mpl_connect('button_release_event',
                                     self.rememmber_pos_panel)
@@ -265,8 +228,7 @@ class CellExplorer:
         # remmember maximum group
         centering = None
         # type of centering
-        counter_group_centering = {'P': 0, 'A': 0, 'B': 0, 'C': 0, 'I': 0,
-                                   'F': 0, 'H': 0, 'R': 0}
+        counter_group_centering = dict(zip(self.cryst_list, [0]*(len(self.cryst_list))))
         # counter for each centering
         for crystal in include_crystal:
             # search maximum group and this centring
@@ -346,18 +308,9 @@ class CellExplorer:
 
         if len(self.args) == 0:
             self.crystals_excluded_list.clear()
-            self.histogram_list[0].set_data(self.dict_data_histogram["a"],
-                                            self.crystals_excluded_list)
-            self.histogram_list[1].set_data(self.dict_data_histogram["b"],
-                                            self.crystals_excluded_list)
-            self.histogram_list[2].set_data(self.dict_data_histogram["c"],
-                                            self.crystals_excluded_list)
-            self.histogram_list[3].set_data(self.dict_data_histogram["alfa"],
-                                            self.crystals_excluded_list)
-            self.histogram_list[4].set_data(self.dict_data_histogram["beta"],
-                                            self.crystals_excluded_list)
-            self.histogram_list[5].set_data(self.dict_data_histogram["gamma"],
-                                            self.crystals_excluded_list)
+            for hist_indx, hist_name in enumerate(self.histogram_order):
+                self.histogram_list[hist_indx].set_data(self.dict_data_histogram[hist_name],
+                                                        self.crystals_excluded_list)
             for hist in self.histogram_list:
                 hist.update()
         else:
@@ -366,40 +319,13 @@ class CellExplorer:
         self.fig.canvas.draw()
 
     def parametres_used(self):
-        try:
-            a_xmin, a_xmax = self.args['a']
-            self.span_list[0].onselect(a_xmin, a_xmax)
-        except:
-            pass
-        try:
-            b_xmin, b_xmax = self.args['b']
-            self.span_list[1].onselect(b_xmin, b_xmax)
 
-        except:
-            pass
-        try:
-            c_xmin, c_xmax = self.args['c']
-            self.span_list[2].onselect(c_xmin, c_xmax)
+        for hist_indx, hist_name in enumerate(self.histogram_order):
+            try:
+                self.span_list[hist_indx].onselect(*self.args[hist_name])
+            except:
+                pass
 
-        except:
-            pass
-        try:
-            alfa_xmin, alfa_xmax = self.args['alfa']
-            self.span_list[3].onselect(alfa_xmin, alfa_xmax)
-
-        except:
-            pass
-        try:
-            beta_xmin, beta_xmax = self.args['beta']
-            self.span_list[4].onselect(beta_xmin, beta_xmax)
-        except:
-            pass
-
-        try:
-            gamma_xmin, gamma_xmax = self.args['gamma']
-            self.span_list[5].onselect(gamma_xmin, gamma_xmax)
-        except:
-            pass
 
     def rememmber_pos_panel(self, event):
         for hist in self.histogram_list:
@@ -462,3 +388,5 @@ class CellExplorer:
 if __name__ == "__main__":
     streamfile = 'indexing.stream'
     RUN = CellExplorer(streamfile)
+    RUN = CellExplorer(streamfile, alfa=(80, 90),
+                       beta=(80, 90), gamma=(80, 90))
