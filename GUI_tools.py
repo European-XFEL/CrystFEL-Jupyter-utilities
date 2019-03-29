@@ -459,3 +459,6 @@ class CellExplorer:
                                                             np.round(s, 2)),
                           fontsize=10)
             hist.axs.grid(True)
+if __name__ == "__main__":
+    streamfile = 'indexing.stream'
+    RUN = CellExplorer(streamfile)

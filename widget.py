@@ -157,7 +157,7 @@ class Bttn(Button):
         # change name color in diction for key PABCFHIR is label button
         self.dict_color_histogram[self.label.get_text()] = self.color
         for hist in self.histogram_list:  # Loop for each histogram.
-            hist.set_cololor(self.dict_color_histogram)  # Setting new colour
+            hist.set_colour(self.dict_color_histogram)  # Setting new colour
             # in a given histogram.
             # Refresh each histogram (clear image and draw again)
             hist.update_color()
@@ -168,7 +168,7 @@ class Bttn(Button):
         self.color = self.list_color[0]
         self.dict_color_histogram[self.label.get_text()] = self.color
         for hist in self.histogram_list:  # Loop for each histogram.
-            hist.set_cololor(self.dict_color_histogram)  # Setting new colour
+            hist.set_colour(self.dict_color_histogram)  # Setting new colour
             # in a given histogram.
             # Refresh each histogram (clear image and draw again)
             hist.update_color()

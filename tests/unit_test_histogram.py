@@ -53,7 +53,7 @@ class TestHistogram(unittest.TestCase):
                                              'lime', 'magenta', 'firebrick',
                                              'olive', 'lightgray'],
                                              histtype='stepfilled',
-                                             normed=1, range=(1, 10),
+                                             density=1, range=(1, 10),
                                              stacked=True, x=[[1, 2, 3, 4, 5, 10],
                                              [1, 1, 1, 1], [2, 2, 3, 4, 4, 4], [],
                                         [6, 6, 5, 4, 5, 3], [], [], [],
@@ -111,7 +111,7 @@ class TestHistogram(unittest.TestCase):
         self.dict_color = {'P': 'magenta', 'A': 'magenta', 'B': 'magenta',
                            'C': 'olive', 'I': 'olive', 'F': "olive",
                            'H': "magenta", 'R': 'firebrick'}
-        self.hist.set_cololor(self.dict_color)
+        self.hist.set_colour(self.dict_color)
         list_test = ['magenta', 'magenta', 'magenta', 'olive', 'olive',
                      'olive', 'magenta', 'firebrick', 'lightgray']
         self.assertListEqual(self.hist.list_colors, list_test)

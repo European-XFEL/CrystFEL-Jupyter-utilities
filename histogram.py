@@ -46,10 +46,10 @@ class Histogram():
         self.max = max(self.data_included + self.data_excluded)
         self.min = min(self.data_included + self.data_excluded)
 
-        color_exclude = 'lightgray'
+        self.color_exclude = 'lightgray'
 
         self.list_colors = [colors[color] for color in self.cryst_list]
-        self.list_colors.append(color_exclude)
+        self.list_colors.append(self.color_exclude)
 
         self.axs.set_title(self.title)
         self.axs.set_xlabel(self.xlabel)
@@ -154,53 +154,21 @@ class Histogram():
         self.list_data.append(self.data_excluded)
 
 
-    def set_cololor(self, colors):
+    def set_colour(self, colors):
         """
         For updating colours.
         """
-        color_p = colors['P']
-        color_a = colors['A']
-        color_b = colors['B']
-        color_c = colors['C']
-        color_i = colors['I']
-        color_f = colors['F']
-        color_h = colors['H']
-        color_r = colors['R']
-        color_exclude = 'lightgray'
-        self.list_colors = [color_p, color_a, color_b, color_c,
-                            color_i, color_f, color_h, color_r, color_exclude]
+        self.list_colors = [colors[color] for color in self.cryst_list]
+        self.list_colors.append(self.color_exclude)
 
     def update_color(self):
         """
         Loop for each bin and updating colour for the next in colour loop.
         """
-        # For P set
-        for box in self.patches[0]:
-            box.set_facecolor(self.list_colors[0])
-        #  For A set
-        for box in self.patches[1]:
-            box.set_facecolor(self.list_colors[1])
-        # For B set
-        for box in self.patches[2]:
-            box.set_facecolor(self.list_colors[2])
-        # For C set
-        for box in self.patches[3]:
-            box.set_facecolor(self.list_colors[3])
-        # For I set
-        for box in self.patches[4]:
-            box.set_facecolor(self.list_colors[4])
-        # For F set
-        for box in self.patches[5]:
-            box.set_facecolor(self.list_colors[5])
-        # For H set
-        for box in self.patches[6]:
-            box.set_facecolor(self.list_colors[6])
-        # For R set
-        for box in self.patches[7]:
-            box.set_facecolor(self.list_colors[7])
-        # For excluded set
-        for box in self.patches[8]:
-            box.set_facecolor(self.list_colors[8])
+
+        for patch_index in range(9):
+            for box in self.patches[patch_index]:
+                box.set_facecolor(self.list_colors[patch_index])
 
     def update(self):
         """
