@@ -121,48 +121,19 @@ def check_list_begin_crystal(crystals, name):
     if len(crystals) > 13:
         print("Too much data for crystal: {}".format(name))
     elif len(crystals) == 13:
-        if "Cell parameters" not in crystals[0]:
-            print("No cell parameters for crystal: {}".format(name))
-            sys.exit()
-        if "astar" not in crystals[1]:
-            print("No astar in crystal: {}".format(name))
-            sys.exit()
-        if "bstar" not in crystals[2]:
-            print("No bstar in crystal: {}".format(name))
-            sys.exit()
-        if "cstar" not in crystals[3]:
-            print("No cstar in crystal: {}".format(name))
-            sys.exit()
-        if "lattice_type" not in crystals[4]:
-            print("lattice type for crystal: {}".format(name))
-            sys.exit()
-        if "centering" not in crystals[5]:
-            print("No centerings for crystal: {}".format(name))
-            sys.exit()
-        if "unique_axis" not in crystals[6]:
-            print("No unique axis for crystal: {}".format(name))
-            sys.exit()
-        if "profile_radius" not in crystals[7]:
-            print("No profile radius for crystal: {}".format(name))
-            sys.exit()
-        if "predict_refine/det_shift x" not in crystals[8]:
-            print("No predict_refine/det_shift x for crystal: {}".format(name))
-            sys.exit()
-        if "diffraction_resolution_limit" not in crystals[9]:
-            print("No diffraction_resolution_limit" +
-                  " for crystal: {}".format(name))
-            sys.exit()
-        if "num_reflections" not in crystals[10]:
-            print("No diffraction_resolution_limit" +
-                  " for crystal: {}".format(name))
-            sys.exit()
-        if "num_saturated_reflections" not in crystals[11]:
-            print("No num_saturated_reflections for crystal: {}".format(name))
-            sys.exit()
-        if "num_implausible_reflections" not in crystals[12]:
-            print("No num_implausible_reflections" +
-                  " for crystal: {}".format(name))
-            sys.exit()
+
+        checks = ["Cell parameters", "astar", "bstar", "cstar", "lattice_type", "centering", "unique_axis", "profile_radius", "predict_refine/det_shift x",
+                  "diffraction_resolution_limit", "num_reflections", "num_saturated_reflections", "num_implausible_reflections"]
+
+        print_outs = ["No cell parameters for crystal:", "No astar in crystal:", "No bstar in crystal:", "No cstar in crystal:",
+                      "lattice type for crystal:", "No centerings for crystal:", "No unique axis for crystal:", "No profile radius for crystal:", "No predict_refine/det_shift x for crystal:", "No diffraction_resolution_limit  for crystal:", "No diffraction_resolution_limit for crystal: ", "No num_saturated_reflections for crystal: ", "No num_implausible_reflections for crystal:"]
+
+
+        for k, crystal in enumerate(crystals):
+            if checks[k] not in crystal:
+                print(" ".join([print_outs[k], name]))
+                sys.exit()
+
     elif len(crystals) == 12:
         if "Cell parameters" not in crystals[0]:
             print("No Cell parameters for crystal: {}".format(name))

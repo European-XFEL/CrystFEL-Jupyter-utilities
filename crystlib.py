@@ -7,7 +7,7 @@ from stream_read import diction_crystal_return
 # crystal details as parameters.
 
 
-class Crystal:
+class Crystal(dict):
     """
     Object representing a crystall from indexamajig (CrystFEL) output file.
     Includes a, b, c, alpha, beta, gamma values needed for drawing histograms.
@@ -19,17 +19,17 @@ class Crystal:
                  num_saturated_reflections,
                  num_implausible_reflections):
         self.name = name
-        self.a = a
-        self.b = b
-        self.c = c
-        self.alfa = alfa
-        self.beta = beta
-        self.gamma = gamma
-        self.astar = astar
-        self.bstar = bstar
-        self.cstar = cstar
-        self.lattice_type = lattice_type
-        self.centering = centering
+        self['a'] = a
+        self['b'] = b
+        self['c'] = c
+        self['alfa'] = alfa
+        self['beta'] = beta
+        self['gamma'] = gamma
+        self['astar'] = astar
+        self['bstar'] = bstar
+        self['cstar'] = cstar
+        self['lattice_type'] = lattice_type
+        self['centering'] = centering
 
         # The other parameters may be needed later.
 
@@ -78,104 +78,21 @@ def crystals_list(file_name):
 
     return crystals
 
-
-def dict_a(crystals):
-    """
-    Returns a dictionary with crystal type as key (PABCFHRI).
-    Values are lists with "a" cell parameter values.
-    """
-    crystals_a_dict = {}
+def crystal_search(crystals, crystal_type):
+    crystal_dict = {}
     for crystal in crystals:
-        if crystal.centering not in crystals_a_dict.keys():
-            crystals_a_dict[crystal.centering] = list()
-            crystals_a_dict[crystal.centering].append(crystal.a)
-        else:
-            crystals_a_dict[crystal.centering].append(crystal.a)
-    return crystals_a_dict
-
-
-def dict_b(crystals):
-    """
-    Returns a dictionary with crystal type as key (PABCFHRI).
-    Values are lists with "b" cell parameter values.
-    """
-    crystals_b_dict = {}
-    for crystal in crystals:
-        if crystal.centering not in crystals_b_dict.keys():
-            crystals_b_dict[crystal.centering] = list()
-            crystals_b_dict[crystal.centering].append(crystal.b)
-        else:
-            crystals_b_dict[crystal.centering].append(crystal.b)
-    return crystals_b_dict
-
-
-def dict_c(crystals):
-    """
-    Returns a dictionary with crystal type as key (PABCFHRI).
-    Values are lists with "c" cell parameter values.
-    """
-    crystals_c_dict = {}
-    for crystal in crystals:
-        if crystal.centering not in crystals_c_dict.keys():
-            crystals_c_dict[crystal.centering] = list()
-            crystals_c_dict[crystal.centering].append(crystal.c)
-        else:
-            crystals_c_dict[crystal.centering].append(crystal.c)
-    return crystals_c_dict
-
-
-def dict_alfa(crystals):
-    """
-    Returns a dictionary with crystal type as key (PABCFHRI).
-    Values are lists with "alpha" cell parameter values.
-    """
-    crystals_alfa_dict = {}
-    for crystal in crystals:
-        if crystal.centering not in crystals_alfa_dict.keys():
-            crystals_alfa_dict[crystal.centering] = list()
-            crystals_alfa_dict[crystal.centering].append(crystal.alfa)
-        else:
-            crystals_alfa_dict[crystal.centering].append(crystal.alfa)
-    return crystals_alfa_dict
-
-
-def dict_beta(crystals):
-    """
-    Returns a dictionary with crystal type as key (PABCFHRI).
-    Values are lists with "beta" cell parameter values.
-    """
-    crystals_beta_dict = {}
-    for crystal in crystals:
-        if crystal.centering not in crystals_beta_dict.keys():
-            crystals_beta_dict[crystal.centering] = list()
-            crystals_beta_dict[crystal.centering].append(crystal.beta)
-        else:
-            crystals_beta_dict[crystal.centering].append(crystal.beta)
-    return crystals_beta_dict
-
-
-def dict_gamma(crystals):
-    """
-    Returns a dictionary with crystal type as key (PABCFHRI).
-    Values are lists with "gamma" cell parameter values.
-    """
-    crystals_gamma_dict = {}
-    for crystal in crystals:
-        if crystal.centering not in crystals_gamma_dict.keys():
-            crystals_gamma_dict[crystal.centering] = list()
-            crystals_gamma_dict[crystal.centering].append(crystal.gamma)
-        else:
-            crystals_gamma_dict[crystal.centering].append(crystal.gamma)
-    return crystals_gamma_dict
-
+        try:
+            crystal_dict[crystal['centering']].append(crystal[crystal_type])
+        except KeyError:
+            crystal_dict[crystal['centering']] = [crystal[crystal_type]]
+    return crystal_dict
 
 def dict_data_histogram(crystal_list):
     """
     Creating a dictionary with data for each histogram. Each value is a
     dictionary divided into centering types.
     """
+    histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
     cryst = crystal_list  # Crystals list
-    dict_data = {'a': dict_a(cryst), 'b': dict_b(cryst),
-                 'c': dict_c(cryst), 'alfa': dict_alfa(cryst),
-                 'beta': dict_beta(cryst), 'gamma': dict_gamma(cryst)}
+    dict_data = {key:crystal_search(cryst, key) for key in histogram_order}
     return dict_data
