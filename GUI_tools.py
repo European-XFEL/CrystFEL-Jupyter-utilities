@@ -55,7 +55,7 @@ class CellExplorer:
         self.histogram_list = []
         for hist_indx, hist_name in enumerate(self.histogram_order):
             temp_label = 'Angstrem[Å]'
-            if hist_name == 'alfa':
+            if hist_indx > 2:
                 temp_label = 'deg'
             self.histogram_list.append(Histogram(axs=self.axs_list[hist_indx], title="Histogram of "+hist_name,
                                                  xlabel=temp_label, data_excluded=[],
