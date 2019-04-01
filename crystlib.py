@@ -86,9 +86,11 @@ def crystal_search(crystals, crystal_type):
     crystal_dict = {}
     for crystal in crystals:
         try:
-            crystal_dict[crystal['centering']].append(crystal[crystal_type])
+            crystal_dict[crystal.centering].append(
+                crystal.crystals_dict[crystal_type])
         except KeyError:
-            crystal_dict[crystal['centering']] = [crystal[crystal_type]]
+            crystal_dict[crystal.centering] = [
+                crystal.crystals_dict[crystal_type]]
     return crystal_dict
 
 def dict_data_histogram(crystal_list):
