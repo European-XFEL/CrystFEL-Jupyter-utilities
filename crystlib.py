@@ -7,7 +7,7 @@ from stream_read import diction_crystal_return
 # crystal details as parameters.
 
 
-class Crystal(dict):
+class Crystal():
     """
     Object representing a crystall from indexamajig (CrystFEL) output file.
     Includes a, b, c, alpha, beta, gamma values needed for drawing histograms.
@@ -19,18 +19,21 @@ class Crystal(dict):
                  num_saturated_reflections,
                  num_implausible_reflections):
         self.name = name
-        self['a'] = a
-        self['b'] = b
-        self['c'] = c
-        self['alfa'] = alfa
-        self['beta'] = beta
-        self['gamma'] = gamma
-        self['astar'] = astar
-        self['bstar'] = bstar
-        self['cstar'] = cstar
-        self['lattice_type'] = lattice_type
-        self['centering'] = centering
-
+        self.a = a
+        self.b = b
+        self.c = c
+        self.alfa = alfa
+        self.beta = beta
+        self.gamma = gamma
+        self.astar = astar
+        self.bstar = bstar
+        self.cstar = cstar
+        self.lattice_type = lattice_type
+        self.centering = centering
+        self.histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
+        self.histogram_data = [a, b, c, alfa, beta, gamma]
+        self.crystals_dict = {key_1: key_2 for key_1,
+                              key_2 in zip(self.histogram_order, self.histogram_data)}
         # The other parameters may be needed later.
 
         self.diffraction_resolution_limit = diffraction_resolution_limit
@@ -78,6 +81,7 @@ def crystals_list(file_name):
 
     return crystals
 
+
 def crystal_search(crystals, crystal_type):
     crystal_dict = {}
     for crystal in crystals:
@@ -92,7 +96,8 @@ def dict_data_histogram(crystal_list):
     Creating a dictionary with data for each histogram. Each value is a
     dictionary divided into centering types.
     """
-    histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
     cryst = crystal_list  # Crystals list
-    dict_data = {key:crystal_search(cryst, key) for key in histogram_order}
+    histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
+    dict_data = {key: crystal_search(cryst, key)
+                 for key in histogram_order}
     return dict_data
