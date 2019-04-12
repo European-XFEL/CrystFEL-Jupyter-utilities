@@ -201,10 +201,10 @@ class Span():
         self.span = SpanSelector(self.histogram_list[index].axs, self.onselect,
                                  'horizontal', useblit=True,
                                  rectprops=dict(alpha=0.5, facecolor='red'))
-
+    @staticmethod
     def set_all_false():
         Span.__which_was_used_last = [False, False, False, False, False, False]
-
+    @staticmethod
     def get_all_used():
         return Span.__which_was_used_last
 
@@ -236,19 +236,7 @@ class Span():
                                                                   right_posx)
         for crystal in self.all_crystals_list:
             # Loop for each histogram checking if it belongs to the selection.
-            if self.histogram_list[0].bool_crystal_exluded_green_space(crystal.a):
-                self.crystals_excluded_list.append(crystal)
-            elif self.histogram_list[1].bool_crystal_exluded_green_space(crystal.b):
-                self.crystals_excluded_list.append(crystal)
-            elif self.histogram_list[2].bool_crystal_exluded_green_space(crystal.c):
-                self.crystals_excluded_list.append(crystal)
-            elif self.histogram_list[3].bool_crystal_exluded_green_space(crystal.alfa):
-                self.crystals_excluded_list.append(crystal)
-            elif self.histogram_list[4].bool_crystal_exluded_green_space(crystal.beta):
-                self.crystals_excluded_list.append(crystal)
-            elif self.histogram_list[5].bool_crystal_exluded_green_space(crystal.gamma):
-                self.crystals_excluded_list.append(crystal)
-            else:
+            if not self.is_exluded(crystal):
                 # If the crystal meets all conditions it is added.
                 Span.__crystals_included_list.append(crystal)
 
@@ -259,7 +247,12 @@ class Span():
         for hist in self.histogram_list:
             # Loop for changing the colour to green on the selected part.
             hist.draw_green_space()
-
+    def is_exluded(self, crystal):
+        for hist in self.histogram_list:
+            if hist.bool_crystal_exluded_green_space(crystal[hist.name]):
+                self.crystals_excluded_list.append(crystal)
+                return True
+    @staticmethod
     def get_crystals_included_list():
         return Span.__crystals_included_list
 
@@ -280,12 +273,12 @@ class Span():
 
         for crystal in self.crystals_excluded_list:
             # each crystal value is added at the end of the list
-            data_excluded_a.append(crystal.a)
-            data_excluded_b.append(crystal.b)
-            data_excluded_c.append(crystal.c)
-            data_excluded_alfa.append(crystal.alfa)
-            data_excluded_beta.append(crystal.beta)
-            data_excluded_gamma.append(crystal.gamma)
+            data_excluded_a.append(crystal['a'])
+            data_excluded_b.append(crystal['b'])
+            data_excluded_c.append(crystal['c'])
+            data_excluded_alfa.append(crystal['alfa'])
+            data_excluded_beta.append(crystal['beta'])
+            data_excluded_gamma.append(crystal['gamma'])
         self.histogram_list[0].set_data(data_to_histogram=dict_data_histogram_included["a"],
                                         data_excluded=data_excluded_a)
         self.histogram_list[1].set_data(data_to_histogram=dict_data_histogram_included["b"],
@@ -301,9 +294,6 @@ class Span():
 
         self.histogram_list[5].set_data(data_to_histogram=dict_data_histogram_included["gamma"],
                                         data_excluded=data_excluded_gamma)
-        self.histogram_list[0].update()
-        self.histogram_list[1].update()
-        self.histogram_list[2].update()
-        self.histogram_list[3].update()
-        self.histogram_list[4].update()
-        self.histogram_list[5].update()
+        for hist in self.histogram_list:
+            hist.update()
+

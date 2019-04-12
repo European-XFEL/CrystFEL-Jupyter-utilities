@@ -57,7 +57,7 @@ class CellExplorer:
             temp_label = 'Angstrem[Å]'
             if hist_indx > 2:
                 temp_label = 'deg'
-            self.histogram_list.append(Histogram(axs=self.axs_list[hist_indx], title="Histogram of "+hist_name,
+            self.histogram_list.append(Histogram(axs=self.axs_list[hist_indx], name=hist_name,
                                                  xlabel=temp_label, data_excluded=[],
                                                  data_to_histogram=self.dict_data_histogram[hist_name],
                                                  colors=self.dict_color_histogram, bins=self.bins))

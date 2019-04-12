@@ -7,7 +7,7 @@ from stream_read import diction_crystal_return
 # crystal details as parameters.
 
 
-class Crystal():
+class Crystal(dict):
     """
     Object representing a crystall from indexamajig (CrystFEL) output file.
     Includes a, b, c, alpha, beta, gamma values needed for drawing histograms.
@@ -19,17 +19,17 @@ class Crystal():
                  num_saturated_reflections,
                  num_implausible_reflections):
         self.name = name
-        self.a = a
-        self.b = b
-        self.c = c
-        self.alfa = alfa
-        self.beta = beta
-        self.gamma = gamma
+        self['a'] = a
+        self['b'] = b
+        self['c'] = c
+        self['alfa'] = alfa
+        self['beta'] = beta
+        self['gamma'] = gamma
+        self['centering'] = centering
         self.astar = astar
         self.bstar = bstar
         self.cstar = cstar
         self.lattice_type = lattice_type
-        self.centering = centering
         self.histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
         self.histogram_data = [a, b, c, alfa, beta, gamma]
         self.crystals_dict = {key_1: key_2 for key_1,
@@ -40,7 +40,6 @@ class Crystal():
         self.num_reflections = num_reflections
         self.num_saturated_reflections = num_saturated_reflections
         self.num_implausible_reflections = num_implausible_reflections
-
 
 def crystals_list(file_name):
     """
@@ -86,10 +85,10 @@ def crystal_search(crystals, crystal_type):
     crystal_dict = {}
     for crystal in crystals:
         try:
-            crystal_dict[crystal.centering].append(
+            crystal_dict[crystal['centering']].append(
                 crystal.crystals_dict[crystal_type])
         except KeyError:
-            crystal_dict[crystal.centering] = [
+            crystal_dict[crystal['centering']] = [
                 crystal.crystals_dict[crystal_type]]
     return crystal_dict
 
