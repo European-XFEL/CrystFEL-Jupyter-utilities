@@ -7,7 +7,7 @@ class Histogram():
     """
     Class for representing a single subplot for displaying a histogram.
     axs     - a subplot object.
-    title   - histogram title.
+    name   - histogram name used in title.
     xlabel  - distanse or angle unit
     facecolor - histogram colour
     bins    - number of bins
@@ -16,9 +16,9 @@ class Histogram():
     data_included - data not excluded during selection
     data_excluded - data in the range which was not selected
     """
-    def __init__(self, axs, title, xlabel, data_to_histogram,
+    def __init__(self, axs, name, xlabel, data_to_histogram,
                  data_excluded, colors, bins):
-        self.title = title
+        self.name = name
         self.axs = axs
         self.bins = bins
         self.xlabel = xlabel
@@ -51,7 +51,7 @@ class Histogram():
         self.list_colors = [colors[color] for color in self.cryst_list]
         self.list_colors.append(self.color_exclude)
 
-        self.axs.set_title(self.title)
+        self.axs.set_title("Histogram of " + self.name)
         self.axs.set_xlabel(self.xlabel)
 
         _, _, self.patches = self.axs.hist(x=self.list_data, bins=self.bins,
@@ -126,11 +126,11 @@ class Histogram():
     def get_bins(self):
         return self.bins
 
-    def set_title(self, title):
+    def set_name(self, name):
         """
-        Change the histogram title.
+        Change the histogram name.
         """
-        self.title = title
+        self.name = name
 
     def set_data(self, data_to_histogram, data_excluded):
         """
@@ -176,7 +176,7 @@ class Histogram():
         """
         # Clear subplot
         self.axs.clear()
-        self.axs.set_title(self.title)
+        self.axs.set_title("Histogram of " + self.name)
         self.axs.set_xlabel(self.xlabel)
         # Draw histogram
         _, _, self.patches = self.axs.hist(x=self.list_data, bins=self.bins,
