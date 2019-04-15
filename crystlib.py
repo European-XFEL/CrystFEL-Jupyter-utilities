@@ -4,42 +4,6 @@ Module for getting crystals info from input indexin stream file.
 
 from stream_read import diction_crystal_return
 # From the stream file return a dictionary with each crystal as key and
-# crystal details as parameters.
-
-
-class Crystal(dict):
-    """
-    Object representing a crystall from indexamajig (CrystFEL) output file.
-    Includes a, b, c, alpha, beta, gamma values needed for drawing histograms.
-    """
-
-    def __init__(self, name, a, b, c, alfa, beta, gamma, astar, bstar,
-                 cstar, lattice_type, centering, diffraction_resolution_limit,
-                 num_reflections,
-                 num_saturated_reflections,
-                 num_implausible_reflections):
-        self.name = name
-        self['a'] = a
-        self['b'] = b
-        self['c'] = c
-        self['alfa'] = alfa
-        self['beta'] = beta
-        self['gamma'] = gamma
-        self['centering'] = centering
-        self.astar = astar
-        self.bstar = bstar
-        self.cstar = cstar
-        self.lattice_type = lattice_type
-        self.histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
-        self.histogram_data = [a, b, c, alfa, beta, gamma]
-        self.crystals_dict = {key_1: key_2 for key_1,
-                              key_2 in zip(self.histogram_order, self.histogram_data)}
-        # The other parameters may be needed later.
-
-        self.diffraction_resolution_limit = diffraction_resolution_limit
-        self.num_reflections = num_reflections
-        self.num_saturated_reflections = num_saturated_reflections
-        self.num_implausible_reflections = num_implausible_reflections
 
 def crystals_list(file_name):
     """
@@ -68,13 +32,16 @@ def crystals_list(file_name):
             int(diction_crystal[key][11].split(' ')[-1])
         num_implausible_reflections =\
             int(diction_crystal[key][12].split(' ')[-1])
-        # Crystal class constructor.
-        crystal = Crystal(name, a, b, c, alfa, beta, gamma, astar, bstar,
-                          cstar, lattice_type, centering,
-                          diffraction_resolution_limit,
-                          num_reflections,
-                          num_saturated_reflections,
-                          num_implausible_reflections)
+        # crystal details as parameters.
+
+        crystal = {'name': name, 'a': a, 'b': b, 'c': c,
+                   'alfa': alfa, 'beta': beta, 'gamma': gamma,
+                   'astar': astar, 'bstar': bstar,
+                   'cstar': cstar, 'lattice_type': lattice_type,
+                   'centering': centering, 'num_reflections': num_reflections,
+                   'diffraction_resolution_limit': diffraction_resolution_limit,
+                   'num_saturated_reflections': num_saturated_reflections,
+                   'num_implausible_reflections': num_implausible_reflections}
 
         crystals.append(crystal)
 
@@ -82,14 +49,10 @@ def crystals_list(file_name):
 
 
 def crystal_search(crystals, crystal_type):
+
     crystal_dict = {}
     for crystal in crystals:
-        try:
-            crystal_dict[crystal['centering']].append(
-                crystal.crystals_dict[crystal_type])
-        except KeyError:
-            crystal_dict[crystal['centering']] = [
-                crystal.crystals_dict[crystal_type]]
+        crystal_dict.setdefault(crystal['centering'], []).append(crystal[crystal_type])
     return crystal_dict
 
 def dict_data_histogram(crystal_list):
