@@ -4,25 +4,44 @@ Module for parsing indexing stream file produced by CrystFEL indexamajig.
 import sys
 
 
-def diction_crystal_return(file_name):
-    """
-    Function returns a parsed indexing stream file as a dictionary with keys
-    as name of the crystal from which file it comes from and values are lists
-    of lines containing crystal details.
+def search_crystals_parameters(file_name):
+    """Searching crystals parameters in indexing stream file.
 
-    name_flag = False: Check if the file has been already processed.
-    begin_crystal_flag = False: Check if the crystal details have begun.
-    begin_crystal = []: Lines from the file regarding a given crystal.
-    diction_crystal = {}: Output dictionary to be returned.
-    <Begin crystal ; End crystal>
+    The function parses the file.
+
+    Parameters
+    ----------
+    file_name : Python unicode str (on py3)
+        Path to stream file
+
+    Returns
+    -------
+    diction_crystal : dict
+        Keys as name of the file from which the crystal
+        it comes from and values are lists of lines
+        containing crystal details.
+
+    Raises
+    ------
+    FileNotFoundError
+        if no such file
+    IndexError
+        if there is no path to the stream file
     """
+
+    # name_flag- Check if the file has been already processed.
     name_flag = False
+    # begin_crystal_flag- Check if the crystal details have begun.
     begin_crystal_flag = False
-    begin_crystal = []
+    # crystal_parameters- Lines from the file regarding a given crystal.
+    # Lines between <Begin crystal ; End crystal>
+    crystal_parameters = []
+    # diction_crystal- Output dictionary to be returned.
+
     diction_crystal = {}
     stream_name = None
-    suma = 0  # Number of crystals in the histogram.
-    chunks_count = 0  # All crystals in the stream file.
+    crystal_counter = 0  # Number of crystals in the histogram.
+    chunks_counter = 0  # All crystals in the stream file.
     try:
         stream_name = file_name
     except IndexError:
@@ -40,143 +59,155 @@ def diction_crystal_return(file_name):
                     else:
                         name = line  # No meaningfull data.
                         name_flag = True
-                    #  Count all crystals.
-                    chunks_count += 1
+                    #  Count all crystals parametrs.
+                    chunks_counter += 1
                 if line.startswith("--- Begin crystal"):
                     # After this line following lines contain cryst. info.
                     if ((not begin_crystal_flag) and name_flag):
                         begin_crystal_flag = True
                     else:
                         print("Error: duplicate data.")
-                elif line.startswith('Reflections measured after indexing'):
+                elif (begin_crystal_flag and
+                      line.startswith('Reflections measured after indexing')):
+
                     # Last line with cryst. info.
                     begin_crystal_flag = name_flag = False
                     # If this much lines then it may be error (?).
-                    if len(begin_crystal) == 13:
-                        check_list_begin_crystal(begin_crystal, name)
+                    if (len(crystal_parameters) == 13 or
+                            len(crystal_parameters) == 14):
+
+                        check_crystal_parametrs(crystal_parameters, name)
                         name = name.strip()  # For multiple names of the same
                         # crystal then such crystal is added with a copy of the
                         # name and a number.
                         copy = 1
-                        name_help = name
-                        while name_help in diction_crystal:  # It is unknown
+                        helpful_name = name
+                        while helpful_name in diction_crystal:  # It is unknown
                             # how many of the same name crystals are in the
                             # stream so the loops iterates until all names
                             # are processed.
-                            name_help = name + '-additional'+str(copy)
+                            helpful_name = name + '-additional'+str(copy)
                             copy += 1
-                        diction_crystal[name_help] = begin_crystal
+                        diction_crystal[helpful_name] = crystal_parameters
                         # The whole list of data is put into a dictionary where
                         # key is the crystal name.
                     else:
-                        check_list_begin_crystal(begin_crystal, name)
+                        check_crystal_parametrs(crystal_parameters, name)
                         print("Not enough" +
                               " data for crystal: {}".format(name.strip()))
-                        if "ddunique_axis" in begin_crystal[5]:
+                        if "ddunique_axis" in crystal_parameters[5]:
                             print("No centernings")
                         else:
                             print("Unknown error in crystal {}".format(name))
                             sys.exit()
-                        suma += 1  # Counts crystals which can be histogramed.
+                        # Counts crystals which can be histogramed.
+                        crystal_counter += 1
                         # To know where it belongs.
-                        latice_type = begin_crystal[4].strip()
+                        latice_type = crystal_parameters[4].strip()
                         if latice_type == "lattice_type = triclinic" or\
                                           latice_type == "lattice_type" +\
                                           " = monoclinic":
 
                             print(latice_type, "Will have centering type: P\n")
                             # When no centering is found.
-                            begin_crystal.insert(5, 'centering = P\n')
+                            crystal_parameters.insert(5, 'centering = P\n')
                         else:
                             print("Unknown orientation.")
                             sys.exit()
                         #  In the stream file the crystals of P type (?).
                         name = name.strip()
                         copy = 1  # Multiple names of the same crystal.
-                        name_help = name
-                        while name_help in diction_crystal:  # Loop ends when
+                        helpful_name = name
+                        while helpful_name in diction_crystal:
+                            # Loop ends when
                             # there is no more crystals of the same name.
-                            name_help = name + '-additional'+str(copy)
+                            helpful_name = name + '-additional'+str(copy)
                             copy += 1
 
-                        diction_crystal[name_help] = begin_crystal
-                    begin_crystal = []
+                        diction_crystal[helpful_name] = crystal_parameters
+                    crystal_parameters = []
 
                 elif (begin_crystal_flag and name_flag):
                     # When a crystal is found it is added to the list.
                     # List of lines from 'begin crystal'.
-                    begin_crystal.append(line)
+                    crystal_parameters.append(line)
     except FileNotFoundError:
         print("File not found or not a indexing stream file.")
         sys.exit()
     print("Loaded {} cells from {} chunks".format(len(diction_crystal.keys()),
-                                                  chunks_count))
+                                                  chunks_counter))
     return diction_crystal
 
 
-def check_list_begin_crystal(crystals, name):
+def check_crystal_parametrs(crystal_parameters, name):
+    """Checking the data received from indexing stream file.
+
+    Parameters
+    ----------
+    crystal_parameters : list
+        Lines from the file regarding a given crystal
+    name : Python unicode str (on py3)
+        The name of the file from which the crystal came from
     """
-    Checking the data received from indexing stream file.
-    """
-    if len(crystals) > 13:
+
+    checks = ["Cell parameters", "astar", "bstar", "cstar", "lattice_type",
+              "centering", "unique_axis", "profile_radius",
+              "predict_refine/final_residual", "predict_refine/det_shift x",
+              "diffraction_resolution_limit", "num_reflections",
+              "num_saturated_reflections", "num_implausible_reflections"]
+    # do I have enough parameters?
+    if len(crystal_parameters) > 14:
         print("Too much data for crystal: {}".format(name))
-    elif len(crystals) == 13:
+    elif len(crystal_parameters) >= 13:
+        for idx, param in enumerate(crystal_parameters):
+            if checks[idx] not in param:
+                if checks[idx+1] not in param:
+                    print("No {} for {}".format(checks[idx], name))
+                    sys.exit()
 
-        checks = ["Cell parameters", "astar", "bstar", "cstar", "lattice_type", "centering", "unique_axis", "profile_radius", "predict_refine/det_shift x",
-                  "diffraction_resolution_limit", "num_reflections", "num_saturated_reflections", "num_implausible_reflections"]
-
-        print_outs = ["No cell parameters for crystal:", "No astar in crystal:", "No bstar in crystal:", "No cstar in crystal:",
-                      "lattice type for crystal:", "No centerings for crystal:", "No unique axis for crystal:", "No profile radius for crystal:", "No predict_refine/det_shift x for crystal:", "No diffraction_resolution_limit  for crystal:", "No diffraction_resolution_limit for crystal: ", "No num_saturated_reflections for crystal: ", "No num_implausible_reflections for crystal:"]
-
-
-        for k, crystal in enumerate(crystals):
-            if checks[k] not in crystal:
-                print(" ".join([print_outs[k], name]))
-                sys.exit()
-
-    elif len(crystals) == 12:
-        if "Cell parameters" not in crystals[0]:
+    elif len(crystal_parameters) == 12:
+        if "Cell parameters" not in crystal_parameters[0]:
             print("No Cell parameters for crystal: {}".format(name))
             sys.exit()
-        if "astar" not in crystals[1]:
+        if "astar" not in crystal_parameters[1]:
             print("No astar for crystal: {}".format(name))
             sys.exit()
-        if "bstar" not in crystals[2]:
+        if "bstar" not in crystal_parameters[2]:
             print("No bstar for crystal: {}".format(name))
             sys.exit()
-        if "cstar" not in crystals[3]:
+        if "cstar" not in crystal_parameters[3]:
             print("No cstar for crystal: {}".format(name))
             sys.exit()
-        if "lattice_type" not in crystals[4]:
+        if "lattice_type" not in crystal_parameters[4]:
             print("No lattice type for crystal: {}".format(name))
             sys.exit()
         index = 7
-        if "centering" in crystals[5]:
-            if "unique_axis" not in crystals[6]:
+        if "centering" in crystal_parameters[5]:
+            if "unique_axis" not in crystal_parameters[6]:
                 print("No unique_axis for crystal: {}".format(name))
                 sys.exit()
-        elif crystals[5].startswith("unique_axis"):
+        elif crystal_parameters[5].startswith("unique_axis"):
             print("No centering for crystal: {}".format(name))
             sys.exit()
         else:
             index = 6
-        if "profile_radius" not in crystals[index]:
+        if "profile_radius" not in crystal_parameters[index]:
             print("No profile_radius for crystal: {}".format(name))
             sys.exit()
-        if "predict_refine/det_shift x" not in crystals[index+1]:
+        if "predict_refine/det_shift x" not in crystal_parameters[index+1]:
             print("No predict_refine/det_shift x for crystal: {}".format(name))
             sys.exit()
-        if "diffraction_resolution_limit" not in crystals[index+2]:
+        if "diffraction_resolution_limit" not in crystal_parameters[index+2]:
             print("No diffraction_resolution_limit" +
                   " for crystal: {}".format(name))
             sys.exit()
-        if "num_reflections" not in crystals[index+3]:
+        if "num_reflections" not in crystal_parameters[index+3]:
             print("No num_reflections for crystal: {}".format(name))
             sys.exit()
-        if "num_saturated_reflections" not in crystals[index+4]:
+        if "num_saturated_reflections" not in crystal_parameters[index+4]:
             print("No num_saturated_reflections for crystal: {}".format(name))
             sys.exit()
-        if "num_implausible_reflections" not in crystals[-1]:
+        if "num_implausible_reflections" not in crystal_parameters[-1]:
             print("No num_implausible_reflections" +
                   " for crystal: {}".format(name))
             sys.exit()
