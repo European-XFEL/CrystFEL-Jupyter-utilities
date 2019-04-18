@@ -18,8 +18,8 @@ import cfelpyutils.geometry_utils as g
 import panel
 import data
 import peak_h5
-from widget import My_slider, Radio
-from bttn_peak import Bttn_peak
+from widget import ContrastSlider, Radio
+from bttn_peak import PeakButton
 
 
 # Creating arguments for parsing.
@@ -132,7 +132,7 @@ class Image():
                                         vmax=self.vmax, vmin=self.vmin)
             # Slider position.
             axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
-            self.slider = My_slider(image=self.image, fig=self.fig,
+            self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                     ax=axes, label="Kontrast", vmin=self.vmin,
                                     vmax=self.vmax)
             # Radio (?) position.
@@ -148,7 +148,7 @@ class Image():
             self.display_arrangment_view()
             # Slider position.
             axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
-            self.slider = My_slider(image=self.image, fig=self.fig,
+            self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                     ax=axes, label="Kontrast", vmin=self.vmin,
                                     vmax=self.vmax)
             # Radio position.
@@ -165,7 +165,7 @@ class Image():
                                          facecolor='yellow')
             # Only one button for showing peaks from h5 file.
             self.peakbtn =\
-                Bttn_peak(fig=self.fig, peaks=self.peaks, matrix=self.matrix,
+                PeakButton(fig=self.fig, peaks=self.peaks, matrix=self.matrix,
                           title=Image.FILE_H5_NAME, axis_list=self.axis_list,
                           radio=self.radio, slider=self.slider,
                           list_active_peak=self.list_active_peak,
@@ -183,7 +183,7 @@ class Image():
                 # we can show peaks as shown check_peak_detection
                 # they are under line 'Peaks from peak search'
                 self.peakbtn2 =\
-                    Bttn_peak(fig=self.fig, peaks=self.peaks,
+                    PeakButton(fig=self.fig, peaks=self.peaks,
                               matrix=self.matrix, title=Image.FILE_H5_NAME,
                               axis_list=self.axis_list, radio=self.radio,
                               slider=self.slider,
@@ -195,7 +195,7 @@ class Image():
                 self.axis_list[2] = plt.axes([.90, 0.35, 0.09, 0.08],
                                              facecolor='yellow')
                 self.peakbtn3 =\
-                    Bttn_peak(fig=self.fig, peaks=self.peaks,
+                    PeakButton(fig=self.fig, peaks=self.peaks,
                               matrix=self.matrix, title=Image.FILE_H5_NAME,
                               axis_list=self.axis_list, radio=self.radio,
                               slider=self.slider,

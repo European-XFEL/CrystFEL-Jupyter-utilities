@@ -10,7 +10,7 @@ from matplotlib.backend_bases import NavigationToolbar2
 # In there we have refereces on to 'home' button
 from scipy import stats
 from histogram import Histogram
-from widget import Span, Bttn, Bttn_bins, Button
+from widget import Span, CenteringButton, ButtonBins, Button
 
 import crystlib
 from zoompan import ZoomOnWheel
@@ -81,7 +81,7 @@ class CellExplorer:
         button_x_pos = [0.95,0.935,0.92,0.905,0.89,0.875,0.86,0.845]
         self.buttons_list = []
         for cryst_indx, cryst_symb in enumerate(self.cryst_list):
-            self.buttons_list.append(Bttn(axs=plt.axes([button_x_pos[-1-cryst_indx], 0.95, 0.015, 0.045]), fig=self.fig,
+            self.buttons_list.append(CenteringButton(axs=plt.axes([button_x_pos[-1-cryst_indx], 0.95, 0.015, 0.045]), fig=self.fig,
                                             label=cryst_symb, list_color=[
                                                 self.dict_color_histogram[cryst_symb], 'gray', 'lightgrey'],
                                             histogram_list=self.histogram_list,
@@ -102,11 +102,11 @@ class CellExplorer:
 
         self.fig.pan_zoom = ZoomOnWheel(self.fig, scale_factor=2.0)
         # For zooming in using mouse wheel
-        Bttn_bins.set_bins(self.bins)
-        self.btt_p = Bttn_bins(fig=self.fig, label='+',
+        ButtonBins.set_bins(self.bins)
+        self.btt_p = ButtonBins(fig=self.fig, label='+',
                                histogram_list=self.histogram_list,
                                ax=plt.axes([0.91, 0.90, 0.025, 0.025]),)
-        self.btt_m = Bttn_bins(fig=self.fig, label='-',
+        self.btt_m = ButtonBins(fig=self.fig, label='-',
                                histogram_list=self.histogram_list,
                                ax=plt.axes([0.935, 0.90, 0.025, 0.025]),)
         self.bttn_save = Button(ax=plt.axes([0.91, 0.875, 0.050, 0.025]),
@@ -285,7 +285,7 @@ class CellExplorer:
         for hist in self.histogram_list:
             hist.reset()
             hist.set_bins(self.bins)
-            Bttn_bins.set_bins(self.bins)
+            ButtonBins.set_bins(self.bins)
         for bttn in self.buttons_list:
             bttn.reset_color()
 
