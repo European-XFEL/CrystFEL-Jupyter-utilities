@@ -4,20 +4,70 @@ Module for displaying a single module in a subplot.
 
 
 class Histogram():
+    """ Represents a histogram on a single subplot
+
+    Attributes
+    ----------
+
+    axs : The class:`matplotlib.axes.Axes`
+
+        The Axes contains most of the figure elements
+    name : str
+
+        histogram name used in title.
+    xlabel : str
+
+        distanse or angle unit
+    bins : int
+
+        number of bins
+    was_clicked_before : boolean
+
+        flag for checking is something was selected on a hist.
+    range_green_space : list
+
+        range of the 'green' surface
+    data_included : list
+
+        data not excluded during selection
+    data_excluded : list
+
+        data in the range which was not selected
+    color_exclude : str
+
+        the name of the color to the exclude histogram bar
+
+    current_xlim : tuple
+
+            current x limits of the histogram.
+    patches : list
+
+        individual patches used to create the histogram
     """
-    Class for representing a single subplot for displaying a histogram.
-    axs     - a subplot object.
-    name   - histogram name used in title.
-    xlabel  - distanse or angle unit
-    facecolor - histogram colour
-    bins    - number of bins
-    was_clicked_before - flag for checking is something was selected on a hist.
-    range_green_space - range of the 'green' surface
-    data_included - data not excluded during selection
-    data_excluded - data in the range which was not selected
+    def __init__(self, axs, name, xlabel, data_to_histogram, colors, bins):
+        """
+            Attributes
+            ----------
+
+            axs : The class:`matplotlib.axes.Axes`
+
+                The Axes contains most of the figure elements
+            name : str
+
+                histogram name used in title.
+            xlabel : str
+
+                distanse or angle unit
+            bins : int
+
+                number of bins
+            colors : dict
+
+                Colors of changing the bars in the histogram
+            data_to_histogram : dict
+
+                Data for the histogram
     """
-    def __init__(self, axs, name, xlabel, data_to_histogram,
-                 data_excluded, colors, bins):
         self.name = name
         self.axs = axs
         self.bins = bins
@@ -34,13 +84,13 @@ class Histogram():
                 self.list_data.append(data_to_histogram[a_cryst])
             except KeyError:
                 self.list_data.append([])
-            self.data_included+=self.list_data[k]
-        
+            self.data_included += self.list_data[k]
+
         try:
-            self.data_excluded = data_excluded
+            self.data_excluded = []
         except KeyError:
             self.data_excluded = []
-        
+
         self.list_data.append(self.data_excluded)
 
         self.max = max(self.data_included + self.data_excluded)
@@ -70,14 +120,28 @@ class Histogram():
         self.current_xlim = self.axs.get_xlim()
 
     def reset(self):
+        """Restore the initial settings
+        """
         self.was_clicked_before = False
         self.range_green_space = [None, None]
         self.current_xlim = self.xlim
 
     def bool_crystal_exluded_green_space(self, data):
         """
-        Function for checking if data is in the selection and if the
+        Method for checking if data is in the selection and if the
         cristal will be included in the selection or not.
+
+        Parametetrs
+        -----------
+
+        data : double
+
+            the value given to check if it belongs to the range of ​​interest
+
+        Returns
+        -------
+
+        bolean value
         """
         if self.range_green_space[0] is None or\
            self.range_green_space[1] is None:
@@ -89,14 +153,22 @@ class Histogram():
         return False
 
     def set_range_green_space(self, minimum, maximum):
-        """
-        Setting the range of selection.
+        """Setting the range of selection.
+
+        Parameters
+        ----------
+
+        minimum : double
+
+        left position the range of ​​interest
+        maximum : double
+
+        right position the range of ​​interest
         """
         self.range_green_space = [minimum, maximum]
 
     def draw_green_space(self):
-        """
-        Changing colour to green in the selection.
+        """Draw the range of ​​interest ('green')
         """
         if self.range_green_space[0] is not None or\
            self.range_green_space[1] is not None:
@@ -105,44 +177,55 @@ class Histogram():
                              facecolor='#2ca02c', alpha=0.5)
 
     def set_was_clicked_before(self, true_false):
-        """
-        Check if range was selected.
+        """set flag was_clicked_before.
         """
         self.was_clicked_before = true_false
 
     def get_was_clicked_before(self):
-        """
-        Return bool value.
+        """Return flag was_clicked_before.
         """
         return self.was_clicked_before
 
     def set_bins(self, bins):
-        """
-        Changing number of bins.
+        """Changing number of bins.
+
+        Parameters
+        ----------
+        bins : int
+
+            number of bins
         """
         self.bins = int(bins)
         # Dividing by 2 may give float number.
 
     def get_bins(self):
+        """get bins.
+        """
         return self.bins
 
     def set_name(self, name):
-        """
-        Change the histogram name.
+        """Changing the histogram name.
         """
         self.name = name
 
     def set_data(self, data_to_histogram, data_excluded):
-        """
-        Method for updating data during the selection with Span.
-        Finds excluded crystals (?).
-        Try/Except needed for none crystals in selection.
+        """Updating the data.
+
+        Parameters
+        ----------
+
+        data_to_histogram : dict
+
+            Data for the histogram
+        data_excluded : list
+
+            Data excluded for the histogram.
         """
         try:
             self.data_excluded = data_excluded
         except KeyError:
             self.data_excluded = []
-        
+
         self.list_data = []
         self.data_included = []
         for k, a_cryst in enumerate(self.cryst_list):
@@ -153,10 +236,15 @@ class Histogram():
             self.data_included += self.list_data[k]
         self.list_data.append(self.data_excluded)
 
-
     def set_colour(self, colors):
-        """
-        For updating colours.
+        """Set colors.
+
+        Parameters
+        ----------
+
+        colors : dict
+
+            Colors of changing the bars in the histogram
         """
         self.list_colors = [colors[color] for color in self.cryst_list]
         self.list_colors.append(self.color_exclude)
@@ -189,10 +277,16 @@ class Histogram():
         self.axs.set_xlim(self.current_xlim)
 
     def set_current_xlim(self, xlim):
+        """ set current x limits of the histogram.
+        """
         self.current_xlim = xlim
 
     def get_current_xlim(self):
+        """get current x limits of the histogram.
+        """
         return self.axs.get_xlim()
 
     def get_current_ylim(self):
+        """get current y limits of the histogram.
+        """
         return self.axs.get_ylim()
