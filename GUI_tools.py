@@ -58,7 +58,7 @@ class CellExplorer:
             if hist_indx > 2:
                 temp_label = 'deg'
             self.histogram_list.append(Histogram(axs=self.axs_list[hist_indx], name=hist_name,
-                                                 xlabel=temp_label, data_excluded=[],
+                                                 xlabel=temp_label,
                                                  data_to_histogram=self.dict_data_histogram[hist_name],
                                                  colors=self.dict_color_histogram, bins=self.bins))
 
@@ -85,7 +85,7 @@ class CellExplorer:
                                             label=cryst_symb, list_color=[
                                                 self.dict_color_histogram[cryst_symb], 'gray', 'lightgrey'],
                                             histogram_list=self.histogram_list,
-                                            dict_color_histogram=self.dict_color_histogram))
+                                            histogram_colors=self.dict_color_histogram))
 
         self.span_list = []
         for hist_indx, hist_name in enumerate(self.histogram_order):
@@ -369,7 +369,7 @@ class CellExplorer:
                           fontsize=10)
             hist.axs.grid(True)
 if __name__ == "__main__":
-    streamfile = 'indexing.stream'
+    streamfile = '/home/tsachanowski/Dokumenty/Process.stream'
     RUN = CellExplorer(streamfile)
     RUN = CellExplorer(streamfile, alfa=(80, 90),
                        beta=(80, 90), gamma=(80, 90))
