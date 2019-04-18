@@ -32,7 +32,7 @@ class ButtonBins(Button):
             The Figure which will be redraw.
         ax : The :class:`matplotlib.axes.Axes`
 
-            The button renders into.
+            instance the button will be placed into.
         histogram_list : list
 
             Contains objects the class:`histogram.Histogram`
@@ -107,7 +107,7 @@ class Radio(RadioButtons):
             The Figure which will be redraw.
         ax : The class:`matplotlib.axes.Axes`
 
-            The button renders into.
+            instance the button will be placed into.
         labels : tuple of The :class:`matplotlib.text.Text`
 
             instance.
@@ -181,7 +181,7 @@ class ContrastSlider(Slider):
             The Figure which will be redraw.
         ax : The class:`matplotlib.axes.Axes`
 
-            The button renders into.
+            instance the button will be placed into.
         label : The :class:`matplotlib.text.Text` instance.
 
             instance.
@@ -256,17 +256,18 @@ class CenteringButton(Button):
     histogram_list : list
 
         Contains objects the class:`histogram.Histogram`
+    list_color : list
 
-    define the data range that the colormap covers.
-    Class for button changing crystal type.
-    fig - whole image figure called by canvas.draw().
-    list_color - list with def. colours.
-    histogram_list - list with objects of class histogram.
-    dict_color_histogram - dictionary with keys as centering types and value
-    is the colour name.
+        Colors of changing the bars in the histogram
+    histogram_list : list
+
+        Contains objects the class:`histogram.Histogram`
+    histogram_colors : dict
+
+        key - type centering, value - list with colors
     """
     def __init__(self, fig, axs, label, list_color,
-                 histogram_list, dict_color_histogram):
+                 histogram_list, histogram_colors):
         # Initialize parent constructor.
         super(CenteringButton, self).__init__(ax=axs, label=label,
                                               color=list_color[0])
@@ -276,7 +277,7 @@ class CenteringButton(Button):
         # Click reaction
         super(CenteringButton, self).on_clicked(self.on_check)
         self.histogram_list = histogram_list  # List with all histograms
-        self.dict_color_histogram = dict_color_histogram
+        self.histogram_colors = histogram_colors
         self.list_color = list_color
 
     def on_check(self, label):
@@ -294,9 +295,9 @@ class CenteringButton(Button):
         # to the next in a loop. For a given button the colour will be set in
         # the histogram.
         # change name color in diction for key PABCFHIR is label button
-        self.dict_color_histogram[self.label.get_text()] = self.color
+        self.histogram_colors[self.label.get_text()] = self.color
         for hist in self.histogram_list:  # Loop for each histogram.
-            hist.set_colour(self.dict_color_histogram)  # Setting new colour
+            hist.set_colour(self.histogram_colors)  # Setting new colour
             # in a given histogram.
             # Refresh each histogram (clear image and draw again)
             hist.update_color()
@@ -307,9 +308,9 @@ class CenteringButton(Button):
         """
         self.colors = itertools.cycle(self.list_color)
         self.color = self.list_color[0]
-        self.dict_color_histogram[self.label.get_text()] = self.color
+        self.histogram_colors[self.label.get_text()] = self.color
         for hist in self.histogram_list:  # Loop for each histogram.
-            hist.set_colour(self.dict_color_histogram)  # Setting new colour
+            hist.set_colour(self.histogram_colors)  # Setting new colour
             # in a given histogram.
             # Refresh each histogram (clear image and draw again)
             hist.update_color()
