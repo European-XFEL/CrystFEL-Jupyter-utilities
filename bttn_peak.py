@@ -2,22 +2,39 @@ from matplotlib.widgets import Button
 import matplotlib.pyplot as plt
 
 
-class Bttn_peak(Button):
-    """
-    class used in hadsee to visible others peaks in image
-    fig - object of the Figuge class used to redraw
-    axs - is object subplot(Axes objects)
-    axis - position button in figure(object matplotlib.pyplot.axis)
-    label - the name of the button
-    axis_list - list all position button used to peaks
-                (list object matplotlib.pyplot.axis)
-    list_active_peak - list flags with peaks are enabled/disabled
-    detectors - diction all panels with peaks
-    peaks - peaks form h5 file
-    title - title image
-    radio - object form widget/Radio
-    slider - objet form widget/My_slider
-    matrix - data with pixels
+class PeakButton(Button):
+    """A GUI button used in hadsee to visible others peaks in image
+
+    Attributes
+    ----------
+    fig : The class:`matplotlib.figure.Figure`.
+
+        The Figure which will be redraw
+    axs : The class:`matplotlib.axes.Axes`
+
+        The Axes contains most of the figure elements
+    axis_list : list
+
+        position button in figure(object matplotlib.pyplot.axis)
+    list_active_peak : list
+
+        flags with peaks are enabled/disabled
+    detectors : dict
+
+        object class Panel with peaks
+    peaks -  list
+
+        objects Peak (form h5 file)
+    title : str
+
+        title image
+    radio : object form widget/Radio
+
+    slider : objet form widget/My_slider
+
+    matrix : numpy.array object
+
+        data with pixels
     """
     def __init__(self, fig, axs, matrix, ax, label, axis_list,
                  list_active_peak, peaks, detectors, title, radio, slider):
@@ -34,9 +51,9 @@ class Bttn_peak(Button):
         self.radio = radio
         self.slider = slider
         # Initialize parent constructor.
-        super(Bttn_peak, self).__init__(ax=self.ax, label=label)
+        super(PeakButton, self).__init__(ax=self.ax, label=label)
         # On click reaction.
-        super(Bttn_peak, self).on_clicked(self.peaks_on_of)
+        super(PeakButton, self).on_clicked(self.peaks_on_of)
 
     def visual_peaks_near_bragg_from_stream(self):
         """
