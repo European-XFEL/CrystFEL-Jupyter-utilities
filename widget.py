@@ -341,7 +341,7 @@ class Span():
     """
     # list of flags for showing what was selected last, where.
     __which_was_used_last = [False, False, False, False, False, False]
-    __crystals_included_list = []
+    __crystals_included = []
     # crystals in green space
 
     def __init__(self, fig, crystals_excluded_list,
@@ -386,7 +386,7 @@ class Span():
         # Always search every crystal whose parameter
         # is in the region of interes and exclude the rest.
         # We clear list and search again
-        Span.__crystals_included_list.clear()
+        Span.__crystals_included.clear()
         self.crystals_excluded_list.clear()
         left_posx = min(xmin, xmax)  # Left selection point.
         right_posx = max(xmin, xmax)  # Right selection point.
@@ -406,9 +406,9 @@ class Span():
             # Loop for each histogram checking if it belongs to the selection.
             if not self.is_exluded(crystal):
                 # If the crystal meets all conditions it is added.
-                Span.__crystals_included_list.append(crystal)
+                Span.__crystals_included.append(crystal)
 
-        print("Selected {} of {} cells".format(len(Span.__crystals_included_list),
+        print("Selected {} of {} cells".format(len(Span.__crystals_included),
               len(self.all_crystals_list)))
 
         self.data_update()
@@ -439,44 +439,24 @@ class Span():
     def get_crystals_included_list():
         """ Returns all crystals found in the region of interest
         """
-        return Span.__crystals_included_list
+        return Span.__crystals_included
 
     def data_update(self):
         """Method for updating data in
         the histograms with regard to the selection.
         """
         data_included =\
-            crystlib.dict_data_histogram(Span.__crystals_included_list)
+            crystlib.dict_data_histogram(Span.__crystals_included)
 
-        data_excluded_a = []
-        data_excluded_b = []
-        data_excluded_c = []
-        data_excluded_alfa = []
-        data_excluded_beta = []
-        data_excluded_gamma = []
+        data_excluded = {'a': [], 'b': [], 'c': [],
+                         'alfa': [], 'beta': [], 'gamma': []}
 
         for crystal in self.crystals_excluded_list:
-            # each crystal value is added at the end of the list
-            data_excluded_a.append(crystal['a'])
-            data_excluded_b.append(crystal['b'])
-            data_excluded_c.append(crystal['c'])
-            data_excluded_alfa.append(crystal['alfa'])
-            data_excluded_beta.append(crystal['beta'])
-            data_excluded_gamma.append(crystal['gamma'])
-        self.histogram_list[0].set_data(data_to_histogram=data_included["a"],
-                                        data_excluded=data_excluded_a)
-        self.histogram_list[1].set_data(data_to_histogram=data_included["b"],
-                                        data_excluded=data_excluded_b)
-        self.histogram_list[2].set_data(data_to_histogram=data_included["c"],
-                                        data_excluded=data_excluded_c)
+            for hist in self.histogram_list:
+                data_excluded[hist.name].append(crystal[hist.name])
 
-        self.histogram_list[3].set_data(data_to_histogram=data_included["alfa"],
-                                        data_excluded=data_excluded_alfa)
-
-        self.histogram_list[4].set_data(data_to_histogram=data_included["beta"],
-                                        data_excluded=data_excluded_beta)
-
-        self.histogram_list[5].set_data(data_to_histogram=data_included["gamma"],
-                                        data_excluded=data_excluded_gamma)
+        # set data and refresh hist
         for hist in self.histogram_list:
+            hist.set_data(data_excluded=data_excluded[hist.name],
+                          data_to_histogram=data_included[hist.name])
             hist.update()
