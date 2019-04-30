@@ -10,22 +10,102 @@ from stream_read import dict_peak_in_name_h5
 
 
 class Detector:
+    """representing a detector.
+
+    Attributes
+    ----------
+
+    min_fs : int
+
+        min index in a column
+    min_ss : int
+
+    min index in a row
+    max_fs : int
+
+        max index in a column
+    max_ss : int
+
+        max index in a row
+    xfs: double
+
+        fast scan directions, value x
+    yfs: double
+
+        fast scan directions, value y
+    xss: double
+
+        slow scan directions, value x
+    yss: double
+
+        slow scan directions, value y
+    corner_x : double
+
+        coordinates of the panel corner from geom file
+    corner_y : double
+
+        coordinates of the panel corner from geom file
+    array : numpy.array
+
+        detector data
+    position : tuple
+
+        panel coordinates on the final image
+    peak_list : list
+
+        list of peaks from the stream file
+    peak_near_bragg_list : list
+
+        another peak list from the stream file. (peak like the
+        check-near-bragg script does)
     """
-    Class representing a detector.
-    min_fs - min index in a column
-    min_ss - min index in a row
-    max_fs - max index in a column
-    max_ss - max index in a row
-    corner_x - coordinates of the panel corner from geom file
-    corner_y - coordinates of the panel corner from geom file
-    array - data from each panel from part of the data - dataset in h5 file
-    position - panel coordinates on the final image
-    peak_list - list of peaks from the stream file
-    peak_near_bragg_list - peak list from 'this' (?) panel like the
-        check-near-bragg script does.
-    """
+
     def __init__(self, image_size, name, min_fs, min_ss, max_fs, max_ss, xfs,
                  yfs, xss, yss, corner_x, corner_y, data):
+
+        """
+        Parameters
+        ----------
+        image_size : tuple
+
+            image size
+        name : str
+
+            the name of the detector
+        min_fs : int
+
+            min index in a column
+        min_ss : int
+
+        min index in a row
+        max_fs : int
+
+            max index in a column
+        max_ss : int
+
+            max index in a row
+        xfs: double
+
+            fast scan directions, value x
+        yfs: double
+
+            fast scan directions, value y
+        xss: double
+
+            slow scan directions, value x
+        yss: double
+
+            slow scan directions, value y
+        corner_x : double
+
+            coordinates of the panel corner from geom file
+        corner_y : double
+
+            coordinates of the panel corner from geom file
+        data : numpy.array
+
+            data from each panel from part of the data - dataset in h5 file
+        """
         self.name = name
         self.min_fs = min_fs
         self.min_ss = min_ss
@@ -59,8 +139,7 @@ class Detector:
         return self.array
 
     def with_rotatioon(self):
-        """
-        By comparing xfs, yfs, xss and yss verifies which kind of rotation
+        """By comparing xfs, yfs, xss and yss verifies which kind of rotation
         should be applied.
         """
         if np.abs(self.xfs) < np.abs(self.yfs) and \
@@ -80,216 +159,233 @@ class Detector:
             exit()
 
     def rot_x(self):
+        """Rotation along x axis, columns stay the same, rows are switched.
         """
-        Rotation along x axis, columns stay the same, rows are switched.
-        """
-        for peak_stream in self.peak_list:
-            # to sa peaki które wyświetla check peak detection
-            # petla sluzy temu by połozenie peakow
-            # bylo wzgledem lewego gornego rogu
-            # kazdego panela przed rotacja, a nie
-            # wzgledem początku macierzy danych
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
-
-        for peak_stream in self.peak_near_bragg_list:
-            # to sa peaki ktore wyswietla
-            # skrypt near bragg
-            # petla sluzy temu by połozenie peakow
-            # bylo wzgledem lewego gornego rogu
-            # kazdego panela przed rotacja, a nie
-            # wzgledem początku macierzy danych
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
-        # rotacja
+        # rotation x
         self.array = self.array[::-1, :]
+        # The position of the panel
+        # position x
+        pos_x = int(np.round(self.image_size[0]/2.0 - self.corner_y -
+                    self.array.shape[0], 0))
+        # position y
+        pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
+        # position
+        self.position = (pos_x, pos_y)
 
-        # pozycja wzdluz osi y
-        rows = int(np.round(self.image_size[0]/2.0 - self.corner_y -
-                   self.array.shape[0], 0))
-        # pozycja wzdlurz osi x
-        kolumns = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
-        # pozycja na OBRAZIE
-        self.position = (rows, kolumns)
-
+        # two loop for:
         for peak_stream in self.peak_list:
-            # petal sluzy temu by zlokalizowac
-            # nowe poloznie peaku w panelu po rotacji
-            # -1 bo polzenie jest
-            # od zera liczone, a array.shape zwraca liczbe wierszy
-            peak_stream.ss_px = self.array.shape[0] - 1 - peak_stream.ss_px
-            row = peak_stream.fs_px + self.position[1]
-            kolumn = peak_stream.ss_px + self.position[0]
-            # polozenie peaku po rotacji wzgledem lewego gornego rogu
-            peak_stream.position = (row, kolumn)
+            # for check peak detection
 
-        for peak_stream in self.peak_near_bragg_list:
-            # petal sluzy temu by zlokalizowac
-            # nowe poloznie peaku w panelu po rotacji
-            # -1 bo polzenie jest
-            # od zera liczone, a array.shape zwraca liczbe wierszy
+            # setting the peak relative
+            # to the upper left corner of the panel
+            # default: upper left corner of the matrix data
+            peak_stream.ss_px -= self.min_ss
+            peak_stream.fs_px -= self.min_fs
+
+            # setting position after rotation
             peak_stream.ss_px = self.array.shape[0] - 1 - peak_stream.ss_px
-            row = peak_stream.fs_px + self.position[1]
-            kolumn = peak_stream.ss_px + self.position[0]
-            # polozenie peaku po rotacji wzgledem lewego gornego rogu
-            peak_stream.position = (row, kolumn)
+            posx = peak_stream.fs_px + self.position[1]
+            posy = peak_stream.ss_px + self.position[0]
+            # new position of the peak in the panel after rotation
+            peak_stream.position = (posx, posy)
+        for peak_stream in self.peak_near_bragg_list:
+            # for script near bragg
+
+            # setting the peak relative
+            # to the upper left corner of the panel
+            # default: upper left corner of the matrix data
+            peak_stream.ss_px -= self.min_ss
+            peak_stream.fs_px -= self.min_fs
+
+            # setting position after rotation
+            peak_stream.ss_px = self.array.shape[0] - 1 - peak_stream.ss_px
+            posx = peak_stream.fs_px + self.position[1]
+            posy = peak_stream.ss_px + self.position[0]
+            # new position of the peak in the panel after rotation
+            peak_stream.position = (posx, posy)
 
     def rot_y(self):
+        """Rotation along y axis; columns order is inversed, rows stay the same.
         """
-        Rotation along y axis; columns order is inversed, rows stay the same.
-        """
-        # peaki ktore wyswietla check peak detection
-        for peak_stream in self.peak_list:
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
-            # petla sluzy temu by połozenie peakow
-            # bylo wzgledem lewego gornego rogu
-            # kazdego panela przed rotacja, a nie
-            # wzgledem początku macierzy danych
-
-        for peak_stream in self.peak_near_bragg_list:
-            # peaki ktore wyswietla near bragg
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
-            # petla sluzy temu by połozenie peakow
-            # bylo wzgledem lewego gornego rogu
-            # kazdego panela przed rotacja, a nie
-            # wzgledem początku macierzy danych
-
-        # rotacja
+        # rotation y
         self.array = self.array[:, ::-1]
-        # pozycja wzdluz osi x
-        kolumns = int(self.image_size[1]/2) + int(self.corner_x) - \
+        # The position of the panel
+        # position y
+        pos_y = int(self.image_size[1]/2) + int(self.corner_x) - \
             int(self.array.shape[1])
-        # pozycja wzdluz osi y
-        rows = int(self.image_size[0]/2) - int(self.corner_y)
-        # położenie panelu na OBRAZIE
-        self.position = (rows, kolumns)
+        # position x
+        pos_x = int(self.image_size[0]/2) - int(self.corner_y)
+        # position
+        self.position = (pos_x, pos_y)
 
+        # two loop for:
         for peak_stream in self.peak_list:
-            peak_stream.fs_px = self.array.shape[1] - 1 - peak_stream.fs_px
-            # -1 bo polozenie liczone jest od zera a shaep jest od 1
-            row = peak_stream.fs_px + self.position[1]
-            kolumn = peak_stream.ss_px + self.position[0]
-            # polozenie peaku po rotacji
-            peak_stream.position = (row, kolumn)
+            # for check peak detection
 
-        for peak_stream in self.peak_near_bragg_list:
+            # setting the peak relative
+            # to the upper left corner of the panel
+            # default: upper left corner of the matrix data
+            peak_stream.ss_px -= self.min_ss
+            peak_stream.fs_px -= self.min_fs
+
+            # setting position after rotation
             peak_stream.fs_px = self.array.shape[1] - 1 - peak_stream.fs_px
-            # -1 bo polozenie liczone jest od zera a shaep jest od 1
-            row = peak_stream.fs_px + self.position[1]
-            kolumn = peak_stream.ss_px + self.position[0]
-            # polozenie peaku po rotacji
-            peak_stream.position = (row, kolumn)
+            posx = peak_stream.fs_px + self.position[1]
+            posy = peak_stream.ss_px + self.position[0]
+            # new position of the peak in the panel after rotation
+            peak_stream.position = (posx, posy)
+        for peak_stream in self.peak_near_bragg_list:
+            # for script near bragg
+
+            # setting the peak relative
+            # to the upper left corner of the panel
+            # default: upper left corner of the matrix data
+            peak_stream.ss_px -= self.min_ss
+            peak_stream.fs_px -= self.min_fs
+
+            # setting position after rotation
+            peak_stream.fs_px = self.array.shape[1] - 1 - peak_stream.fs_px
+            posx = peak_stream.fs_px + self.position[1]
+            posy = peak_stream.ss_px + self.position[0]
+            # new position of the peak in the panel after rotation
+            peak_stream.position = (posx, posy)
 
     def rot_y_x(self):
+        """Rotation along y=x diagonal.
         """
-        Rotation along y=x diagonal.
-        """
-        for peak_stream in self.peak_list:
-            # peaki ktore wyswietla check peak detection
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
-            # petla sluzy temu by połozenie peakow
-            # bylo wzgledem lewego gornego rogu
-            # kazdego panela przed rotacja, a nie
-            # wzgledem początku macierzy danych
-
-        for peak_stream in self.peak_near_bragg_list:
-            # peaki ktore wyswietla near bragg
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
-            # petla sluzy temu by połozenie peakow
-            # bylo wzgledem lewego gornego rogu
-            # kazdego panela przed rotacja,
-            # a nie wzgledem początku macierzy danych
-
+        # rotation y=x digonal
         self.array = np.rot90(self.array)[:, ::-1]
-        # pozycja wzdluz osi x
-        kolumns = int(np.round(self.image_size[1]/2.0 + self.corner_x -
-                      self.array.shape[1], 0))
+        # The position of the panel
+        # position y
+        pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x -
+                    self.array.shape[1], 0))
 
-        # pozycja wzdluz osi y
-        rows = int(np.round(self.image_size[0]/2.0 - self.corner_y -
-                   self.array.shape[0], 0))
-        # położenie panelu na OBRAZIE
-        self.position = (rows, kolumns)
+        # position x
+        pos_x = int(np.round(self.image_size[0]/2.0 - self.corner_y -
+                    self.array.shape[0], 0))
+        # position
+        self.position = (pos_x, pos_y)
 
+        # two loop for:
         for peak_stream in self.peak_list:
+            # for check peak detection
+
+            # setting the peak relative
+            # to the upper left corner of the panel
+            # default: upper left corner of the matrix data
+            peak_stream.ss_px -= self.min_ss
+            peak_stream.fs_px -= self.min_fs
+
+            # setting position after rotation
             old_fs_px = peak_stream.fs_px
             old_ss_px = peak_stream.ss_px
             peak_stream.ss_px = self.array.shape[0] - old_fs_px - 1
             peak_stream.fs_px = self.array.shape[1] - old_ss_px - 1
-            row = peak_stream.fs_px + self.position[1]
-            kolumn = peak_stream.ss_px + self.position[0]
-            # polozenie peaku po rotacji
-            peak_stream.position = (row, kolumn)
+            posx = peak_stream.fs_px + self.position[1]
+            posy = peak_stream.ss_px + self.position[0]
+            # new position of the peak in the panel after rotation
+            peak_stream.position = (posx, posy)
 
         for peak_stream in self.peak_near_bragg_list:
+            # for script near bragg
+
+            # setting the peak relative
+            # to the upper left corner of the panel
+            # default: upper left corner of the matrix data
+            peak_stream.ss_px -= self.min_ss
+            peak_stream.fs_px -= self.min_fs
+
+            # setting position after rotation
             old_fs_px = peak_stream.fs_px
             old_ss_px = peak_stream.ss_px
             peak_stream.ss_px = self.array.shape[0] - old_fs_px - 1
             peak_stream.fs_px = self.array.shape[1] - old_ss_px - 1
-            row = peak_stream.fs_px + self.position[1]
-            kolumn = peak_stream.ss_px + self.position[0]
-            # polozenie peaku po rotacji
-            peak_stream.position = (row, kolumn)
+            posx = peak_stream.fs_px + self.position[1]
+            posy = peak_stream.ss_px + self.position[0]
+            # new position of the peak in the panel after rotation
+            peak_stream.position = (posx, posy)
 
     def rot_y_2x(self):
+        """Rotation along y=-x transpose.
         """
-        Rotation along y=-x diagonal.
-        """
-        for peak_stream in self.peak_list:
-            # peaki ktore wyswietla check peak detection
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
-            # petla sluzy temu by połozenie peakow
-            # bylo wzgledem lewego gornego rogu
-            # kazdego panela przed rotacja, a nie
-            # wzgledem początku macierzy danych
-
-        for peak_stream in self.peak_near_bragg_list:
-            # peaki ktore wyswietla near bragg
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
-            # petla sluzy temu by połozenie peakow
-            # bylo wzgledem lewego gornego rogu
-            # kazdego panela przed rotacja, a nie
-            # wzgledem początku macierzy danych
-
+        # rotation y=-x transpose
         self.array = np.transpose(self.array)
-        # pozycja wzdluz osi y
-        rows = int(np.round(self.image_size[0]/2.0 - self.corner_y, 0))
-        # pozycja wzdluz osi x
-        kolumns = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
-        self.position = (rows, kolumns)
+        # The position of the panel
+        # position x
+        pos_x = int(np.round(self.image_size[0]/2.0 - self.corner_y, 0))
+        # position y
+        pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
+        # position
+        self.position = (pos_x, pos_y)
 
+        # two loop for
         for peak_stream in self.peak_list:
+            # for check peak detection
+
+            # setting the peak relative
+            # to the upper left corner of the panel
+            # default: upper left corner of the matrix data
+            peak_stream.ss_px -= self.min_ss
+            peak_stream.fs_px -= self.min_fs
+
             old_ss_px = peak_stream.ss_px
             peak_stream.ss_px = peak_stream.fs_px
             peak_stream.fs_px = old_ss_px
-            row = peak_stream.fs_px + self.position[1]
-            kolumn = peak_stream.ss_px + self.position[0]
-            # polozenie peaku po rotacji
-            peak_stream.position = (row, kolumn)
+            posx = peak_stream.fs_px + self.position[1]
+            posy = peak_stream.ss_px + self.position[0]
+            # new position of the peak in the panel after rotation
+            peak_stream.position = (posx, posy)
 
         for peak_stream in self.peak_near_bragg_list:
+            # for script near bragg
+
+            # setting the peak relative
+            # to the upper left corner of the panel
+            # default: upper left corner of the matrix data
+            peak_stream.ss_px -= self.min_ss
+            peak_stream.fs_px -= self.min_fs
+
+            # setting position after rotation
             old_ss_px = peak_stream.ss_px
             peak_stream.ss_px = peak_stream.fs_px
             peak_stream.fs_px = old_ss_px
-            row = peak_stream.fs_px + self.position[1]
-            kolumn = peak_stream.ss_px + self.position[0]
-            # polozenie peaku po rotacji
-            peak_stream.position = (row, kolumn)
+            posx = peak_stream.fs_px + self.position[1]
+            posy = peak_stream.ss_px + self.position[0]
+            # new position of the peak in the panel after rotation
+            peak_stream.position = (posx, posy)
 
 
-def get_diction_detectors(raw_data_from_h5, image_size, geom,
-                          file_stream, file_h5):
-    """
-    Creates a dictionary with detector class objects as items and panel names
-    as in the geometry file (crystfel type) as keys. Function reads 'raw' data
+def get_detectors(raw_data_from_h5, image_size, geom,
+                  file_stream, file_h5):
+    """Creates a dictionary with detector class objects as items and panel names
+    as in the geometry file as keys. Function reads 'raw' data
     for each panel from the h5 file.
-    """
+
+    Parameters
+    ----------
+    raw_data_from_h5 : numpy.array
+
+        data from h5 for all detectors
+    image_size : tuple
+
+        image size
+    geom : dict
+
+        dictionary with the geometry information loaded from the geomfile.
+
+    file_stream : path
+
+        file stream path
+    file_h5 : path
+
+        file h5 path
+
+    Returns
+    -------
+    panels : dict
+
+        dictionary with class Detector object
+            """
     panels = {panel_name: Detector(name=panel_name, image_size=image_size,
                                    corner_x=geom["panels"][panel_name]["cnx"],
                                    corner_y=geom["panels"][panel_name]["cny"],
@@ -306,10 +402,9 @@ def get_diction_detectors(raw_data_from_h5, image_size, geom,
 
     dict_witch_peak_list, dict_witch_peak_reflections_list =\
         dict_peak_in_name_h5(file_stream, file_h5)
-    # uzupełnia wszystkie panele o
-    # listę peaków ktore sie tam znajudją, w poszczególnych panelach
-    # peaki ktore wyswietal cheack peak detection
-    # i peaki ktore wyswietla near bragg.
+    # complete all panels  with a list of peaks they have.
+    # peaks which `cheack peak detection` shows
+    # and peaks which  `near bragg` shows.
     for panel_name in dict_witch_peak_list:
         panels[panel_name].peak_list = dict_witch_peak_list[panel_name]
 
@@ -317,7 +412,6 @@ def get_diction_detectors(raw_data_from_h5, image_size, geom,
         panels[panel_name].peak_near_bragg_list =\
             dict_witch_peak_reflections_list[panel_name]
 
-    # slowink ze wszystkimi danymi danego panelu
     return panels
 
 
