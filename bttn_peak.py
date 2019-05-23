@@ -25,7 +25,7 @@ class PeakButton(Button):
     peaks -  list
 
         objects Peak (form h5 file)
-    title : str
+    title : Python unicode str (on py3)
 
         title image
     radio : object form widget/Radio
@@ -38,6 +38,45 @@ class PeakButton(Button):
     """
     def __init__(self, fig, axs, matrix, ax, label, axis_list,
                  list_active_peak, peaks, detectors, title, radio, slider):
+        """
+        Parameters
+        ----------
+        fig : The class:`matplotlib.figure.Figure`.
+
+            The Figure which will be redraw
+        axs : The class:`matplotlib.axes.Axes`
+
+            The Axes contains most of the figure elements
+        matrix : numpy.array object
+
+            data with pixels
+        ax : The :class:`matplotlib.axes.Axes`
+
+            instance the button will be placed into.
+        label : Python unicode str (on py3)
+
+            button name.
+        axis_list : list
+
+            position button in figure(object matplotlib.pyplot.axis)
+        list_active_peak : list
+
+            flags with peaks are enabled/disabled
+        detectors : dict
+
+            object class Panel with peaks
+        peaks -  list
+
+            objects Peak (form h5 file)
+        title : Python unicode str (on py3)
+
+            title image
+        radio : object form widget/Radio
+
+        slider : objet form widget/My_slider
+
+
+        """
         self.fig = fig
         self.axs = axs
         self.matrix = matrix
@@ -55,41 +94,39 @@ class PeakButton(Button):
         # On click reaction.
         super(PeakButton, self).on_clicked(self.peaks_on_of)
 
-    def visual_peaks_near_bragg_from_stream(self):
-        """
-        draw peaks like as script near_bragg from stream
-        under line  'Reflections measured after indexing'
+    def visual_peaks_reflection(self):
+        """Draw peaks reflections measured after indexing
+        from stream file. Like as script near_bragg.
         """
         # set flag peaks_near_bragg are enabled
         self.list_active_peak[2] = True
         # loop through all detectors
         for name in self.detectors:
             # loop through all peaks near_bragg
-            for peak in self.detectors[name].get_peak_near_bragg_list():
+            for peak in self.detectors[name].get_peaks_reflection():
                 circle = plt.Circle(peak.get_position(), radius=5, color='r',
                                     fill=False)
                 # draw red circle
                 self.axs.add_artist(circle)
 
-    def visual_peaks_from_stream(self):
+    def visual_peaks_search(self):
         """
-        Draw peaks like check_peak_detection script
-        from stream file under line Peaks 'from peak search'
+        Draw peaks  form peaks search from stream file.
+        Like check_peak_detection script.
         """
         # set flag peaks_list are enabledd
         self.list_active_peak[1] = True
         # loop through all detectors
         for name in self.detectors:
             # loop through all peaks list
-            for peak in self.detectors[name].get_peak_list():
+            for peak in self.detectors[name].get_peaks_search():
                 circle = plt.Circle(peak.get_position(), radius=5, color='g',
                                     fill=False)
                 # draw red circle
                 self.axs.add_artist(circle)
 
     def visual_peaks(self):
-        """
-        draw peaks form dataset in h5 file 'cheetah peakinfo-assembled'
+        """Draw peaks form dataset in h5 file 'cheetah peakinfo-assembled'
         """
         try:
             # loop through all peaks list
@@ -103,10 +140,9 @@ class PeakButton(Button):
             return None
 
     def peaks_on_of(self, event):
-        """
-        clear and create clean image
-        checks which flags were active
-        and changes the flags due to the button being pressed
+        """React at the click of buttons.
+        Clear and create clean image. Checks which flags were active
+        and changes the flags due to the button being clicked.
         """
         # clear subplot
         self.axs.cla()
@@ -134,11 +170,11 @@ class PeakButton(Button):
             if self.list_active_peak[1]:
                 # 'CrystFEL_peak on/off' was enabled
                 # and draw we don't change flags
-                self.visual_peaks_from_stream()
+                self.visual_peaks_search()
             if self.list_active_peak[2]:
                 # 'CrystFEL_near_bragg_peak on/off' was enabled
                 # and draw we don't change flags
-                self.visual_peaks_near_bragg_from_stream()
+                self.visual_peaks_reflection()
 
         # when we clicked button 'CrystFEL_peak on/off'
         if event.inaxes == self.axis_list[1]:
@@ -149,7 +185,7 @@ class PeakButton(Button):
             if self.list_active_peak[2]:
                 # 'CrystFEL_near_bragg_peak on/off' was enabled
                 # and draw we don't change flags
-                self.visual_peaks_near_bragg_from_stream()
+                self.visual_peaks_reflection()
             if self.list_active_peak[1]:
                 # 'CrystFEL_peak on/off' was enabled and change flags
                 # we don't draw
@@ -158,7 +194,7 @@ class PeakButton(Button):
                 # 'CrystFEL_peak on/off' was disabled and change flags
                 # we draw
                 self.list_active_peak[1] = True
-                self.visual_peaks_from_stream()
+                self.visual_peaks_search()
 
         # when we clicked button 'CrystFEL_near_bragg_peak on/off'
         if event.inaxes == self.axis_list[2]:
@@ -169,7 +205,7 @@ class PeakButton(Button):
             if self.list_active_peak[1]:
                 # 'CrystFEL_peak on/off' was enabled
                 # and draw we don't change flags
-                self.visual_peaks_from_stream()
+                self.visual_peaks_search()
             if self.list_active_peak[2]:
                 # 'CrystFEL_near_bragg_peak on/off' and change flags was enabled 
                 # we don't draw
@@ -179,7 +215,7 @@ class PeakButton(Button):
                 # and change flags
                 # we don't draw
                 self.list_active_peak[2] = True
-                self.visual_peaks_near_bragg_from_stream()
+                self.visual_peaks_reflection()
         # Redraw the current figure.
         self.fig.canvas.draw()
         # set title because we clear subplot axs

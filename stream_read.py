@@ -16,7 +16,7 @@ def search_crystals_parameters(file_name):
 
     Returns
     -------
-    diction_crystal : dict
+    crystals : dict
         Keys as name of the file from which the crystal
         it comes from and values are lists of lines
         containing crystal details.
@@ -36,9 +36,9 @@ def search_crystals_parameters(file_name):
     # crystal_parameters- Lines from the file regarding a given crystal.
     # Lines between <Begin crystal ; End crystal>
     crystal_parameters = []
-    # diction_crystal- Output dictionary to be returned.
+    # crystals- Output dictionary to be returned.
 
-    diction_crystal = {}
+    crystals = {}
     stream_name = None
     crystal_counter = 0  # Number of crystals in the histogram.
     chunks_counter = 0  # All crystals in the stream file.
@@ -82,13 +82,14 @@ def search_crystals_parameters(file_name):
                         # name and a number.
                         copy = 1
                         helpful_name = name
-                        while helpful_name in diction_crystal:  # It is unknown
+                        while helpful_name in crystals:
+                            # It is unknown
                             # how many of the same name crystals are in the
                             # stream so the loops iterates until all names
                             # are processed.
                             helpful_name = name + '-additional'+str(copy)
                             copy += 1
-                        diction_crystal[helpful_name] = crystal_parameters
+                        crystals[helpful_name] = crystal_parameters
                         # The whole list of data is put into a dictionary where
                         # key is the crystal name.
                     else:
@@ -118,13 +119,13 @@ def search_crystals_parameters(file_name):
                         name = name.strip()
                         copy = 1  # Multiple names of the same crystal.
                         helpful_name = name
-                        while helpful_name in diction_crystal:
+                        while helpful_name in crystals:
                             # Loop ends when
                             # there is no more crystals of the same name.
                             helpful_name = name + '-additional'+str(copy)
                             copy += 1
 
-                        diction_crystal[helpful_name] = crystal_parameters
+                        crystals[helpful_name] = crystal_parameters
                     crystal_parameters = []
 
                 elif (begin_crystal_flag and name_flag):
@@ -134,9 +135,9 @@ def search_crystals_parameters(file_name):
     except FileNotFoundError:
         print("File not found or not a indexing stream file.")
         sys.exit()
-    print("Loaded {} cells from {} chunks".format(len(diction_crystal.keys()),
+    print("Loaded {} cells from {} chunks".format(len(crystals.keys()),
                                                   chunks_counter))
-    return diction_crystal
+    return crystals
 
 
 def check_crystal_parametrs(crystal_parameters, name):
@@ -216,14 +217,45 @@ def check_crystal_parametrs(crystal_parameters, name):
         sys.exit()
 
 
-class Peak_stream():
-    """
-    Class for representing a peak object from the indexing stream file.
-    fs_px/ss_px - column and row positions in the matrix.
-    panel_name - panel to which the peak belongs.
-    position - peak coordinates after panel reconstruction.
+class PeakSearch:
+    """Class for representing a peak  object from the peak search
+    in the stream file.
+
+    Attributes
+    ----------
+    fs_px : double
+
+        fast scan/pixel
+    ss_px : double
+
+        slow scan/pixel
+    panel_name : str
+
+        the name of the panel to which the peak belongs
+    position : tuple
+
+        peak coordinates after panel reconstruction.
     """
     def __init__(self, fs, ss, recip, intesity, panel_name):
+        """
+        Parameters
+        ----------
+        fs : double
+
+            fast scan/pixel
+        ss : double
+
+            slow scan/pixel
+        panel_name : str
+
+            the name of the panel to which the peak belongs
+        intesity : double
+
+            Intensity
+        recip : double
+
+            value `(1/d)/nm^-1`
+        """
         self.fs_px = fs
         self.ss_px = ss
         self.recip = recip
@@ -232,22 +264,72 @@ class Peak_stream():
         self.position = None
 
     def get_position(self):
+        """returns peak coordinates
+        """
         return self.position
 
-    def printer(self):
-        """
-        Display peak info.
-        """
-        print("Peak: ", self.panel_name, self.recip, self.intesity)
 
+class PeakReflections:
+    """Class for representing a peak object from reflections measured
+    after indexing in the stream file.
 
-class Peak_Reflections_measured:
-    """
-    Class for representing a reflection peak (?) from the indexing lines:
-    "Reflections measured after indexing".
+    Attributes
+    ----------
+    fs_px : double
+
+        fast scan/pixel
+    ss_px : double
+
+        slow scan/pixel
+    panel_name : str
+
+        the name of the panel to which the peak belongs
+    position : tuple
+
+        peak coordinates after panel reconstruction.
     """
     def __init__(self, h, k, l, I, sigmaI, peak, background, fs_px, ss_px,
                  panel_name):
+        """
+        Parameters
+        ----------
+        fs_px : double
+
+            fast scan/pixel
+        ss_px : double
+
+            slow scan/pixel
+        panel_name : str
+
+            the name of the panel to which the peak belongs
+        intesity : double
+
+            Intensity
+        h : int
+
+            the parameter 'h' of the reflection measured after indexing
+        k : int
+
+            the parameter 'k' of the reflection measured after indexing
+        l : int
+
+            the parameter 'l' of the reflection measured after indexing
+        I : double
+
+            the parameter 'I' of the reflection measured after indexing
+        sigmaI : double
+
+            the parameter 'sigma(I)' of the reflection measured
+            after indexing
+        peak : double
+
+            the parameter 'peak' of the reflection measured
+            after indexing
+        background : double
+
+            the parameter 'background' of the reflection measured
+            after indexing
+        """
         self.h = h
         self.k = k
         self.l = l
@@ -260,27 +342,46 @@ class Peak_Reflections_measured:
         self.panel_name = panel_name
         self.position = None
 
-    def printer(self):
-        """
-        Display peak info.
-        """
-        print("Peak_reflection", self.panel_name, self.background)
-
     def get_position(self):
+        """returns peak coordinates
+        """
         return self.position
 
 
-def dict_peak_in_name_h5(file_stream, file_h5):
-    """
-    Function creates a dictionary with keys as panel names and values as
-    lists with peaks in a key panel.
+def search_peaks(file_stream, file_h5):
+    """Searching peaks in indexing stream file.
+    The function parses the file.
+
+    Parameters
+    ----------
+    file_stream : Python unicode str (on py3)
+
+        Path to stream file
+    file_h5 : Python unicode str (on py3)
+
+        Image filename
+
+    Returns
+    -------
+    peaks_search, peaks_reflection : tuple
+
+        peaks_search and peaks_reflection have
+        keys as name of the panel from which the peaks
+        belongs from and values are lists of peak object.
+
+    Raises
+    ------
+    FileNotFoundError
+        if no such file
+    TypeError
+        if the line with the peak parameter contains incomplete data.
     """
     name_h5_flag = False  # Check if already filename was processed.
     found_h5_in_stream = False  # Check if h5 file was
     # processed by indexamajig.
     peaks_from_peak_search = False
-    dict_witch_peak_list = {}
-    dict_peak_reflections_list = {}
+    peaks_search = {}
+    peaks_reflection = {}
     reflections_measured_after_indexing_flag = False  # If this line was found
     # with data for near bragg
 
@@ -314,14 +415,14 @@ def dict_peak_in_name_h5(file_stream, file_h5):
                     recip = float(line2[2])
                     intesity = float(line2[3])
                     panel_name = line2[4]
-                    peak = Peak_stream(fs_px, ss_px, recip, intesity,
-                                       panel_name)
+                    peak = PeakSearch(fs_px, ss_px, recip, intesity,
+                                      panel_name)
                     # Create an object with peak information.
-                    if panel_name not in dict_witch_peak_list.keys():
-                        dict_witch_peak_list[panel_name] = list()
-                        dict_witch_peak_list[panel_name].append(peak)
+                    if panel_name not in peaks_search.keys():
+                        peaks_search[panel_name] = list()
+                        peaks_search[panel_name].append(peak)
                     else:
-                        dict_witch_peak_list[panel_name].append(peak)
+                        peaks_search[panel_name].append(peak)
                 if name_h5_flag and line.startswith('  fs/px   ss/px' +
                                                     ' (1/d)/nm^-1   ' +
                                                     'Intensity  Panel'):
@@ -345,32 +446,32 @@ def dict_peak_in_name_h5(file_stream, file_h5):
                     fs_px = float(line2[7])
                     ss_px = float(line2[8])
                     panel_name = line2[9]
-                    peak = Peak_Reflections_measured(h, k, l, I, sigmaI, peak,
-                                                     background, fs_px,
-                                                     ss_px, panel_name)
+                    peak = PeakReflections(h, k, l, I, sigmaI, peak,
+                                           background, fs_px,
+                                           ss_px, panel_name)
                     # Create an object.
-                    if panel_name not in dict_peak_reflections_list.keys():
-                        dict_peak_reflections_list[panel_name] = list()
+                    if panel_name not in peaks_reflection.keys():
+                        peaks_reflection[panel_name] = list()
                         # Dictionary with a panel name as key and near_bragg
                         # peaks as value.
-                        dict_peak_reflections_list[panel_name].append(peak)
+                        peaks_reflection[panel_name].append(peak)
                     else:
-                        dict_peak_reflections_list[panel_name].append(peak)
+                        peaks_reflection[panel_name].append(peak)
                 if name_h5_flag and line.startswith('   h    k    l  '):
                     # Check for the near_bragg info.
                     reflections_measured_after_indexing_flag = True
 
     except FileNotFoundError:
         print('Error while opening stream file.')
-        dict_peak_reflections_list = {}
-        dict_witch_peak_list = {}
-        return (dict_witch_peak_list, dict_peak_reflections_list)
+        peaks_reflection = {}
+        peaks_search = {}
+        return (peaks_search, peaks_reflection)
     except TypeError:
-        dict_peak_reflections_list = {}
-        dict_witch_peak_list = {}
-        return (dict_witch_peak_list, dict_peak_reflections_list)
+        peaks_reflection = {}
+        peaks_search = {}
+        return (peaks_search, peaks_reflection)
     if not found_h5_in_stream:
         print("No peaks for file in the stream file.")
 
-    return (dict_witch_peak_list, dict_peak_reflections_list)
+    return (peaks_search, peaks_reflection)
     # In case of error the dictionary is returned empty.
