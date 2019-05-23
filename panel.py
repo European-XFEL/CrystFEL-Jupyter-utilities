@@ -441,6 +441,29 @@ class BadRegion():
         range y_max  bad region
     """
     def __init__(self, image_size, name, min_x, max_x, min_y, max_y):
+        """
+        Parameters
+        ----------
+        name : str
+
+            bad region name from geom file
+
+        image_size : tuple
+
+            image size
+        min_x : int
+
+            range x_min  bad region
+        min_y : int
+
+            range y_min  bad region
+        max_x : int
+
+            range x_max  bad region
+        max_y : int
+
+            range y_max  bad region
+        """
         self.name = name
         self.image_size = image_size
 
