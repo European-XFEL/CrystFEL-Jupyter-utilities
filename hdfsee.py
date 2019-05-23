@@ -109,13 +109,13 @@ class Image:
         GEOM = c.load_crystfel_geometry(FILE_GEOM_NAME)
         # Dictionary with information about the image: panels, bad places.
         # Tuple for the minimal images size.
-        SIZE_OBRAZ = g.compute_min_array_size(g.compute_pix_maps(GEOM))
+        IMAGE_SIZE = g.compute_min_array_size(g.compute_pix_maps(GEOM))
     except FileNotFoundError:
         print("Error while opening geometry file.")
         sys.exit()
     except TypeError:
         # No geometry file was provided.
-        SIZE_OBRAZ = None
+        IMAGE_SIZE = None
 
     def __init__(self):
         """
@@ -238,7 +238,7 @@ class Image:
         Then adds panels (?).
         """
         # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = panel.np.ones(Image.SIZE_OBRAZ)
+        self.matrix = panel.np.ones(Image.IMAGE_SIZE)
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
         peaks_search, peaks_reflections =\
@@ -246,13 +246,13 @@ class Image:
                          Image.FILE_H5_NAME)
         self.detectors =\
             panel.get_detectors(self.dict_witch_data["Paneles"],
-                                Image.SIZE_OBRAZ, Image.GEOM, peaks_search,
+                                Image.IMAGE_SIZE, Image.GEOM, peaks_search,
                                 peaks_reflections)
         # Creating a peak list from the h5 file.
         self.peaks = peak_h5.get_list_peaks(self.dict_witch_data["Peaks"],
-                                            Image.SIZE_OBRAZ)
+                                            Image.IMAGE_SIZE)
         # Creating a bad pixel mask (?).
-        self.bad_places = panel.bad_places(Image.SIZE_OBRAZ,
+        self.bad_places = panel.bad_places(Image.IMAGE_SIZE,
                                            Image.GEOM)
         # Arranging the panels.
         self.arrangement_panels()
