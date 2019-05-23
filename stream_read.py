@@ -302,9 +302,6 @@ class PeakReflections:
         panel_name : str
 
             the name of the panel to which the peak belongs
-        intesity : double
-
-            Intensity
         h : int
 
             the parameter 'h' of the reflection measured after indexing
