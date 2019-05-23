@@ -20,8 +20,8 @@ class ButtonBins(Button):
     label : The :class:`matplotlib.text.Text` instance.
     """
     __bins = None
-    # zmienna używana przez wszystkie objekty tej klasy
-    # inicjalizowana przez set_bins
+    # variable used by all objects in this class
+    # initialized by set_bins
 
     def __init__(self, fig, histogram_list, ax, label):
         """
