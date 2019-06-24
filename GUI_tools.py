@@ -5,14 +5,15 @@ Joins work of other moules together.
 # !/usr/bin/env python
 
 import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.backend_bases import NavigationToolbar2
 # In there we have refereces on to 'home' button
+from matplotlib.backend_bases import NavigationToolbar2
+import numpy as np
 from scipy import stats
-from histogram import Histogram
-from widget import Span, CenteringButton, ButtonBins, Button
 
 import crystlib
+from histogram import Histogram
+import stream_read
+from widget import Span, CenteringButton, ButtonBins, Button
 from zoompan import ZoomOnWheel
 
 
@@ -33,7 +34,8 @@ class CellExplorer:
         self.axs_list = self.axs_list.ravel()
         # Reshaping matrix to vector: [1][1] to [4]
         # all crystals find in file
-        self.all_crystals_list = crystlib.crystals_list(self.stream_name)
+        self.all_crystals_list = \
+            stream_read.search_crystals_parameters(self.stream_name)
         # Crystals selected by Spanselector (with their colours)
         self.dict_data_histogram =\
             crystlib.dict_data_histogram(self.all_crystals_list)
@@ -308,7 +310,6 @@ class CellExplorer:
                 self.span_list[hist_indx].onselect(*self.args[hist_name])
             except:
                 pass
-
 
     def rememmber_pos_panel(self, event):
         for hist in self.histogram_list:
