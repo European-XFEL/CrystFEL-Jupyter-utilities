@@ -1,14 +1,13 @@
-import unittest
-from unittest.mock import patch, Mock
 import os
 import sys
+import unittest
+from unittest.mock import patch, Mock
 
 sys.path.insert(0, os.getcwd())
+from widget import ContrastSlider
 
-from widget import My_slider
 
-
-class Test_My_slider(unittest.TestCase):
+class Test_ContrastSlider(unittest.TestCase):
     @patch('matplotlib.image')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')
@@ -20,9 +19,9 @@ class Test_My_slider(unittest.TestCase):
         self.vmax = 100
         self.vmin = 400
         self.label = "test_label"
-        self.slider = My_slider(image=self.image, fig=self.fig, ax=self.ax,
-                                label=self.label, vmin=self.vmin,
-                                vmax=self.vmax)
+        self.slider = ContrastSlider(image=self.image, fig=self.fig,
+                                     ax=self.ax, label=self.label,
+                                     vmin=self.vmin, vmax=self.vmax)
 
     @patch('matplotlib.backend_bases.Event')
     def test_on_check(self, Mock_event):
