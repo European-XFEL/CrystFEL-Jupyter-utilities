@@ -316,7 +316,7 @@ class CenteringButton(Button):
             hist.update_color()
 
 
-class Span():
+class Span:
     """Visually select the region of interest on a single histogram
 
     Attributes
@@ -324,7 +324,7 @@ class Span():
     fig : The class:`matplotlib.figure.Figure`.
 
         The Figure which will be redraw
-    crystals_excluded_list : list
+    crystals_excluded : list
 
         Crystals excluded
     all_crystals_list : list
@@ -345,12 +345,12 @@ class Span():
     __crystals_included = []
     # crystals in green space
 
-    def __init__(self, fig, crystals_excluded_list,
+    def __init__(self, fig, crystals_excluded,
                  all_crystals_list, histogram_list, name, index):
 
         self.fig = fig
         # Excluded crystals.
-        self.crystals_excluded_list = crystals_excluded_list
+        self.crystals_excluded = crystals_excluded
         # all crystals found in stream file
         self.all_crystals_list = all_crystals_list
 
@@ -388,7 +388,7 @@ class Span():
         # is in the region of interes and exclude the rest.
         # We clear list and search again
         Span.__crystals_included.clear()
-        self.crystals_excluded_list.clear()
+        self.crystals_excluded.clear()
         left_posx = min(xmin, xmax)  # Left selection point.
         right_posx = max(xmin, xmax)  # Right selection point.
 
@@ -433,7 +433,7 @@ class Span():
         """
         for hist in self.histogram_list:
             if hist.bool_crystal_exluded_green_space(crystal[hist.name]):
-                self.crystals_excluded_list.append(crystal)
+                self.crystals_excluded.append(crystal)
                 return True
 
     @staticmethod
@@ -447,12 +447,12 @@ class Span():
         the histograms with regard to the selection.
         """
         data_included =\
-            crystlib.dict_data_histogram(Span.__crystals_included)
+            crystlib.histograms_data(Span.__crystals_included)
 
         data_excluded = {'a': [], 'b': [], 'c': [],
                          'alfa': [], 'beta': [], 'gamma': []}
 
-        for crystal in self.crystals_excluded_list:
+        for crystal in self.crystals_excluded:
             for hist in self.histogram_list:
                 data_excluded[hist.name].append(crystal[hist.name])
 

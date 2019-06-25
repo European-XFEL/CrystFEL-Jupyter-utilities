@@ -37,17 +37,17 @@ class CellExplorer:
         self.all_crystals_list = \
             stream_read.search_crystals_parameters(self.stream_name)
         # Crystals selected by Spanselector (with their colours)
-        self.dict_data_histogram =\
-            crystlib.dict_data_histogram(self.all_crystals_list)
+        self.histograms_data =\
+            crystlib.histograms_data(self.all_crystals_list)
         # Dictionary with a, b, c, alpha, beta, gamma as keys,
         # ABCFHIR with list of data as values
-        self.crystals_excluded_list = []
+        self.crystals_excluded = []
         # Excluded cristals
 
         # Colours for each centering type during initialization
-        self.dict_color_histogram = {'P': 'gray', 'A': 'cyan', 'B': 'darkblue',
-                                     'C': 'royalblue', 'H': "firebrick",
-                                     'F': "magenta", 'I': 'lime', 'R': 'olive'}
+        self.histogram_colors = {'P': 'gray', 'A': 'cyan', 'B': 'darkblue',
+                                 'C': 'royalblue', 'H': "firebrick",
+                                 'F': "magenta", 'I': 'lime', 'R': 'olive'}
         self.histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
         self.cryst_list = ['P', 'A', 'B', 'C', 'I', 'F', 'H', 'R']
         self.bins = 16
@@ -59,10 +59,11 @@ class CellExplorer:
             temp_label = 'Angstrem[Å]'
             if hist_indx > 2:
                 temp_label = 'deg'
-            self.histogram_list.append(Histogram(axs=self.axs_list[hist_indx], name=hist_name,
-                                                 xlabel=temp_label,
-                                                 data_to_histogram=self.dict_data_histogram[hist_name],
-                                                 colors=self.dict_color_histogram, bins=self.bins))
+            self.histogram_list.append(Histogram(
+                axs=self.axs_list[hist_indx], name=hist_name,
+                xlabel=temp_label, bins=self.bins,
+                data_to_histogram=self.histograms_data[hist_name],
+                colors=self.histogram_colors))
 
         plt.subplots_adjust(hspace=0.5)
         plt.subplots_adjust(wspace=0.1)
@@ -72,29 +73,30 @@ class CellExplorer:
         # Using intertool for looping to change color
         # list_color is our cyclic list
 
-
         # Buttols list:
         # All Spans include reference for crystals list which were refused
         # or not included (?) changes in 1 Span is visible by others.
         # all_crystals_list has all crystals that are finded
-        # crystals_excluded_list has all crystal that has not set they are gray
+        # crystals_excluded has all crystal that has not set they are gray
         # index is used to locate which histogram applies
 
-        button_x_pos = [0.95,0.935,0.92,0.905,0.89,0.875,0.86,0.845]
+        button_x_pos = [0.95, 0.935, 0.92, 0.905, 0.89, 0.875, 0.86, 0.845]
         self.buttons_list = []
         for cryst_indx, cryst_symb in enumerate(self.cryst_list):
-            self.buttons_list.append(CenteringButton(axs=plt.axes([button_x_pos[-1-cryst_indx], 0.95, 0.015, 0.045]), fig=self.fig,
-                                            label=cryst_symb, list_color=[
-                                                self.dict_color_histogram[cryst_symb], 'gray', 'lightgrey'],
-                                            histogram_list=self.histogram_list,
-                                            histogram_colors=self.dict_color_histogram))
+            self.buttons_list.append(CenteringButton(
+                axs=plt.axes([button_x_pos[-1-cryst_indx], 0.95, 0.015, 0.045]),
+                fig=self.fig, label=cryst_symb,
+                list_color=[self.histogram_colors[cryst_symb], 'gray', 'lightgrey'],
+                histogram_list=self.histogram_list,
+                histogram_colors=self.histogram_colors))
 
         self.span_list = []
         for hist_indx, hist_name in enumerate(self.histogram_order):
-            self.span_list.append(Span(crystals_excluded_list=self.crystals_excluded_list,
-                                       fig=self.fig, index=hist_indx, name=hist_name,
-                                       all_crystals_list=self.all_crystals_list,
-                                       histogram_list=self.histogram_list))
+            self.span_list.append(Span(
+                crystals_excluded=self.crystals_excluded,
+                fig=self.fig, index=hist_indx,
+                name=hist_name, all_crystals_list=self.all_crystals_list,
+                histogram_list=self.histogram_list))
 
         # self.span_list = (span1, span2, span3, span4, span5, span6)
         self.fig.canvas.mpl_connect('key_press_event', self.press)
@@ -106,11 +108,11 @@ class CellExplorer:
         # For zooming in using mouse wheel
         ButtonBins.set_bins(self.bins)
         self.btt_p = ButtonBins(fig=self.fig, label='+',
-                               histogram_list=self.histogram_list,
-                               ax=plt.axes([0.91, 0.90, 0.025, 0.025]),)
+                                histogram_list=self.histogram_list,
+                                ax=plt.axes([0.91, 0.90, 0.025, 0.025]),)
         self.btt_m = ButtonBins(fig=self.fig, label='-',
-                               histogram_list=self.histogram_list,
-                               ax=plt.axes([0.935, 0.90, 0.025, 0.025]),)
+                                histogram_list=self.histogram_list,
+                                ax=plt.axes([0.935, 0.90, 0.025, 0.025]),)
         self.bttn_save = Button(ax=plt.axes([0.91, 0.875, 0.050, 0.025]),
                                 label="Save")
         self.bttn_save.on_clicked(self.save_file)
@@ -213,7 +215,8 @@ class CellExplorer:
         # remmember maximum group
         centering = None
         # type of centering
-        counter_group_centering = dict(zip(self.cryst_list, [0]*(len(self.cryst_list))))
+        counter_group_centering = \
+            dict(zip(self.cryst_list, [0]*(len(self.cryst_list))))
         # counter for each centering
         for crystal in include_crystal:
             # search maximum group and this centring
@@ -292,10 +295,11 @@ class CellExplorer:
             bttn.reset_color()
 
         if len(self.args) == 0:
-            self.crystals_excluded_list.clear()
+            self.crystals_excluded.clear()
             for hist_indx, hist_name in enumerate(self.histogram_order):
-                self.histogram_list[hist_indx].set_data(self.dict_data_histogram[hist_name],
-                                                        self.crystals_excluded_list)
+                self.histogram_list[hist_indx].set_data(
+                    self.histograms_data[hist_name],
+                    self.crystals_excluded)
             for hist in self.histogram_list:
                 hist.update()
         else:

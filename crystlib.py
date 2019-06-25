@@ -29,7 +29,7 @@ def crystal_search(crystals, histogram_type):
     return crystal_dict
 
 
-def dict_data_histogram(crystal_list):
+def histograms_data(crystal_list):
     """Creating a dictionary with data for each histogram. Each value is a
     dictionary divided into centering types.
 
