@@ -15,12 +15,11 @@ import sys
 import cfelpyutils.crystfel_utils as c
 import cfelpyutils.geometry_utils as g
 
-from bttn_peak import PeakButton
 import data
 import panel
 import peak_h5
 from stream_read import search_peaks
-from widget import ContrastSlider, Radio
+from widget import ContrastSlider, Radio, PeakButton
 
 
 # Creating arguments for parsing.
