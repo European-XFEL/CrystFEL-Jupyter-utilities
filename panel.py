@@ -414,7 +414,7 @@ def get_detectors(raw_data_from_h5, image_size, geom,
     return panels
 
 
-class BadRegion():
+class BadRegion:
     """Class for mapping bad pixel regions on the image. Regions are read from the
     geometry file.
 
