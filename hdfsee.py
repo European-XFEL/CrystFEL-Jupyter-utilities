@@ -149,7 +149,7 @@ class Image:
         # dispaly without laying the panels
         if Image.WHICH_ARGUMNENT_IS_USED['display_only_file']:
             # Just the image from file with no buttons or reconstruction.
-            self.matrix = data.np.copy(self.dict_witch_data["Paneles"])
+            self.matrix = data.np.copy(self.dict_witch_data["Panels"])
             # Rotating to get the same image as CrystFEL hdfsee.
             self.matrix = self.matrix[::-1, :]
             # Creating the image with imshow().
@@ -244,7 +244,7 @@ class Image:
             search_peaks(Image.FILE_STREAM_NAME,
                          Image.FILE_H5_NAME)
         self.detectors =\
-            panel.get_detectors(self.dict_witch_data["Paneles"],
+            panel.get_detectors(self.dict_witch_data["Panels"],
                                 Image.IMAGE_SIZE, Image.GEOM, peaks_search,
                                 peaks_reflections)
         # Creating a peak list from the h5 file.
