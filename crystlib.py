@@ -1,23 +1,24 @@
-"""
-Module for getting crystals info from input indexing stream file.
+"""Module for getting crystals info from input indexing stream file.
 """
 
 
 def crystal_search(crystals, histogram_type):
     """Creating a dictionary of values list ​​divided into centering
-    types for a given histogram type
+    types for a given histogram type.
 
     Parameters
     ----------
+    crystals : list
 
-        crystals: list
-           A list of crystal
-        histogram_type:  unicode str (on py3)
-            Type of histogram e.g. 'a', 'gamma'
+        A list of crystal.
+    histogram_type :  unicode str (on py3)
+
+        Type of histogram e.g. 'a', 'gamma'.
 
     Returns
     -------
-    crystal_dict: dict
+    crystal_dict : dict
+
         A dict of values lists
         key- type centering
         value - list
@@ -35,17 +36,17 @@ def histograms_data(crystal_list):
 
     Parameters
     ----------
+    crystals : list
 
-        crystals: list
-           A list of crystal
+        A list of crystal
 
     Returns
     -------
-    dict_data: dict
+    dict_data : dict
+
         A dict with data
         key- histogram order e.g. 'a', 'beta'
         value - dict
-
     """
     cryst = crystal_list  # Crystals list
     histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']

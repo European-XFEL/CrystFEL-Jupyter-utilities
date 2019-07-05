@@ -13,10 +13,10 @@ def list_datasets(dictionary, list_dataset):
     ----------
     dictionary : dict
 
-        dictionary in a dictionary with dataset due to a datagroup.
+        Dictionary in a dictionary with dataset due to a datagroup.
     list_dataset : list
 
-        list with all dataset from h5py.
+        List with all dataset from h5py.
     """
     for name in dictionary:
         if isinstance(dictionary[name], dict):
@@ -36,13 +36,13 @@ def catalog(dictionary):
     ----------
     dictionary : dict
 
-        dictionary in dictionary with dataset.
+        Dictionary in dictionary with dataset.
 
     Returns
     -------
     dictionary : dict
 
-        dictionary in a dictionary with dataset due to a datagroup.
+        Dictionary in a dictionary with dataset due to a datagroup.
     """
     for key in dictionary.keys():
         # name is instance datagroup
@@ -56,12 +56,11 @@ def catalog(dictionary):
 def get_data_peaks(list_dataset):
     """Returned Dataset with peaks data from 'hitfinder/peakinfo'.
 
-
     Parameters
     ----------
     list_dataset : list
 
-        list with dataset from h5py.
+        List with dataset from h5py.
 
     Returns
     -------
@@ -86,7 +85,7 @@ def get_data_image(list_dataset):
     ----------
     list_dataset : list
 
-        list with dataset from h5py.
+        List with dataset from h5py.
 
     Returns
     -------
@@ -121,7 +120,7 @@ def get_diction_data(file):
     -------
     dictionary : dict
 
-        dictionary with two entries: image data and peaks data.
+        Dictionary with two entries: image data and peaks data.
     """
     # the variable contains all dataset from H5
     list_dataset = []

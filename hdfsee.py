@@ -1,5 +1,4 @@
-"""
-Main module for running code.
+"""Main module for running code.
 
 Creates image from a ndarray, arranges the panels,
 refreshes (updates) the image and adds widgets.
@@ -53,20 +52,20 @@ class Image:
         Returned by matplotlib imshow.
     peaks : list
 
-        containing peak objects from 'peak_h5' module.
+        Containing peak objects from 'peak_h5' module.
     detectors : dict
 
-        containing Detector object from 'panel' module.
+        Containing Detector object from 'panel' module.
     bad_places : list
 
-        containing BadRegion object from 'panel' module.
+        Containing BadRegion object from 'panel' module.
     axis_list : list
 
-        of matplotlib.pyplot.axes objects for locations of the
+        List of matplotlib.pyplot.axes objects for locations of the
         buttons.
     list_active_peak : list
 
-    Flags list showing which type of peaks were selected.
+        Flags list showing which type of peaks were selected.
     """
     PARSER = argparse.ArgumentParser()
     PARSER.add_argument('filename', nargs=1, metavar="name.H5",
@@ -117,8 +116,7 @@ class Image:
         IMAGE_SIZE = None
 
     def __init__(self):
-        """
-        Method for initializing image and checking options how to run code.
+        """Method for initializing image and checking options how to run code.
         """
         # Dictionary containing panels and peaks info from the h5 file.
         self.dict_witch_data = data.get_diction_data(Image.FILE_H5_NAME)
@@ -232,8 +230,7 @@ class Image:
         plt.show()
 
     def display_arrangment_view(self):
-        """
-        Creating the image filled with ones (?) and applies bad pixel mask (?).
+        """Creating the image filled with ones (?) and applies bad pixel mask (?).
         Then adds panels (?).
         """
         # Creating an 'empty' matrix ready to be filled with pixel data.
@@ -262,9 +259,19 @@ class Image:
                                 vmin=self.vmin, animated=True)
 
     def set_panel_in_view(self, detector):
-        """
-        Positions (?) the detector in the right place on the matrix.
+        """Positions (?) the detector in the right place on the matrix.
         Changes the 1 values to the correct pixel value.
+
+        Parameters
+        ----------
+        detector : The: class Detectror object
+
+            Detector which has been set in the image.
+
+        Raises
+        ------
+        ValueError
+            If wrong panel position.
         """
         # Trying to reposition the panels.
         try:
@@ -278,8 +285,18 @@ class Image:
             print(detector.position)
 
     def set_bad_place_in_view(self, bad_place):
-        """
-        Copying the bad pixel ranges to the image.
+        """Copying the bad pixel ranges to the image.
+
+        Parameters
+        ----------
+        bad_place : The: class BadRegion object
+
+            BadRegion which has been set in the image.
+
+        Raises
+        ------
+        ValueError
+            If wrong bad_place position.
         """
         try:
             self.matrix[bad_place.max_y: bad_place.max_y + bad_place.shape[0],
@@ -290,8 +307,7 @@ class Image:
             print(bad_place.name, bad_place.printer())
 
     def arrangment_bad_places(self):
-        """
-        Iterates through each bad pixel (?) region and positions it to the
+        """Iterates through each bad pixel (?) region and positions it to the
         correct place on the image.
         """
         for name_bad_place in self.bad_places:
@@ -299,8 +315,7 @@ class Image:
             self.set_bad_place_in_view(bad_place)
 
     def arrangement_panels(self):
-        """
-        Iterates through each detector (?) and positions them.
+        """Iterates through each detector (?) and positions them.
         """
         for key in self.detectors:
             detector = self.detectors[key]

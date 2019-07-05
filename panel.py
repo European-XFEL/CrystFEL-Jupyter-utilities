@@ -1,5 +1,4 @@
-"""
-Module representing detector.
+"""Module representing detector.
 Creates a detector list from a geometry file (crystfel type) and
 matrix size for the image.
 """
@@ -8,54 +7,54 @@ import numpy as np
 
 
 class Detector:
-    """representing a detector.
+    """Representing a detector.
 
     Attributes
     ----------
 
     min_fs : int
 
-        min index in a column
+        Min index in a column.
     min_ss : int
 
-        min index in a row
+        Min index in a row.
     max_fs : int
 
-        max index in a column
+        Max index in a column.
     max_ss : int
 
-        max index in a row
-    xfs: double
+        Max index in a row.
+    xfs : double
 
-        fast scan directions, value x
-    yfs: double
+        Fast scan directions, value x.
+    yfs : double
 
-        fast scan directions, value y
-    xss: double
+        Fast scan directions, value y.
+    xss : double
 
-        slow scan directions, value x
-    yss: double
+        Slow scan directions, value x.
+    yss : double
 
-        slow scan directions, value y
+        Slow scan directions, value y.
     corner_x : double
 
-        coordinates of the panel corner from geom file
+        Coordinates of the panel corner from geom file.
     corner_y : double
 
-        coordinates of the panel corner from geom file
+        Coordinates of the panel corner from geom file.
     array : numpy.array
 
-        detector data
+        Detector data.
     position : tuple
 
-        panel coordinates on the final image
+        Panel coordinates on the final image.
     peaks_search : list
 
-        list of peaks from the stream file
+        List of peaks from the stream file.
     peaks_reflection : list
 
-        another peak list from the stream file. (peak like the
-        check-near-bragg script does)
+        Another peak list from the stream file. (peak like the
+        check-near-bragg script does).
     """
 
     def __init__(self, image_size, name, min_fs, min_ss, max_fs, max_ss, xfs,
@@ -65,43 +64,43 @@ class Detector:
         ----------
         image_size : tuple
 
-            image size
+            Image size.
         name : Python unicode str (on py3)
 
-            the name of the detector
+            The name of the detector.
         min_fs : int
 
-            min index in a column
+            Min index in a column.
         min_ss : int
 
-            min index in a row
+            Min index in a row.
         max_fs : int
 
-            max index in a column
+            Max index in a column.
         max_ss : int
 
-            max index in a row
+            Max index in a row.
         xfs: double
 
-            fast scan directions, value x
+            Fast scan directions, value x.
         yfs: double
 
-            fast scan directions, value y
+            Fast scan directions, value y.
         xss: double
 
-            slow scan directions, value x
+            Slow scan directions, value x.
         yss: double
 
-            slow scan directions, value y
+            Slow scan directions, value y.
         corner_x : double
 
-            coordinates of the panel corner from geom file
+            Coordinates of the panel corner from geom file.
         corner_y : double
 
-            coordinates of the panel corner from geom file
+            Coordinates of the panel corner from geom file.
         data : numpy.array
 
-            data from each panel from part of the data - dataset in h5 file
+            Data from each panel from part of the data - dataset in h5 file.
         """
         self.name = name
         self.min_fs = min_fs
@@ -123,19 +122,36 @@ class Detector:
         self.image_size = image_size
 
     def get_peaks_search(self):
-        """returns peaks from peak search
+        """Returns peaks from peak search.
+
+        Returns
+        -------
+        peaks_search : touple
+
+            The peaks_search list.
         """
         return self.peaks_search
 
     def get_peaks_reflection(self):
-        """returns peaks from reflections measured after indexing
-        as in the script 'check-near-bragg'
+        """Returns peaks from reflections measured after indexing
+        as in the script 'check-near-bragg'.
+
+        Returns
+        -------
+        peaks_reflection : touple
+
+            The peaks_reflection list.
         """
         return self.peaks_reflection
 
     def get_array_rotated(self):
-        """
-        Returns array data for each panel after rotation.
+        """Returns array data for each panel after rotation.
+
+        Returns
+        -------
+        array : numpy.array
+
+            The numpy.array for panel after rotation.
         """
         self.with_rotatioon()
         return self.array
@@ -161,7 +177,7 @@ class Detector:
             exit()
 
     def rot_x(self):
-        """Rotation along x axis, columns stay the same, rows are switched.
+        """Rotation along x-axis, columns stay the same, rows are switched.
         """
         # rotation x
         self.array = self.array[::-1, :]
@@ -207,7 +223,7 @@ class Detector:
             peak_stream.position = (posx, posy)
 
     def rot_y(self):
-        """Rotation along y axis; columns order is inversed, rows stay the same.
+        """Rotation along y-axis, columns order is inversed, rows stay the same.
         """
         # rotation y
         self.array = self.array[:, ::-1]
@@ -367,22 +383,22 @@ def get_detectors(raw_data_from_h5, image_size, geom,
     ----------
     raw_data_from_h5 : numpy.array
 
-        data from h5 for all detectors
+        Data from h5 for all detectors.
     image_size : tuple
 
-        image size
+        Image size.
     geom : dict
 
-        dictionary with the geometry information loaded from the geomfile.
+        Dictionary with the geometry information loaded from the geomfile.
     peaks_search : dict
 
-    dictionary with list of Peaskdetector name and value list
+        Dictionary with list of Peaskdetector name and value list.
 
     Returns
     -------
     panels : dict
 
-        dictionary with class Detector object
+        Dictionary with class Detector object.
             """
     panels = {panel_name: Detector(name=panel_name, image_size=image_size,
                                    corner_x=geom["panels"][panel_name]["cnx"],
@@ -422,23 +438,23 @@ class BadRegion:
     ----------
     name : str
 
-        bad region name from geom file
+        Bad region name from geom file.
 
     image_size : tuple
 
-        image size
+        Image size.
     min_x : int
 
-        range x_min  bad region
+        Range x_min  bad region.
     min_y : int
 
-        range y_min  bad region
+        Range y_min  bad region.
     max_x : int
 
-        range x_max  bad region
+        Range x_max  bad region.
     max_y : int
 
-        range y_max  bad region
+        Range y_max  bad region.
     """
     def __init__(self, image_size, name, min_x, max_x, min_y, max_y):
         """
@@ -446,23 +462,23 @@ class BadRegion:
         ----------
         name : str
 
-            bad region name from geom file
+            Bad region name from geom file.
 
         image_size : tuple
 
-            image size
+            Image size.
         min_x : int
 
-            range x_min  bad region
+            Range x_min bad region.
         min_y : int
 
-            range y_min  bad region
+            Range y_min bad region.
         max_x : int
 
-            range x_max  bad region
+            Range x_max bad region.
         max_y : int
 
-            range y_max  bad region
+            Range y_max bad region.
         """
         self.name = name
         self.image_size = image_size
@@ -488,6 +504,12 @@ class BadRegion:
 
     def get_array(self):
         """Retunrs array data.
+
+        Returns
+        -------
+        array : numpy.array
+
+            The numpy.array for BadRegion.
         """
         return self.array
 
@@ -499,12 +521,12 @@ def bad_places(image_size, geom):
     ----------
     image_size : tuple
 
-        image size
+        Image size.
     geom : dict
 
-        dictionary with the geometry information loaded from the geomfile.
+        Dictionary with the geometry information loaded from the geomfile.
 
-    Retunrs
+    Returns
     -------
     bad_places : dict
 

@@ -1,5 +1,4 @@
-"""
-Module for centering switches and handling mouse events.
+"""Module for centering switches and handling mouse events.
 """
 import itertools
 from matplotlib.widgets import Button, SpanSelector, Slider, RadioButtons
@@ -15,32 +14,32 @@ class PeakButton(Button):
     ----------
     fig : The class:`matplotlib.figure.Figure`.
 
-        The Figure which will be redraw
+        The Figure which will be redraw.
     axs : The class:`matplotlib.axes.Axes`
 
-        The Axes contains most of the figure elements
+        The Axes contains most of the figure elements.
     axis_list : list
 
-        position button in figure(object matplotlib.pyplot.axis)
+        Position button in figure(object matplotlib.pyplot.axis).
     list_active_peak : list
 
-        flags with peaks are enabled/disabled
+        Flags with peaks are enabled/disabled.
     detectors : dict
 
-        object class Panel with peaks
+        Object class Panel with peaks.
     peaks -  list
 
-        objects Peak (form h5 file)
+        Objects Peak (form h5 file).
     title : Python unicode str (on py3)
 
-        title image
+        Title image.
     radio : object form widget/Radio
 
     slider : objet form widget/My_slider
 
     matrix : numpy.array object
 
-        data with pixels
+        Data with pixels.
     """
     def __init__(self, fig, axs, matrix, ax, label, axis_list,
                  list_active_peak, peaks, detectors, title, radio, slider):
@@ -49,38 +48,37 @@ class PeakButton(Button):
         ----------
         fig : The class:`matplotlib.figure.Figure`.
 
-            The Figure which will be redraw
+            The Figure which will be redraw.
         axs : The class:`matplotlib.axes.Axes`
 
-            The Axes contains most of the figure elements
+            The Axes contains most of the figure elements.
         matrix : numpy.array object
 
-            data with pixels
+            Data with pixels.
         ax : The :class:`matplotlib.axes.Axes`
 
-            instance the button will be placed into.
+            Instance the button will be placed into.
         label : Python unicode str (on py3)
 
-            button name.
+            Button name.
         axis_list : list
 
-            position button in figure(object matplotlib.pyplot.axis)
+            Position button in figure(object matplotlib.pyplot.axis).
         list_active_peak : list
 
-            flags with peaks are enabled/disabled
+            Flags with peaks are enabled/disabled.
         detectors : dict
 
-            object class Panel with peaks
-        peaks -  list
+            Object class Panel with peaks.
+        peaks : list
 
-            objects Peak (form h5 file)
+            List of objects class Peak (form h5 file).
         title : Python unicode str (on py3)
 
-            title image
+            Title image.
         radio : object form widget/Radio
 
         slider : objet form widget/My_slider
-
 
         """
         self.fig = fig
@@ -116,8 +114,7 @@ class PeakButton(Button):
                 self.axs.add_artist(circle)
 
     def visual_peaks_search(self):
-        """
-        Draw peaks  form peaks search from stream file.
+        """Draw peaks  form peaks search from stream file.
         Like check_peak_detection script.
         """
         # set flag peaks_list are enabledd
@@ -132,7 +129,7 @@ class PeakButton(Button):
                 self.axs.add_artist(circle)
 
     def visual_peaks(self):
-        """Draw peaks form dataset in h5 file 'cheetah peakinfo-assembled'
+        """Draw peaks form dataset in h5 file 'cheetah peakinfo-assembled'.
         """
         try:
             # loop through all peaks list
@@ -149,6 +146,10 @@ class PeakButton(Button):
         """React at the click of buttons.
         Clear and create clean image. Checks which flags were active
         and changes the flags due to the button being clicked.
+
+        Parameters
+        ----------
+        event : The class:`matplotlib.backend_bases.Event`.
         """
         # clear subplot
         self.axs.cla()
@@ -213,11 +214,12 @@ class PeakButton(Button):
                 # and draw we don't change flags
                 self.visual_peaks_search()
             if self.list_active_peak[2]:
-                # 'CrystFEL_near_bragg_peak on/off' and change flags was enabled 
+                # 'CrystFEL_near_bragg_peak on/off'
+                # and change flags was enabled
                 # we don't draw
                 self.list_active_peak[2] = False
             else:
-                # 'CrystFEL_near_bragg_peak on/off' was disabled 
+                # 'CrystFEL_near_bragg_peak on/off' was disabled
                 # and change flags
                 # we don't draw
                 self.list_active_peak[2] = True
@@ -238,10 +240,10 @@ class ButtonBins(Button):
     ----------
     fig : The :class:`matplotlib.figure.Figure`.
 
-        The Figure which will be redraw
+        The Figure which will be redraw.
     histogram_list : list
-        Contains objects the class:`histogram.Histogram`
 
+        Contains objects the class:`histogram.Histogram`.
     label : The :class:`matplotlib.text.Text` instance.
     """
     __bins = None
@@ -257,7 +259,7 @@ class ButtonBins(Button):
             The Figure which will be redraw.
         ax : The :class:`matplotlib.axes.Axes`
 
-            instance the button will be placed into.
+            Instance the button will be placed into.
         histogram_list : list
 
             Contains objects the class:`histogram.Histogram`
@@ -272,23 +274,22 @@ class ButtonBins(Button):
 
     @staticmethod
     def set_bins(bins):
-        """ Set the value of bins for all histograms
+        """Set the value of bins for all histograms
 
         Parameters
         ----------
         bins : int
 
-            New value of bins
+            New value of bins.
         """
         ButtonBins.__bins = bins
 
     def change_bins(self, event):
-        """
-        When the ButtonBins is clicked, call this func with event
+        """When the ButtonBins is clicked, call this func with event
 
         Parameters
         ----------
-        event : The class:`matplotlib.backend_bases.Event`
+        event : The class:`matplotlib.backend_bases.Event`.
         """
         # Changing number of bins; Number is a power of 2. Max val. 512.
         if self.label == '+':
@@ -309,19 +310,19 @@ class ButtonBins(Button):
 
 
 class Radio(RadioButtons):
-    """A GUI radio button used in hdfsee
+    """A GUI radio button used in hdfsee.
 
     Attributes
     ----------
     fig : The class:`matplotlib.figure.Figure`.
 
-        The Figure which will be redraw
+        The Figure which will be redraw.
     image : The class:`matplotlib.image.AxesImage`
 
             created by functions imshow()
     cmap : The class:`matplotlib.colors.Colormap`
 
-        used to change color map in image
+        Used to change color map in image.
     """
     def __init__(self, fig, ax, labels, cmap, image):
         """
@@ -332,16 +333,14 @@ class Radio(RadioButtons):
             The Figure which will be redraw.
         ax : The class:`matplotlib.axes.Axes`
 
-            instance the button will be placed into.
-        labels : tuple of The :class:`matplotlib.text.Text`
-
-            instance.
+            Instance the button will be placed into.
+        labels : tuple of The :class:`matplotlib.text.Text` instance.
         cmap : The class:`matplotlib.colors.Colormap`
 
-            used to change color map in image
+            Used to change color map in image.
         image : The class:`matplotlib.image.AxesImage`
 
-            created by functions imshow()
+            Created by functions imshow().
         """
         self.image = image
         self.fig = fig
@@ -363,39 +362,39 @@ class Radio(RadioButtons):
         self.fig.canvas.draw()
 
     def set_image(self, image):
-        """set a new image
+        """Set a new image.
 
         Parameters
         ----------
         image : The class:`matplotlib.image.AxesImage`
 
-            created by functions imshow()
+            Created by functions imshow().
         """
         self.image = image
 
     def get_cmap(self):
-        """returned last cmap
+        """Returns last cmap.
         """
         return self.cmap
 
 
 class ContrastSlider(Slider):
-    """A GUI slider used in hdfsee to change the contrast
+    """A GUI slider used in hdfsee to change the contrast.
 
     Attributes
     ----------
     fig : The class:`matplotlib.figure.Figure`.
 
-        The Figure which will be redraw
+        The Figure which will be redraw.
     image : The class:`matplotlib.image.AxesImage`
 
-            created by functions imshow()
+            Created by functions imshow().
     vmax : int
 
-        define the data range that the colormap covers.
+        Define the data range that the colormap covers.
     vmin : int
 
-        define the data range that the colormap covers.
+        Define the data range that the colormap covers.
     """
     def __init__(self, image, fig, ax, label, vmin, vmax):
         """
@@ -406,19 +405,17 @@ class ContrastSlider(Slider):
             The Figure which will be redraw.
         ax : The class:`matplotlib.axes.Axes`
 
-            instance the button will be placed into.
+            Instance the button will be placed into.
         label : The :class:`matplotlib.text.Text` instance.
-
-            instance.
         vmax : int
 
-            define the data range that the colormap covers.
+            Define the data range that the colormap covers.
         vmin : int
 
-            define the data range that the colormap covers.
+            Define the data range that the colormap covers.
         image : The class:`matplotlib.image.AxesImage`
 
-            created by functions imshow()
+            Created by functions imshow().
         """
         self.image = image
         self.fig = fig
@@ -430,6 +427,13 @@ class ContrastSlider(Slider):
         super(ContrastSlider, self).on_changed(self.on_check)
 
     def on_check(self, event):
+        """When the button is clicked, call this func with event
+        Updates the image contrast.
+
+        Parameters
+        ----------
+        event : The class:`matplotlib.backend_bases.Event`.
+        """
         self.vmax = event
         self.image.set_clim(vmax=self.vmax)
         self.fig.canvas.draw()
@@ -441,27 +445,29 @@ class ContrastSlider(Slider):
         ----------
         image : The class:`matplotlib.image.AxesImage`
 
-            created by functions imshow()
+            Created by functions imshow().
         """
         self.image = image
 
     def get_vmax(self):
-        """returned  last vmax
+        """Returns last vmax.
 
         Returns
         -------
         vmax : int
-            max range that the colormap covers.
+
+            Max range that the colormap covers.
         """
         return self.vmax
 
     def get_vmin(self):
-        """returned  last vmin
+        """Returns  last vmin.
 
         Returns
         -------
         vmin : int
-            min range that the colormap covers.
+
+            Min range that the colormap covers.
         """
         return self.vmin
 
@@ -474,25 +480,45 @@ class CenteringButton(Button):
     ----------
     fig : The class:`matplotlib.figure.Figure`.
 
-        The Figure which will be redraw
+        The Figure which will be redraw.
     colors : itertools.cycle list
 
-        contains a list of colors
+        Contains a list of colors.
     histogram_list : list
 
-        Contains objects the class:`histogram.Histogram`
+        Contains objects the class:`histogram.Histogram`.
     list_color : list
 
-        Colors of changing the bars in the histogram
+        Colors of changing the bars in the histogram.
     histogram_list : list
 
-        Contains objects the class:`histogram.Histogram`
+        Contains objects the class:`histogram.Histogram`.
     histogram_colors : dict
 
-        key - type centering, value - list with colors
+        key - type centering, value - list with colors.
     """
     def __init__(self, fig, axs, label, list_color,
                  histogram_list, histogram_colors):
+        """
+        Parameters
+        ----------
+        fig : The class:`matplotlib.figure.Figure`
+
+            The Figure which will be redraw.
+        axs : The class:`matplotlib.axes.Axes`
+
+            Instance the button will be placed into.
+        label : The :class:`matplotlib.text.Text` instance.
+        list_color : list
+
+            Colors of changing the bars in the histogram.
+        histogram_list : list
+
+            Contains objects the class:`histogram.Histogram`.
+        histogram_colors : dict
+
+            key - type centering, value - list with colors.
+        """
         # Initialize parent constructor.
         super(CenteringButton, self).__init__(ax=axs, label=label,
                                               color=list_color[0])
@@ -511,10 +537,7 @@ class CenteringButton(Button):
 
         Parameters
         ----------
-
         label : The :class:`matplotlib.text.Text` instance.
-
-            instance.
         """
         self.color = next(self.colors)  # After clicking changes the colour
         # to the next in a loop. For a given button the colour will be set in
@@ -529,7 +552,7 @@ class CenteringButton(Button):
         self.fig.canvas.draw()  # Redraw the current figure.
 
     def reset_color(self):
-        """Restore the initial settings
+        """Restore the initial settings.
         """
         self.colors = itertools.cycle(self.list_color)
         self.color = self.list_color[0]
@@ -542,28 +565,28 @@ class CenteringButton(Button):
 
 
 class Span:
-    """Visually select the region of interest on a single histogram
+    """Visually select the region of interest on a single histogram.
 
     Attributes
     ----------
     fig : The class:`matplotlib.figure.Figure`.
 
-        The Figure which will be redraw
+        The Figure which will be redraw.
     crystals_excluded : list
 
-        Crystals excluded
+        Crystals excluded.
     all_crystals_list : list
 
-        all crystals
+        All crystals.
     histogram_list : list
 
-        Contains objects the class:`histogram.Histogram`
+        Contains objects the class:`histogram.Histogram`.
     index : int
 
-        index number in the histgram_list
+        Index number in the histgram_list.
     name : str
 
-        name of the histrgam
+        Name of the histrgam.
     """
     # list of flags for showing what was selected last, where.
     __which_was_used_last = [False, False, False, False, False, False]
@@ -572,7 +595,28 @@ class Span:
 
     def __init__(self, fig, crystals_excluded,
                  all_crystals_list, histogram_list, name, index):
+        """
+        Parameters
+        ----------
+        fig : The class:`matplotlib.figure.Figure`.
 
+            The Figure which will be redraw.
+        crystals_excluded : list
+
+            Crystals excluded.
+        all_crystals_list : list
+
+            All crystals.
+        histogram_list : list
+
+            Contains objects the class:`histogram.Histogram`.
+        name : str
+
+            Name of the histrgam.
+        index : int
+
+            Index number in the histgram_list.
+        """
         self.fig = fig
         # Excluded crystals.
         self.crystals_excluded = crystals_excluded
@@ -589,13 +633,13 @@ class Span:
 
     @staticmethod
     def set_all_false():
-        """list of flags to show what was selected were set to false
+        """List of flags to show what was selected were set to false.
         """
         Span.__which_was_used_last = [False, False, False, False, False, False]
 
     @staticmethod
     def get_all_used():
-        """get a list of flags to show what was selected were.
+        """Get a list of flags to show what was selected were.
         """
         return Span.__which_was_used_last
 
@@ -643,17 +687,17 @@ class Span:
             hist.draw_green_space()
 
     def is_exluded(self, crystal):
-        """checks whether a given crystal is in the region of interest.
+        """Checks whether a given crystal is in the region of interest.
 
         Parameters
         ----------
 
         crystal : dict
-            crystal details.
+
+            Crystal details.
 
         Returns
         -------
-
         True : if crystal is in the region of interest.
         """
         for hist in self.histogram_list:
@@ -663,7 +707,7 @@ class Span:
 
     @staticmethod
     def get_crystals_included_list():
-        """ Returns all crystals found in the region of interest
+        """ Returns all crystals found in the region of interest.
         """
         return Span.__crystals_included
 

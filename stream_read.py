@@ -1,47 +1,49 @@
-"""
-Module for parsing indexing stream file produced by CrystFEL indexamajig.
+"""Module for parsing indexing stream file produced by CrystFEL indexamajig.
 """
 import numpy as np
 import sys
 
 
 def cell_parameters(astar, bstar, cstar):
-    """Calculates unit cell parameters
+    """Calculates unit cell parameters.
+
     Parameters
     ----------
     astar : list
 
-        list of float values.
+        List of float values.
         (A line beginning with `astar`)
     bstar : list
 
-        list of float values.
+        List of float values.
         (A line beginning with `bstar`)
     cstar : list
 
-        list of float values.
+        List of float values.
         (A line beginning with `cstar`)
+
     Returns
     -------
-    a,b,c,alfa,beta,gamma: tuple
+    a, b, c, alfa, beta, gamma : tuple
 
-    Unit cell parameters
+        Unit cell parameters.
     """
 
     def angle_between(x1, x2):
-        """auxiliary function for calculating the angle between vectors
+        """Auxiliary function for calculating the angle between vectors.
+
         Parameters
         ----------
         x1 : numpy.ndarray
 
-            first vector
+            First vector.
         x2 : numpy.ndarray
 
-            second vector
+            Second vector.
 
         Returns
         -------
-        angle in degrees
+        Angle in degrees.
         """
         # magnitude of a vector x1
         mod1 = np.linalg.norm(x1)
@@ -63,9 +65,10 @@ def cell_parameters(astar, bstar, cstar):
     array = np.linalg.inv(array)
 
     # magnitude of a vector
-    a = np.linalg.norm(array[0, :])
-    b = np.linalg.norm(array[1, :])
-    c = np.linalg.norm(array[2, :])
+    # Multiplying by 10 for Angstroms.
+    a = np.linalg.norm(array[0, :]) * 10
+    b = np.linalg.norm(array[1, :]) * 10
+    c = np.linalg.norm(array[2, :]) * 10
     # angle between vectors
     alpha = angle_between(array[1, :], array[2, :])
     beta = angle_between(array[0, :], array[2, :])
@@ -82,21 +85,22 @@ def search_crystals_parameters(file_name):
     Parameters
     ----------
     file_name : Python unicode str (on py3)
-        Path to stream file
+
+        Path to stream file.
 
     Returns
     -------
     crystals : list
 
-        list of crystals dictionaries
+        List of crystals dictionaries
         containing  unit cell details.
 
     Raises
     ------
     FileNotFoundError
-        if no such file
+        If no such file.
     IndexError
-        if there is no path to the stream file
+        If there is no path to the stream file.
     """
     # flags- Check if the line has already been processed.
     flags = {"name": False, "begin_crystal": False,
@@ -221,16 +225,16 @@ class PeakSearch:
     ----------
     fs_px : double
 
-        fast scan/pixel
+        Fast scan/pixel.
     ss_px : double
 
-        slow scan/pixel
+        Slow scan/pixel.
     panel_name : str
 
-        the name of the panel to which the peak belongs
+        The name of the panel to which the peak belongs.
     position : tuple
 
-        peak coordinates after panel reconstruction.
+        Peak coordinates after panel reconstruction.
     """
     def __init__(self, fs, ss, recip, intesity, panel_name):
         """
@@ -238,19 +242,19 @@ class PeakSearch:
         ----------
         fs : double
 
-            fast scan/pixel
+            Fast scan/pixel.
         ss : double
 
-            slow scan/pixel
+            Slow scan/pixel.
         panel_name : str
 
-            the name of the panel to which the peak belongs
+            The name of the panel to which the peak belongs.
         intesity : double
 
-            Intensity
+            Intensity.
         recip : double
 
-            value `(1/d)/nm^-1`
+            Value `(1/d)/nm^-1`.
         """
         self.fs_px = fs
         self.ss_px = ss
@@ -260,7 +264,12 @@ class PeakSearch:
         self.position = None
 
     def get_position(self):
-        """returns peak coordinates
+        """Returns peak coordinates.
+        Returns
+        -------
+        position : tuple
+
+            Peak position.
         """
         return self.position
 
@@ -273,16 +282,16 @@ class PeakReflections:
     ----------
     fs_px : double
 
-        fast scan/pixel
+        Fast scan/pixel.
     ss_px : double
 
-        slow scan/pixel
+        Slow scan/pixel.
     panel_name : str
 
-        the name of the panel to which the peak belongs
+        The name of the panel to which the peak belongs.
     position : tuple
 
-        peak coordinates after panel reconstruction.
+        Peak coordinates after panel reconstruction.
     """
     def __init__(self, h, k, l, I, sigmaI, peak, background, fs_px, ss_px,
                  panel_name):
@@ -291,37 +300,37 @@ class PeakReflections:
         ----------
         fs_px : double
 
-            fast scan/pixel
+            Fast scan/pixel.
         ss_px : double
 
-            slow scan/pixel
+            Slow scan/pixel.
         panel_name : str
 
-            the name of the panel to which the peak belongs
+            The name of the panel to which the peak belongs.
         h : int
 
-            the parameter 'h' of the reflection measured after indexing
+            The parameter 'h' of the reflection measured after indexing.
         k : int
 
-            the parameter 'k' of the reflection measured after indexing
+            The parameter 'k' of the reflection measured after indexing.
         l : int
 
-            the parameter 'l' of the reflection measured after indexing
+            The parameter 'l' of the reflection measured after indexing.
         I : double
 
-            the parameter 'I' of the reflection measured after indexing
+            The parameter 'I' of the reflection measured after indexing.
         sigmaI : double
 
-            the parameter 'sigma(I)' of the reflection measured
-            after indexing
+            Rhe parameter 'sigma(I)' of the reflection measured
+            after indexing.
         peak : double
 
-            the parameter 'peak' of the reflection measured
-            after indexing
+            The parameter 'peak' of the reflection measured
+            after indexing.
         background : double
 
-            the parameter 'background' of the reflection measured
-            after indexing
+            The parameter 'background' of the reflection measured
+            after indexing.
         """
         self.h = h
         self.k = k
@@ -337,6 +346,11 @@ class PeakReflections:
 
     def get_position(self):
         """returns peak coordinates
+        Returns
+        -------
+        position : tuple
+
+            Peak position.
         """
         return self.position
 
@@ -349,25 +363,25 @@ def search_peaks(file_stream, file_h5):
     ----------
     file_stream : Python unicode str (on py3)
 
-        Path to stream file
+        Path to stream file.
     file_h5 : Python unicode str (on py3)
 
-        Image filename
+        Image filename.
 
     Returns
     -------
     peaks_search, peaks_reflection : tuple
 
-        peaks_search and peaks_reflection have
+        Peaks_search and peaks_reflection have
         keys as name of the panel from which the peaks
         belongs from and values are lists of peak object.
 
     Raises
     ------
     FileNotFoundError
-        if no such file
+        If no such file.
     TypeError
-        if the line with the peak parameter contains incomplete data.
+        If the line with the peak parameter contains incomplete data.
     """
     name_h5_flag = False  # Check if already filename was processed.
     found_h5_in_stream = False  # Check if h5 file was

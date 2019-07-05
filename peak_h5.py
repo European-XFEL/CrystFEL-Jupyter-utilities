@@ -1,5 +1,4 @@
-"""
-This module depicts peaks on the panels
+"""This module depicts peaks on the panels
 gets the poles connection matrix from the h5 file,
 all peaks are kept in the list
 """
@@ -13,10 +12,10 @@ class Peak:
     ----------
     posx : double
 
-        The peak position according to the origin system in the center of Ox
+        The peak position according to the origin system in the center of Ox.
     posy : double
 
-        the peak position according to the origin system in the center of Oy
+        The peak position according to the origin system in the center of Oy.
     """
     def __init__(self, posx, posy, intensive, offset):
         """
@@ -25,18 +24,18 @@ class Peak:
         posx : double
 
             The peak position according to
-            the origin system in the center of Ox
+            the origin system in the center of Ox.
         posy : double
 
             The peak position according to
-            the origin system in the center of Oy
+            the origin system in the center of Oy.
         intensive : double
 
-            peak intensity.
+            Peak intensity.
 
         offset : double
 
-            peak offset
+            Peak offset.
         """
         self.posx = posx
         self.posy = posy
@@ -45,15 +44,24 @@ class Peak:
 
     def get_position(self):
         """Returns peak position.
+        Returns
+        -------
+        posx, posy : tuple
+
+            Peak position.
         """
         return (self.posx, self.posy)
 
 
 def get_list_peaks(matrix, image_size):
-    """return a list of class Peak form H5
+    """Return a list of class Peak form H5
     gets a matrix with data for all peas given
     file h5
+    Returns
+    -------
+    peaks : list
 
+        List of class Peak object.
     """
     try:
         # array[:,] next rows
