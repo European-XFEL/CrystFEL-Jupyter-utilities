@@ -18,7 +18,7 @@ import data
 import panel
 import peak_h5
 from stream_read import search_peaks
-from widget import ContrastSlider, Radio, PeakButton
+from widget import ContrastSlider, PeakButton, Radio
 
 
 # Creating arguments for parsing.

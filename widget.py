@@ -1,7 +1,7 @@
 """Module for centering switches and handling mouse events.
 """
 import itertools
-from matplotlib.widgets import Button, SpanSelector, Slider, RadioButtons
+from matplotlib.widgets import Button, RadioButtons, SpanSelector, Slider
 import matplotlib.pyplot as plt
 
 import crystlib

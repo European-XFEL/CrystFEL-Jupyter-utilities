@@ -29,9 +29,9 @@ Works for each histogram separately.
 """
 
 import logging
-import weakref
-import numpy
 import matplotlib.ticker as ticker
+import numpy
+import weakref
 
 
 class MplInteraction(object):

@@ -12,7 +12,7 @@ from scipy import stats
 import crystlib
 from histogram import Histogram
 import stream_read
-from widget import Span, CenteringButton, ButtonBins, Button
+from widget import Button, ButtonBins, Span, CenteringButton
 from zoompan import ZoomOnWheel
 
 
