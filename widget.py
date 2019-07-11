@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import crystlib
 
 
-class PeakButton(Button):
-    """A GUI button used in hadsee to visible others peaks in image
+class PeakButtons:
+    """A GUI button used to visible others peaks in image
 
     Attributes
     ----------
@@ -24,7 +24,7 @@ class PeakButton(Button):
     list_active_peak : list
 
         Flags with peaks are enabled/disabled.
-    detectors : dict
+    panels : dict
 
         Object class Panel with peaks.
     peaks -  list
@@ -40,93 +40,106 @@ class PeakButton(Button):
     matrix : numpy.array object
 
         Data with pixels.
+    number_peaks_button : int
+
+        Number of buttons.
+        1- Only button for peaks from hdf5.
+        2- Only two buttons for peaks from stream.
+        3- three buttons for all peaks.
     """
-    def __init__(self, fig, axs, matrix, ax, label, axis_list,
-                 list_active_peak, peaks, detectors, title, radio, slider):
+    def __init__(self, fig, ax, matrix, peaks, number_peaks_button, panels, title, radio, slider):
         """
         Parameters
         ----------
         fig : The class:`matplotlib.figure.Figure`.
 
-            The Figure which will be redraw.
-        axs : The class:`matplotlib.axes.Axes`
+            The Figure which will be redraw
+        ax : The class:`matplotlib.axes.Axes`
 
-            The Axes contains most of the figure elements.
+            The Axes contains most of the figure elements
         matrix : numpy.array object
 
-            Data with pixels.
-        ax : The :class:`matplotlib.axes.Axes`
+            data with pixels
+        panels : dict
 
-            Instance the button will be placed into.
-        label : Python unicode str (on py3)
+            object class Panel with peaks.
+        peaks -  list
 
-            Button name.
-        axis_list : list
+            Peaks form h5 file.
+        number_peaks_button : int
 
-            Position button in figure(object matplotlib.pyplot.axis).
-        list_active_peak : list
-
-            Flags with peaks are enabled/disabled.
-        detectors : dict
-
-            Object class Panel with peaks.
-        peaks : list
-
-            List of objects class Peak (form h5 file).
+            Number of buttons.
         title : Python unicode str (on py3)
 
-            Title image.
+            title image.
         radio : object form widget/Radio
 
         slider : objet form widget/My_slider
-
         """
         self.fig = fig
-        self.axs = axs
-        self.matrix = matrix
-
         self.ax = ax
-        self.axis_list = axis_list
-        self.list_active_peak = list_active_peak
+        self.matrix = matrix
+        self.axis_list = [None, None, None]
+        self.list_active_peak = [False, False, False]
         self.peaks = peaks
-        self.detectors = detectors
+        self.panels = panels
         self.title = title
         self.radio = radio
         self.slider = slider
-        # Initialize parent constructor.
-        super(PeakButton, self).__init__(ax=self.ax, label=label)
-        # On click reaction.
-        super(PeakButton, self).on_clicked(self.peaks_on_of)
+        self.buttons = []
+        if number_peaks_button != 2:
+            self.axis_list[0] = plt.axes([.90, 0.55, 0.09, 0.08], facecolor='yellow')
+            button = Button(ax=self.axis_list[0],
+                            label='cheetah peaks on/off')
+            button.on_clicked(self.peaks_on_of)
+            self.buttons.append(button)
+            # On click reaction.
+        if number_peaks_button != 1:
+            self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08], facecolor='yellow'))
+            # Creat button object.
+            button = Button(ax=self.axis_list[1],
+                            label='peaks_search on/off')
+            # On click reaction.
+            button.on_clicked(self.peaks_on_of)
+            # Add to list of buttons.
+            self.buttons.append(button)
+            self.axis_list[2] = (plt.axes([.90, 0.35, 0.09, 0.08], facecolor='yellow'))
+            button = Button(ax=self.axis_list[2],
+                            label='peaks_reflections on/off')
+            # On click reaction.
+            button.on_clicked(self.peaks_on_of)
+            # Add to list of buttons.
+            self.buttons.append(button)
 
     def visual_peaks_reflection(self):
-        """Draw peaks reflections measured after indexing
+        """Draw peaks from line `reflections measured after indexing`
         from stream file. Like as script near_bragg.
         """
         # set flag peaks_near_bragg are enabled
         self.list_active_peak[2] = True
-        # loop through all detectors
-        for name in self.detectors:
+        # loop through all panels
+        for name in self.panels:
             # loop through all peaks near_bragg
-            for peak in self.detectors[name].get_peaks_reflection():
+            for peak in self.panels[name].get_peaks_reflection():
                 circle = plt.Circle(peak.get_position(), radius=5, color='r',
                                     fill=False)
                 # draw red circle
-                self.axs.add_artist(circle)
+                self.ax.add_artist(circle)
 
     def visual_peaks_search(self):
-        """Draw peaks  form peaks search from stream file.
+        """Draw peaks from `peaks search` from stream file.
         Like check_peak_detection script.
         """
         # set flag peaks_list are enabledd
         self.list_active_peak[1] = True
-        # loop through all detectors
-        for name in self.detectors:
+        # loop through all panels
+        for name in self.panels:
             # loop through all peaks list
-            for peak in self.detectors[name].get_peaks_search():
+            for peak in self.panels[name].get_peaks_search():
                 circle = plt.Circle(peak.get_position(), radius=5, color='g',
                                     fill=False)
                 # draw red circle
-                self.axs.add_artist(circle)
+                self.ax.add_artist(circle)
 
     def visual_peaks(self):
         """Draw peaks form dataset in h5 file 'cheetah peakinfo-assembled'.
@@ -134,10 +147,10 @@ class PeakButton(Button):
         try:
             # loop through all peaks list
             for peak in self.peaks:
-                circle = plt.Circle(peak.get_position(), radius=5,
+                circle = plt.Circle((peak['posx'], peak['posy']), radius=5,
                                     color='y', fill=False)
                 # draw yellow circle
-                self.axs.add_artist(circle)
+                self.ax.add_artist(circle)
         except TypeError:
             # exception when we can find peak in dataset
             return None
@@ -146,20 +159,16 @@ class PeakButton(Button):
         """React at the click of buttons.
         Clear and create clean image. Checks which flags were active
         and changes the flags due to the button being clicked.
-
-        Parameters
-        ----------
-        event : The class:`matplotlib.backend_bases.Event`.
         """
         # clear subplot
-        self.axs.cla()
+        self.ax.cla()
         # returned color map last used
         cmap = self.radio.get_cmap()
         # retuned contrast range last used
         vmax = self.slider.get_vmax()
         vmin = self.slider.get_vmin()
         # created new image we have a new reference
-        image = self.axs.imshow(self.matrix, cmap=cmap, vmax=vmax,
+        image = self.ax.imshow(self.matrix, cmap=cmap, vmax=vmax,
                                 vmin=vmin, animated=True)
         # when we clicked button 'cheetah peaks on/off'
         if event.inaxes == self.axis_list[0]:
@@ -214,12 +223,11 @@ class PeakButton(Button):
                 # and draw we don't change flags
                 self.visual_peaks_search()
             if self.list_active_peak[2]:
-                # 'CrystFEL_near_bragg_peak on/off'
-                # and change flags was enabled
+                # 'CrystFEL_near_bragg_peak on/off' and change flags was enabled 
                 # we don't draw
                 self.list_active_peak[2] = False
             else:
-                # 'CrystFEL_near_bragg_peak on/off' was disabled
+                # 'CrystFEL_near_bragg_peak on/off' was disabled 
                 # and change flags
                 # we don't draw
                 self.list_active_peak[2] = True
@@ -227,11 +235,10 @@ class PeakButton(Button):
         # Redraw the current figure.
         self.fig.canvas.draw()
         # set title because we clear subplot axs
-        self.axs.set_title(self.title)
+        self.ax.set_title(self.title)
         # set a new reference in the widgets
         self.radio.set_image(image)
         self.slider.set_image(image)
-
 
 class ButtonBins(Button):
     """A GUI button to change the number of bins in all histograms
