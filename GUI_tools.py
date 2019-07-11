@@ -1,51 +1,62 @@
-"""
-Module can be executed in a notebook.
+"""Module can be executed in a notebook.
 Joins work of other moules together.
 """
 # !/usr/bin/env python
 
 import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.backend_bases import NavigationToolbar2
 # In there we have refereces on to 'home' button
+from matplotlib.backend_bases import NavigationToolbar2
+import numpy as np
 from scipy import stats
-from histogram import Histogram
-from widget import Span, CenteringButton, ButtonBins, Button
 
 import crystlib
+from histogram import Histogram
+import stream_read
+from widget import Button, ButtonBins, Span, CenteringButton
 from zoompan import ZoomOnWheel
 
 
 class CellExplorer:
-    """
-    Displaying the 6 subplots, each containing a histogram with data from
+    """Displaying the 6 subplots, each containing a histogram with data from
     'indexing stream' file. Each centering type is displayed as a different
     colour and can be switched after clicking on it as in the cell_explorer.
     """
 
-    def __init__(self, streamfile, **args):
+    def __init__(self, streamfile, **kwargs):
+        """Parameters
+        ----------
+        file_stream : Python unicode str (on py3)
+
+            Path to stream file.
+        **kwargs
+
+            Sets the ranges on the given histogram types
+            key- histogram order e.g. 'a', 'beta'
+            value - tuple (range).
+        """
         NavigationToolbar2.home = self.home_reset
         # "Home" button has references to our function
-        self.args = args
+        self.kwargs = kwargs
         self.stream_name = streamfile
         self.fig, self.axs_list = plt.subplots(2, 3)
         # Windows for histograms
         self.axs_list = self.axs_list.ravel()
         # Reshaping matrix to vector: [1][1] to [4]
         # all crystals find in file
-        self.all_crystals_list = crystlib.crystals_list(self.stream_name)
+        self.all_crystals_list = \
+            stream_read.search_crystals_parameters(self.stream_name)
         # Crystals selected by Spanselector (with their colours)
-        self.dict_data_histogram =\
-            crystlib.dict_data_histogram(self.all_crystals_list)
+        self.histograms_data =\
+            crystlib.histograms_data(self.all_crystals_list)
         # Dictionary with a, b, c, alpha, beta, gamma as keys,
         # ABCFHIR with list of data as values
-        self.crystals_excluded_list = []
+        self.crystals_excluded = []
         # Excluded cristals
 
         # Colours for each centering type during initialization
-        self.dict_color_histogram = {'P': 'gray', 'A': 'cyan', 'B': 'darkblue',
-                                     'C': 'royalblue', 'H': "firebrick",
-                                     'F': "magenta", 'I': 'lime', 'R': 'olive'}
+        self.histogram_colors = {'P': 'gray', 'A': 'cyan', 'B': 'darkblue',
+                                 'C': 'royalblue', 'H': "firebrick",
+                                 'F': "magenta", 'I': 'lime', 'R': 'olive'}
         self.histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
         self.cryst_list = ['P', 'A', 'B', 'C', 'I', 'F', 'H', 'R']
         self.bins = 16
@@ -57,10 +68,11 @@ class CellExplorer:
             temp_label = 'Angstrem[Å]'
             if hist_indx > 2:
                 temp_label = 'deg'
-            self.histogram_list.append(Histogram(axs=self.axs_list[hist_indx], name=hist_name,
-                                                 xlabel=temp_label,
-                                                 data_to_histogram=self.dict_data_histogram[hist_name],
-                                                 colors=self.dict_color_histogram, bins=self.bins))
+            self.histogram_list.append(Histogram(
+                axs=self.axs_list[hist_indx], name=hist_name,
+                xlabel=temp_label, bins=self.bins,
+                data_to_histogram=self.histograms_data[hist_name],
+                colors=self.histogram_colors))
 
         plt.subplots_adjust(hspace=0.5)
         plt.subplots_adjust(wspace=0.1)
@@ -70,29 +82,30 @@ class CellExplorer:
         # Using intertool for looping to change color
         # list_color is our cyclic list
 
-
         # Buttols list:
         # All Spans include reference for crystals list which were refused
         # or not included (?) changes in 1 Span is visible by others.
         # all_crystals_list has all crystals that are finded
-        # crystals_excluded_list has all crystal that has not set they are gray
+        # crystals_excluded has all crystal that has not set they are gray
         # index is used to locate which histogram applies
 
-        button_x_pos = [0.95,0.935,0.92,0.905,0.89,0.875,0.86,0.845]
+        button_x_pos = [0.95, 0.935, 0.92, 0.905, 0.89, 0.875, 0.86, 0.845]
         self.buttons_list = []
         for cryst_indx, cryst_symb in enumerate(self.cryst_list):
-            self.buttons_list.append(CenteringButton(axs=plt.axes([button_x_pos[-1-cryst_indx], 0.95, 0.015, 0.045]), fig=self.fig,
-                                            label=cryst_symb, list_color=[
-                                                self.dict_color_histogram[cryst_symb], 'gray', 'lightgrey'],
-                                            histogram_list=self.histogram_list,
-                                            histogram_colors=self.dict_color_histogram))
+            self.buttons_list.append(CenteringButton(
+                axs=plt.axes([button_x_pos[-1-cryst_indx], 0.95, 0.015, 0.045]),
+                fig=self.fig, label=cryst_symb,
+                list_color=[self.histogram_colors[cryst_symb], 'gray', 'lightgrey'],
+                histogram_list=self.histogram_list,
+                histogram_colors=self.histogram_colors))
 
         self.span_list = []
         for hist_indx, hist_name in enumerate(self.histogram_order):
-            self.span_list.append(Span(crystals_excluded_list=self.crystals_excluded_list,
-                                       fig=self.fig, index=hist_indx, name=hist_name,
-                                       all_crystals_list=self.all_crystals_list,
-                                       histogram_list=self.histogram_list))
+            self.span_list.append(Span(
+                crystals_excluded=self.crystals_excluded,
+                fig=self.fig, index=hist_indx,
+                name=hist_name, all_crystals_list=self.all_crystals_list,
+                histogram_list=self.histogram_list))
 
         # self.span_list = (span1, span2, span3, span4, span5, span6)
         self.fig.canvas.mpl_connect('key_press_event', self.press)
@@ -104,11 +117,11 @@ class CellExplorer:
         # For zooming in using mouse wheel
         ButtonBins.set_bins(self.bins)
         self.btt_p = ButtonBins(fig=self.fig, label='+',
-                               histogram_list=self.histogram_list,
-                               ax=plt.axes([0.91, 0.90, 0.025, 0.025]),)
+                                histogram_list=self.histogram_list,
+                                ax=plt.axes([0.91, 0.90, 0.025, 0.025]),)
         self.btt_m = ButtonBins(fig=self.fig, label='-',
-                               histogram_list=self.histogram_list,
-                               ax=plt.axes([0.935, 0.90, 0.025, 0.025]),)
+                                histogram_list=self.histogram_list,
+                                ax=plt.axes([0.935, 0.90, 0.025, 0.025]),)
         self.bttn_save = Button(ax=plt.axes([0.91, 0.875, 0.050, 0.025]),
                                 label="Save")
         self.bttn_save.on_clicked(self.save_file)
@@ -117,9 +130,20 @@ class CellExplorer:
         plt.show()
 
     def lattice_type(self, gauss_parametrs):
-        """
-        return lattice type and unique_axis
-        gauss_parametrs = [a,b,c,alfa,beta,gamma]
+        """Returns lattice type and unique_axis
+        gauss_parametrs = [a, b, c, alfa, beta, gamma]
+
+        Parameters
+        ----------
+        gauss_parametrs : list
+
+            Gauss parameters for each type of histogram
+
+        Returns
+        -------
+        lt, ua : tuple
+
+            Lattice type and unique axis.
         """
         def tolerance(a, b, percent):
             if abs(a-b) < abs(a)*(percent/100):
@@ -203,23 +227,30 @@ class CellExplorer:
         return (lt, ua)
 
     def group_centering(self):
-        """
-        returned maximum centering group from crystal included list
+        """Returns maximum centering group from crystal included list.
+        More than 80% all crystals.
+
+        Returns
+        -------
+        centering : Python unicode str (on py3)
+
+            Name of centering.
         """
         include_crystal = Span.get_crystals_included_list()
         max_group = 0
         # remmember maximum group
         centering = None
         # type of centering
-        counter_group_centering = dict(zip(self.cryst_list, [0]*(len(self.cryst_list))))
+        counter_group_centering = \
+            dict(zip(self.cryst_list, [0]*(len(self.cryst_list))))
         # counter for each centering
         for crystal in include_crystal:
             # search maximum group and this centring
             # Which centering is most common?
-            counter_group_centering[crystal.centering] += 1
-            if max_group < counter_group_centering[crystal.centering]:
-                max_group = counter_group_centering[crystal.centering]
-                centering = crystal.centering
+            counter_group_centering[crystal['centering']] += 1
+            if max_group < counter_group_centering[crystal['centering']]:
+                max_group = counter_group_centering[crystal['centering']]
+                centering = crystal['centering']
         if max_group < len(include_crystal)*0.8:
             # does it constitute 80% of included crystals?
             # why 80% I don't know that was in orginal soft
@@ -227,9 +258,12 @@ class CellExplorer:
         return centering
 
     def was_all_hist_selected(self):
-        """
-        check all histogrmas and return true if all
-        were selected
+        """Check all histograms and return true
+         if all have been selected
+
+        Returns
+        -------
+        True if all have been selected
         """
         for hist in self.histogram_list:
             if not hist.get_was_clicked_before():
@@ -237,9 +271,12 @@ class CellExplorer:
         return True
 
     def save_file(self, event):
-        """
-        writes the crystallography parameters to the file
-        if are some problems return Warnig message
+        """Writes the crystallography parameters to the file
+        if are some problems return Warnig message.
+
+        Parameters
+        ----------
+        event : The class:`matplotlib.backend_bases.Event`.
         """
         # all must be marked
         if not self.was_all_hist_selected():
@@ -276,9 +313,8 @@ class CellExplorer:
             # open file and save parametrs
         return
 
-    def home_reset(self, *args, **kwargs):
-        """
-        method used to set the initial
+    def home_reset(self, *kwargs, **kwkwargs):
+        """Method used to set the initial
         state of all histograms with a button
         NavigationToolbar2.home
         """
@@ -289,11 +325,12 @@ class CellExplorer:
         for bttn in self.buttons_list:
             bttn.reset_color()
 
-        if len(self.args) == 0:
-            self.crystals_excluded_list.clear()
+        if len(self.kwargs) == 0:
+            self.crystals_excluded.clear()
             for hist_indx, hist_name in enumerate(self.histogram_order):
-                self.histogram_list[hist_indx].set_data(self.dict_data_histogram[hist_name],
-                                                        self.crystals_excluded_list)
+                self.histogram_list[hist_indx].set_data(
+                    self.histograms_data[hist_name],
+                    self.crystals_excluded)
             for hist in self.histogram_list:
                 hist.update()
         else:
@@ -302,22 +339,32 @@ class CellExplorer:
         self.fig.canvas.draw()
 
     def parametres_used(self):
-
+        """The method sets the ranges for given types of histograms.
+        """
         for hist_indx, hist_name in enumerate(self.histogram_order):
             try:
-                self.span_list[hist_indx].onselect(*self.args[hist_name])
+                self.span_list[hist_indx].onselect(*self.kwargs[hist_name])
             except:
                 pass
 
-
     def rememmber_pos_panel(self, event):
+        """Updates the xlim of the given histogram
+        if it is moved on the graph by 'Pan'
+
+        Parameters
+        ----------
+        event : The class:`matplotlib.backend_bases.Event`.
+        """
         for hist in self.histogram_list:
             if hist.axs == event.inaxes:
                 hist.set_current_xlim(hist.get_current_xlim())
 
     def press(self, event):
-        """
-        Method for keyboard handling.
+        """Method for keyboard handling.
+
+        Parameters
+        ----------
+        event : The class:`matplotlib.backend_bases.Event`.
         """
         # Changing number of bins; Number is a power of 2. Max val. 512.
         if event.key == '+':
@@ -345,6 +392,8 @@ class CellExplorer:
         self.fig.canvas.draw()
 
     def gauss_draw(self):
+        """Draw gauss graphs.
+        """
         for hist in self.histogram_list:
             hist.update()
             hist.draw_green_space()

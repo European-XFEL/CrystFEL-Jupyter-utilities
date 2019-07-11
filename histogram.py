@@ -1,48 +1,47 @@
-"""
-Module for displaying a single module in a subplot.
+"""Module for displaying a single module in a subplot.
 """
 
 
-class Histogram():
-    """ Represents a histogram on a single subplot
+class Histogram:
+    """ Represents a histogram on a single subplot.
 
     Attributes
     ----------
 
     axs : The class:`matplotlib.axes.Axes`
 
-        The Axes contains most of the figure elements
+        The Axes contains most of the figure elements.
     name : str
 
-        histogram name used in title.
+        Histogram name used in title.
     xlabel : str
 
-        distanse or angle unit
+        Distanse or angle unit.
     bins : int
 
-        number of bins
+        Number of bins.
     was_clicked_before : boolean
 
-        flag for checking is something was selected on a hist.
+        Flag for checking is something was selected on a hist.
     range_green_space : list
 
-        range of the 'green' surface
+        Range of the 'green' surface.
     data_included : list
 
-        data not excluded during selection
+        Data not excluded during selection.
     data_excluded : list
 
-        data in the range which was not selected
+        Data in the range which was not selected.
     color_exclude : str
 
-        the name of the color to the exclude histogram bar
+        The name of the color to the exclude histogram bar.
 
     current_xlim : tuple
 
-            current x limits of the histogram.
+            Current x limits of the histogram.
     patches : list
 
-        individual patches used to create the histogram
+        Individual patches used to create the histogram.
     """
     def __init__(self, axs, name, xlabel, data_to_histogram, colors, bins):
         """
@@ -51,23 +50,23 @@ class Histogram():
 
             axs : The class:`matplotlib.axes.Axes`
 
-                The Axes contains most of the figure elements
+                The Axes contains most of the figure elements.
             name : str
 
-                histogram name used in title.
+                Histogram name used in title.
             xlabel : str
 
-                distanse or angle unit
+                Distanse or angle unit.
             bins : int
 
-                number of bins
+                Number of bins.
             colors : dict
 
-                Colors of changing the bars in the histogram
+                Colors of changing the bars in the histogram.
             data_to_histogram : dict
 
-                Data for the histogram
-    """
+                Data for the histogram.
+        """
         self.name = name
         self.axs = axs
         self.bins = bins
@@ -120,15 +119,14 @@ class Histogram():
         self.current_xlim = self.axs.get_xlim()
 
     def reset(self):
-        """Restore the initial settings
+        """Restore the initial settings.
         """
         self.was_clicked_before = False
         self.range_green_space = [None, None]
         self.current_xlim = self.xlim
 
     def bool_crystal_exluded_green_space(self, data):
-        """
-        Method for checking if data is in the selection and if the
+        """Method for checking if data is in the selection and if the
         cristal will be included in the selection or not.
 
         Parametetrs
@@ -136,12 +134,12 @@ class Histogram():
 
         data : double
 
-            the value given to check if it belongs to the range of ​​interest
+            The value given to check if it belongs to the range of ​​interest.
 
         Returns
         -------
 
-        bolean value
+        Boolean value.
         """
         if self.range_green_space[0] is None or\
            self.range_green_space[1] is None:
@@ -160,10 +158,10 @@ class Histogram():
 
         minimum : double
 
-        left position the range of ​​interest
+            Left position the range of ​​interest.
         maximum : double
 
-        right position the range of ​​interest
+            Right position the range of ​​interest.
         """
         self.range_green_space = [minimum, maximum]
 
@@ -177,7 +175,13 @@ class Histogram():
                              facecolor='#2ca02c', alpha=0.5)
 
     def set_was_clicked_before(self, true_false):
-        """set flag was_clicked_before.
+        """Set flag was_clicked_before.
+
+        Parametetrs
+        -----------
+        true_false : boolean
+
+           value changing the flag was_clicked_before
         """
         self.was_clicked_before = true_false
 
@@ -193,18 +197,23 @@ class Histogram():
         ----------
         bins : int
 
-            number of bins
+            Number of bins.
         """
         self.bins = int(bins)
         # Dividing by 2 may give float number.
 
     def get_bins(self):
-        """get bins.
+        """Get bins.
         """
         return self.bins
 
     def set_name(self, name):
         """Changing the histogram name.
+        Parameters
+        ----------
+        name : str
+
+            The new name of the histogram.
         """
         self.name = name
 
@@ -216,7 +225,7 @@ class Histogram():
 
         data_to_histogram : dict
 
-            Data for the histogram
+            Data for the histogram.
         data_excluded : list
 
             Data excluded for the histogram.
@@ -244,14 +253,13 @@ class Histogram():
 
         colors : dict
 
-            Colors of changing the bars in the histogram
+            Colors of changing the bars in the histogram.
         """
         self.list_colors = [colors[color] for color in self.cryst_list]
         self.list_colors.append(self.color_exclude)
 
     def update_color(self):
-        """
-        Loop for each bin and updating colour for the next in colour loop.
+        """Loop for each bin and updating colour for the next in colour loop.
         """
 
         for patch_index in range(9):
@@ -259,8 +267,7 @@ class Histogram():
                 box.set_facecolor(self.list_colors[patch_index])
 
     def update(self):
-        """
-        Updates a single histogram.
+        """Updates a single histogram.
         """
         # Clear subplot
         self.axs.clear()
@@ -277,16 +284,35 @@ class Histogram():
         self.axs.set_xlim(self.current_xlim)
 
     def set_current_xlim(self, xlim):
-        """ set current x limits of the histogram.
+        """Set current x limits of the histogram.
+
+        Parameters
+        ----------
+
+        xlim : touple
+
+            The new x-axis limits.
         """
         self.current_xlim = xlim
 
     def get_current_xlim(self):
-        """get current x limits of the histogram.
+        """Get current x-axis limits of the histogram.
+
+        Returns
+        -------
+        xlim : touple
+
+            The x-axis limits of the histogram.
         """
         return self.axs.get_xlim()
 
     def get_current_ylim(self):
-        """get current y limits of the histogram.
+        """Get current y-axis limits of the histogram.
+
+        Returns
+        -------
+        ylim : touple
+
+            The y-axis limits of the histogram.
         """
         return self.axs.get_ylim()

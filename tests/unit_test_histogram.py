@@ -1,13 +1,13 @@
-import unittest
-import numpy
-from unittest.mock import patch, Mock
-import os
-import sys
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy
+import os
+import sys
+import unittest
+from unittest.mock import patch, Mock
+
+
 sys.path.insert(0, os.getcwd())
-
-
 import histogram
 
 
@@ -24,17 +24,15 @@ class TestHistogram(unittest.TestCase):
         self.ax_mock.hist.return_value = [None, None, self.patch]
         self.data = {'P': [1, 2, 3, 4, 5, 10], 'B': [2, 2, 3, 4, 4, 4],
                      'I': [6, 6, 5, 4, 5, 3], 'A': [1, 1, 1, 1]}
-        self.data_excluded = [6, 7, 8, 7, 6, 5]
         self.dict_color = {'P': 'gray', 'A': 'cyan', 'B': 'darkblue',
                            'C': 'royalblue', 'I': 'lime',
                            'F': "magenta", 'H': "firebrick", 'R': 'olive'}
         self.title = "test_hist"
         self.xlabel = "test_label"
-        self.hist = histogram.Histogram(axs=self.ax_mock, title=self.title,
-                                        xlabel=self.xlabel,
+        self.hist = histogram.Histogram(axs=self.ax_mock, xlabel=self.xlabel,
                                         data_to_histogram=self.data,
-                                        data_excluded=self.data_excluded,
-                                        colors=self.dict_color, bins=10)
+                                        colors=self.dict_color,
+                                        bins=10, name=self.title)
 
     def tearDown(self):
         self.fig.reset_mock()
@@ -48,21 +46,20 @@ class TestHistogram(unittest.TestCase):
 
     def test_hist(self):
         assert self.ax_mock.hist.called
-        self.ax_mock.hist.assert_called_with(alpha=0.9, bins=10, color=['gray',
-                                             'cyan', 'darkblue', 'royalblue',
-                                             'lime', 'magenta', 'firebrick',
-                                             'olive', 'lightgray'],
-                                             histtype='stepfilled',
-                                             density=1, range=(1, 10),
-                                             stacked=True, x=[[1, 2, 3, 4, 5, 10],
-                                             [1, 1, 1, 1], [2, 2, 3, 4, 4, 4], [],
-                                        [6, 6, 5, 4, 5, 3], [], [], [],
-                                        [6, 7, 8, 7, 6, 5]])
+        self.ax_mock.hist.assert_called_with(
+            alpha=0.9, bins=10, density=1,
+            color=['gray', 'cyan', 'darkblue', 'royalblue', 'lime',
+                   'magenta', 'firebrick', 'olive', 'lightgray'],
+            histtype='stepfilled', range=(1, 10),
+            stacked=True, x=[[1, 2, 3, 4, 5, 10], [1, 1, 1, 1],
+                             [2, 2, 3, 4, 4, 4], [], [6, 6, 5, 4, 5, 3],
+                             [], [], [], []])
         self.assertEqual(self.patch, self.hist.patches)
         assert self.ax_mock.get_xlim.called
 
     def test_bool_crystal_exluded_green_space(self):
-        self.assertEqual(self.hist.bool_crystal_exluded_green_space(1111), False)
+        self.assertEqual(self.hist.bool_crystal_exluded_green_space(1111),
+                         False)
         self.hist.range_green_space = [0, 2]
         self.assertEqual(self.hist.bool_crystal_exluded_green_space(3), True)
         self.hist.range_green_space = [None, None]
@@ -94,9 +91,9 @@ class TestHistogram(unittest.TestCase):
         self.hist.set_bins(22)
         self.assertEqual(self.hist.bins, 22)
 
-    def test_set_title(self):
-        self.hist.set_title("New title")
-        self.assertEqual(self.hist.title, "New title")
+    def test_set_name(self):
+        self.hist.set_name("New title")
+        self.assertEqual(self.hist.name, "New title")
 
     def test_set_data(self):
         self.data = {'P': [2, 3, 4, 5], 'A': [3, 4, 5, 6, 6]}

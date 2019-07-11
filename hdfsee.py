@@ -1,5 +1,4 @@
-"""
-Main module for running code.
+"""Main module for running code.
 
 Creates image from a ndarray, arranges the panels,
 refreshes (updates) the image and adds widgets.
@@ -15,32 +14,58 @@ import sys
 import cfelpyutils.crystfel_utils as c
 import cfelpyutils.geometry_utils as g
 
-import panel
 import data
+import panel
 import peak_h5
-from widget import ContrastSlider, Radio
-from bttn_peak import PeakButton
+from stream_read import search_peaks
+from widget import ContrastSlider, PeakButton, Radio
 
 
 # Creating arguments for parsing.
 
-class Image():
-    """
-    Class for the main image.
-    fig - object class matplotlib.figure:
-          here subplots and widgets will be added.
-    ax - matplotlib.pyplot.subplot for displaying image and updating with
-         the widget.
-    vmax - for contrast.
-    vmin - for contrast.
-    cmap - colour mappings.
-    matrix - Array filled with data from the panels.
-    image - returned by matplotlib imshow.
-    peaks - list containing peak objects from 'peak_h5' module.
-    bad_places - list containing 'bad places' from 'panel' module.
-    axis_list - list of matplotlib.pyplot.axes objects for locations of the
-                buttons.
-    list_active_peak - Flags list showing which type of peaks were selected.
+class Image:
+    """Class for the main image.
+
+    Attributes
+    ----------
+    fig : The class:`matplotlib.figure.Figure`.
+
+        The Figure which will be redraw
+    ax : The class:`matplotlib.axes.Axes`
+
+            The Axes contains most of the figure elements
+    vmax : int
+
+        max value for contrast.
+    vmin : int
+
+        min value for contrast.
+    cmap : Python unicode str (on py3).
+
+        Colormap name used to map scalar data to colors.
+    matrix : numpy.array
+
+        The image data filled with data from the panels.
+    image : The class `matplotlib.image.AxesImage`
+
+        The image module supports basic rescaling and display operations.
+        Returned by matplotlib imshow.
+    peaks : list
+
+        Containing peak objects from 'peak_h5' module.
+    detectors : dict
+
+        Containing Detector object from 'panel' module.
+    bad_places : list
+
+        Containing BadRegion object from 'panel' module.
+    axis_list : list
+
+        List of matplotlib.pyplot.axes objects for locations of the
+        buttons.
+    list_active_peak : list
+
+        Flags list showing which type of peaks were selected.
     """
     PARSER = argparse.ArgumentParser()
     PARSER.add_argument('filename', nargs=1, metavar="name.H5",
@@ -82,19 +107,17 @@ class Image():
         GEOM = c.load_crystfel_geometry(FILE_GEOM_NAME)
         # Dictionary with information about the image: panels, bad places.
         # Tuple for the minimal images size.
-        SIZE_OBRAZ = g.compute_min_array_size(g.compute_pix_maps(GEOM))
+        IMAGE_SIZE = g.compute_min_array_size(g.compute_pix_maps(GEOM))
     except FileNotFoundError:
         print("Error while opening geometry file.")
         sys.exit()
     except TypeError:
         # No geometry file was provided.
-        SIZE_OBRAZ = None
+        IMAGE_SIZE = None
 
     def __init__(self):
+        """Method for initializing image and checking options how to run code.
         """
-        Method for initializing image and checking options how to run code.
-        """
-
         # Dictionary containing panels and peaks info from the h5 file.
         self.dict_witch_data = data.get_diction_data(Image.FILE_H5_NAME)
 
@@ -124,7 +147,7 @@ class Image():
         # dispaly without laying the panels
         if Image.WHICH_ARGUMNENT_IS_USED['display_only_file']:
             # Just the image from file with no buttons or reconstruction.
-            self.matrix = data.np.copy(self.dict_witch_data["Paneles"])
+            self.matrix = data.np.copy(self.dict_witch_data["Panels"])
             # Rotating to get the same image as CrystFEL hdfsee.
             self.matrix = self.matrix[::-1, :]
             # Creating the image with imshow().
@@ -133,8 +156,8 @@ class Image():
             # Slider position.
             axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                    ax=axes, label="Kontrast", vmin=self.vmin,
-                                    vmax=self.vmax)
+                                         ax=axes, label="Kontrast",
+                                         vmin=self.vmin, vmax=self.vmax)
             # Radio (?) position.
             # Position RadioButton
             axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
@@ -149,8 +172,8 @@ class Image():
             # Slider position.
             axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                    ax=axes, label="Kontrast", vmin=self.vmin,
-                                    vmax=self.vmax)
+                                         ax=axes, label="Kontrast",
+                                         vmin=self.vmin, vmax=self.vmax)
             # Radio position.
             axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
             # Radio button.
@@ -166,11 +189,11 @@ class Image():
             # Only one button for showing peaks from h5 file.
             self.peakbtn =\
                 PeakButton(fig=self.fig, peaks=self.peaks, matrix=self.matrix,
-                          title=Image.FILE_H5_NAME, axis_list=self.axis_list,
-                          radio=self.radio, slider=self.slider,
-                          list_active_peak=self.list_active_peak,
-                          axs=self.ax, detectors=self.detectors,
-                          ax=self.axis_list[0], label='cheetah peaks on/off')
+                           title=Image.FILE_H5_NAME, axis_list=self.axis_list,
+                           radio=self.radio, slider=self.slider,
+                           list_active_peak=self.list_active_peak,
+                           axs=self.ax, detectors=self.detectors,
+                           ax=self.axis_list[0], label='cheetah peaks on/off')
             # For displaying peaks from stream file.
             if Image.WHICH_ARGUMNENT_IS_USED['dispaly_with_peaks']:
                 # Additional buttons for switching on/off
@@ -184,48 +207,49 @@ class Image():
                 # they are under line 'Peaks from peak search'
                 self.peakbtn2 =\
                     PeakButton(fig=self.fig, peaks=self.peaks,
-                              matrix=self.matrix, title=Image.FILE_H5_NAME,
-                              axis_list=self.axis_list, radio=self.radio,
-                              slider=self.slider,
-                              list_active_peak=self.list_active_peak,
-                              axs=self.ax, detectors=self.detectors,
-                              ax=self.axis_list[1],
-                              label='CrystFEL_peak on/off')
+                               matrix=self.matrix, title=Image.FILE_H5_NAME,
+                               axis_list=self.axis_list, radio=self.radio,
+                               slider=self.slider,
+                               list_active_peak=self.list_active_peak,
+                               axs=self.ax, detectors=self.detectors,
+                               ax=self.axis_list[1],
+                               label='CrystFEL_peak on/off')
 
                 self.axis_list[2] = plt.axes([.90, 0.35, 0.09, 0.08],
                                              facecolor='yellow')
                 self.peakbtn3 =\
                     PeakButton(fig=self.fig, peaks=self.peaks,
-                              matrix=self.matrix, title=Image.FILE_H5_NAME,
-                              axis_list=self.axis_list, radio=self.radio,
-                              slider=self.slider,
-                              list_active_peak=self.list_active_peak,
-                              axs=self.ax, detectors=self.detectors,
-                              ax=self.axis_list[2],
-                              label='CrystFEL_near_bragg_peak on/off')
+                               matrix=self.matrix, title=Image.FILE_H5_NAME,
+                               axis_list=self.axis_list, radio=self.radio,
+                               slider=self.slider,
+                               list_active_peak=self.list_active_peak,
+                               axs=self.ax, detectors=self.detectors,
+                               ax=self.axis_list[2],
+                               label='CrystFEL_near_bragg_peak on/off')
         # Display the image:
         plt.show()
 
     def display_arrangment_view(self):
-        """
-        Creating the image filled with ones (?) and applies bad pixel mask (?).
+        """Creating the image filled with ones (?) and applies bad pixel mask (?).
         Then adds panels (?).
         """
         # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = panel.np.ones(Image.SIZE_OBRAZ)
+        self.matrix = panel.np.ones(Image.IMAGE_SIZE)
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
+        peaks_search, peaks_reflections =\
+            search_peaks(Image.FILE_STREAM_NAME,
+                         Image.FILE_H5_NAME)
         self.detectors =\
-            panel.get_diction_detectors(self.dict_witch_data["Paneles"],
-                                        Image.SIZE_OBRAZ, Image.GEOM,
-                                        Image.FILE_STREAM_NAME,
-                                        Image.FILE_H5_NAME)
+            panel.get_detectors(self.dict_witch_data["Panels"],
+                                Image.IMAGE_SIZE, Image.GEOM, peaks_search,
+                                peaks_reflections)
         # Creating a peak list from the h5 file.
         self.peaks = peak_h5.get_list_peaks(self.dict_witch_data["Peaks"],
-                                            Image.SIZE_OBRAZ)
+                                            Image.IMAGE_SIZE)
         # Creating a bad pixel mask (?).
-        self.bad_places = panel.get_diction_bad_places(Image.SIZE_OBRAZ,
-                                                       Image.GEOM)
+        self.bad_places = panel.bad_places(Image.IMAGE_SIZE,
+                                           Image.GEOM)
         # Arranging the panels.
         self.arrangement_panels()
         # Masking the bad pixels (?).
@@ -235,9 +259,19 @@ class Image():
                                 vmin=self.vmin, animated=True)
 
     def set_panel_in_view(self, detector):
-        """
-        Positions (?) the detector in the right place on the matrix.
+        """Positions (?) the detector in the right place on the matrix.
         Changes the 1 values to the correct pixel value.
+
+        Parameters
+        ----------
+        detector : The: class Detectror object
+
+            Detector which has been set in the image.
+
+        Raises
+        ------
+        ValueError
+            If wrong panel position.
         """
         # Trying to reposition the panels.
         try:
@@ -251,8 +285,18 @@ class Image():
             print(detector.position)
 
     def set_bad_place_in_view(self, bad_place):
-        """
-        Copying the bad pixel ranges to the image.
+        """Copying the bad pixel ranges to the image.
+
+        Parameters
+        ----------
+        bad_place : The: class BadRegion object
+
+            BadRegion which has been set in the image.
+
+        Raises
+        ------
+        ValueError
+            If wrong bad_place position.
         """
         try:
             self.matrix[bad_place.max_y: bad_place.max_y + bad_place.shape[0],
@@ -263,8 +307,7 @@ class Image():
             print(bad_place.name, bad_place.printer())
 
     def arrangment_bad_places(self):
-        """
-        Iterates through each bad pixel (?) region and positions it to the
+        """Iterates through each bad pixel (?) region and positions it to the
         correct place on the image.
         """
         for name_bad_place in self.bad_places:
@@ -272,8 +315,7 @@ class Image():
             self.set_bad_place_in_view(bad_place)
 
     def arrangement_panels(self):
-        """
-        Iterates through each detector (?) and positions them.
+        """Iterates through each detector (?) and positions them.
         """
         for key in self.detectors:
             detector = self.detectors[key]

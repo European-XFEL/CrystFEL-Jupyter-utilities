@@ -1,14 +1,13 @@
-import unittest
-from unittest.mock import patch, Mock
 import os
 import sys
+import unittest
+from unittest.mock import patch, Mock
 
 sys.path.insert(0, os.getcwd())
+from widget import CenteringButton
 
-from widget import Bttn
 
-
-class Test_Bttn(unittest.TestCase):
+class Test_CenteringButton(unittest.TestCase):
     @patch('histogram.Histogram')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')
@@ -18,12 +17,13 @@ class Test_Bttn(unittest.TestCase):
         self.axs = Mock_axs()
         self.label = "test_label"
         self.list_color = ["green", "red", "pink"]
-        self.dict_color_histogram = {"P": "yellow", "A": "yellow"}
+        self.histogram_colors = {"P": "yellow", "A": "yellow"}
         self.histogram_list = [Mock_hist(), Mock_hist(), Mock_hist]
-        self.bttn = Bttn(fig=self.fig, axs=self.axs, label=self.label,
-                         list_color=self.list_color,
-                         histogram_list=self.histogram_list,
-                         dict_color_histogram=self.dict_color_histogram)
+        self.bttn = CenteringButton(fig=self.fig, axs=self.axs,
+                                    label=self.label,
+                                    list_color=self.list_color,
+                                    histogram_list=self.histogram_list,
+                                    histogram_colors=self.histogram_colors)
 
     @patch('matplotlib.backend_bases.Event')
     def test_on_check(self, Mock_event):
