@@ -7,6 +7,7 @@ refreshes (updates) the image and adds widgets.
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
+import re
 import sys
 # Module for parsing geometry file
 import cfelpyutils.crystfel_utils as c
@@ -116,31 +117,30 @@ class ImageCxi:
         """
         self.panels = {}
         peaks = self.__peak_search(self.streamfile, str(self.event))
-        for i in range(16):
-            for j in range(8):
-                name = str("p{}a{}".format(i, j))
-                panel = Detector(name=name, image_size=image_size,
-                                 corner_x=geom["panels"][name]["cnx"],
-                                 corner_y=geom["panels"][name]["cny"],
-                                 min_fs=geom["panels"][name]["min_fs"],
-                                 min_ss=geom["panels"][name]["min_ss"],
-                                 max_fs=geom["panels"][name]["max_fs"],
-                                 max_ss=geom["panels"][name]["max_ss"],
-                                 xfs=geom["panels"][name]["xfs"],
-                                 yfs=geom["panels"][name]["yfs"],
-                                 xss=geom["panels"][name]["xss"],
-                                 yss=geom["panels"][name]["yss"],
-                                 data=self.raw_data[i])
+        for name in geom['panels']:
+            idx = int(re.findall('\d+', name)[0])
+            panel = Detector(name=name, image_size=image_size,
+                                corner_x=geom["panels"][name]["cnx"],
+                                corner_y=geom["panels"][name]["cny"],
+                                min_fs=geom["panels"][name]["min_fs"],
+                                min_ss=geom["panels"][name]["min_ss"],
+                                max_fs=geom["panels"][name]["max_fs"],
+                                max_ss=geom["panels"][name]["max_ss"],
+                                xfs=geom["panels"][name]["xfs"],
+                                yfs=geom["panels"][name]["yfs"],
+                                xss=geom["panels"][name]["xss"],
+                                yss=geom["panels"][name]["yss"],
+                                data=self.raw_data[idx])
                 # some panels haven't peaks
-                try:
-                    panel.peaks_search = peaks[0][name]
-                except:
-                    pass
-                try:
-                    panel.peaks_reflection = peaks[1][name]
-                except:
-                    pass
-                self.panels[name] = panel
+            try:
+                panel.peaks_search = peaks[0][name]
+            except:
+                pass
+            try:
+                panel.peaks_reflection = peaks[1][name]
+            except:
+                pass
+            self.panels[name] = panel
 
     def __arrangement_panels(self):
         """Arranging panels in the image.
