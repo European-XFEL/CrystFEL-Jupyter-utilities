@@ -429,7 +429,7 @@ class ContrastSlider(Slider):
         self.vmax = vmax
         self.vmin = vmin
         # Initialize parent constructor.
-        super(ContrastSlider, self).__init__(ax, label, vmin, 600, valinit=255)
+        super(ContrastSlider, self).__init__(ax, label, vmin, vmax, valinit=int((vmax+vmin)/2))
         # On click reaction.
         super(ContrastSlider, self).on_changed(self.on_check)
 
@@ -441,8 +441,7 @@ class ContrastSlider(Slider):
         ----------
         event : The class:`matplotlib.backend_bases.Event`.
         """
-        self.vmax = event
-        self.image.set_clim(vmax=self.vmax)
+        self.image.set_clim(vmax=event)
         self.fig.canvas.draw()
 
     def set_image(self, image):
