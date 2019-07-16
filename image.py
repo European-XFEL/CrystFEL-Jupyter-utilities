@@ -166,10 +166,11 @@ class ImageCxi:
                 print("Wrong geomfile!!!")
                 sys.exit()
         # creat panels
-        self.__panels_create(geom=self.geom, image_size=(1260, 1099))
+        kolumns, rows = self.find_image_size(self.geom)
+        self.__panels_create(geom=self.geom, image_size=(int(np.ceil(rows)), int(np.ceil(kolumns))))
         # creat numpy array for imshow
         # all pixel are np.nan
-        self.matrix = np.empty((1260, 1099))*np.nan
+        self.matrix = np.empty((int(np.ceil(rows)), int(np.ceil(kolumns))))*np.nan
         # I arrange the panels on the image
         self.__arrangement_panels()
         # creat imshow image with pixel array
@@ -232,3 +233,98 @@ class ImageCxi:
         except OSError:
             print("Error opening the file ")
             sys.exit()
+
+    def local_range(self, panel):
+        """Calculates the location of the two extreme corners of the panel.
+
+        Parameters
+        ----------
+        panel : dict
+
+            A CrystFEL geometry data for panel.
+
+        Returns
+        -------
+        (local_xmin, local_xmax, local_ymin, local_ymax) : tuple
+
+            The location of the two extreme corners of the panel.
+        """
+        if np.abs(panel['xfs']) < np.abs(panel['xss']) and \
+            np.abs(panel['yfs']) > np.abs(panel['yss']):
+            if panel['xss'] > 0 and panel['yfs'] < 0:
+
+                #After rotation along y=x
+                local_xmax = panel['cnx']
+                local_ymin = panel['cny']
+                local_xmin = panel['cnx'] - panel['max_ss'] + panel['min_ss'] - 1
+                local_ymax = panel['cny'] + panel['max_fs'] - panel['min_fs'] + 1
+
+            elif panel['xss'] < 0 and panel['yfs'] > 0:
+
+                #After rotation along y=-x
+                local_xmin = panel['cnx']
+                local_ymax = panel['cny']
+                local_xmax = panel['cnx'] + panel['max_ss'] - panel['min_ss'] + 1
+                local_ymin = panel['cny'] - panel['max_fs'] + panel['min_fs'] - 1
+        elif np.abs(panel['xfs']) > np.abs(panel['xss']) and \
+                np.abs(panel['yfs']) < np.abs(panel['yss']):
+            if panel['xfs'] < 0 and panel['yss'] < 0:
+
+                # After rotation along y-axis, 
+                local_xmax = panel['cnx']
+                local_ymax = panel['cny']
+                local_xmin = panel['cnx'] - panel['max_fs'] + panel['min_fs'] - 1
+                local_ymin = panel['cny'] - panel['max_ss'] + panel['min_s'] - 1
+
+            elif panel['xfs'] > 0 and panel['yss'] > 0:
+
+                # After rotation along x-axis, 
+                local_xmin = panel['cnx']
+                local_ymin = panel['cny']
+                local_xmax = panel['cnx'] + panel['max_fs'] - panel['min_fs'] + 1
+                local_ymax = panel['cny'] + panel['max_ss'] - panel['min_ss'] + 1
+        
+        return (local_xmin, local_xmax, local_ymin, local_ymax)
+
+    def find_image_size(self, geom):
+        """Finds a matrix size that allows you to hold all the panels.
+
+        Parameters
+        ----------
+        geom : dict
+
+            Dictionary with the geometry information loaded from the geomfile.
+
+        Returns
+        -------
+        (kolumns, rows) : tuple
+
+            Matrix size used in imshow.
+        """
+        # current lenght and height.
+        x_min = x_max = y_min = y_max = 0
+
+        # I am looking for the most remote panel points.
+        for name in geom["panels"]:
+            local_xmin, local_xmax, local_ymin, local_ymax = self.local_range(geom["panels"][name])
+            if local_xmax > x_max:
+                x_max = local_xmax
+            elif local_xmin < x_min:
+                x_min = local_xmin
+            if local_ymax > y_max:
+                y_max = local_ymax
+            elif local_ymin < y_min:
+                y_min = local_ymin
+
+        # The number of columns is equal to the farthest point in x-axis.
+        if np.abs(x_max) > np.abs(x_min):
+            kolumns = 2*np.abs(x_max)
+        else:
+            kolumns = 2*np.abs(x_min)
+        # The number of columns is equal to the farthest point in y-axis.
+        if np.abs(y_max) > np.abs(y_min):
+            rows = 2*np.abs(y_max)
+        else:
+            rows = 2*np.abs(y_min)
+        
+        return(kolumns, rows)
