@@ -142,9 +142,19 @@ class ImageCxi:
                 pass
             self.panels[name] = panel
 
-    def __arrangement_panels(self):
+    def __arrangement_panels(self, center_x, center_y):
         """Arranging panels in the image.
+
+        Parameters
+        ----------
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         """
+
         for name in self.panels:
             panel = self.panels[name]
             try:
@@ -152,7 +162,7 @@ class ImageCxi:
                             panel.array.shape[0],
                             panel.position[1]: panel.position[1] +
                             panel.array.shape[1]] = \
-                                panel.get_array_rotated()
+                                panel.get_array_rotated(center_x, center_y)
             except:
                 print("Wrong panel position: {}".format(panel.name))
 
@@ -166,13 +176,13 @@ class ImageCxi:
                 print("Wrong geomfile!!!")
                 sys.exit()
         # creat panels
-        kolumns, rows = self.find_image_size(self.geom)
-        self.__panels_create(geom=self.geom, image_size=(int(np.ceil(rows)), int(np.ceil(kolumns))))
+        kolumns, rows, center_x, center_y = self.find_image_size(self.geom)
+        self.__panels_create(geom=self.geom, image_size=(rows, kolumns))
         # creat numpy array for imshow
         # all pixel are np.nan
-        self.matrix = np.empty((int(np.ceil(rows)), int(np.ceil(kolumns))))*np.nan
+        self.matrix = np.empty((rows, kolumns))*np.nan
         # I arrange the panels on the image
-        self.__arrangement_panels()
+        self.__arrangement_panels(center_x, center_y)
         # creat imshow image with pixel array
         self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
                                     vmin=self.range[0], vmax=self.range[1])
@@ -297,9 +307,10 @@ class ImageCxi:
 
         Returns
         -------
-        (kolumns, rows) : tuple
+        (kolumns, rows,  center_x, center_y) : tuple
 
-            Matrix size used in imshow.
+            kolumns, rows : Matrix size used in imshow.
+            center_x, center_y : Displacement of centre.
         """
         # current lenght and height.
         x_min = x_max = y_min = y_max = 0
@@ -316,15 +327,17 @@ class ImageCxi:
             elif local_ymin < y_min:
                 y_min = local_ymin
 
-        # The number of columns is equal to the farthest point in x-axis.
-        if np.abs(x_max) > np.abs(x_min):
-            kolumns = 2*np.abs(x_max)
-        else:
-            kolumns = 2*np.abs(x_min)
-        # The number of columns is equal to the farthest point in y-axis.
-        if np.abs(y_max) > np.abs(y_min):
-            rows = 2*np.abs(y_max)
-        else:
-            rows = 2*np.abs(y_min)
-        
-        return(kolumns, rows)
+        # The number of columns.
+        kolumns = x_max - x_min
+        # The number of rows.
+        rows = y_max - y_min
+
+        # Displacement of centre.
+        center_y = -int(x_max-kolumns/2)
+        center_x = int(y_max-rows/2)
+        # add 10 as a stock and round up.
+        # conversion to integer.
+        rows = int(np.ceil(rows+10))
+        kolumns = int(np.ceil(kolumns+10))
+
+        return(kolumns, rows, center_x, center_y)
