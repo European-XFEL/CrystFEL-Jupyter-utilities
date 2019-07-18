@@ -19,9 +19,9 @@ class Test_Stream_read(unittest.TestCase):
                                    [+0.0115679, +0.0777724, -0.0235210],
                                    [+0.0019407, +0.0171354, +0.0576783]]))
         array = np.linalg.inv(array)
-        self.a = np.linalg.norm(array[0, :])
-        self.b = np.linalg.norm(array[1, :])
-        self.c = np.linalg.norm(array[2, :])
+        self.a = np.linalg.norm(array[0, :])*10
+        self.b = np.linalg.norm(array[1, :])*10
+        self.c = np.linalg.norm(array[2, :])*10
         mod1 = np.linalg.norm(array[0, :])
         mod2 = np.linalg.norm(array[1, :])
         mod3 = np.linalg.norm(array[2, :])
