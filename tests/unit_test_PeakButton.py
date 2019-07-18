@@ -7,10 +7,10 @@ import unittest
 from unittest.mock import patch, Mock
 
 sys.path.insert(0, os.getcwd())
-import bttn_peak
+from widget import PeakButton
 
 
-class Test_bttn_peak(unittest.TestCase):
+class Test_PeakButton(unittest.TestCase):
     @patch('stream_read.PeakSearch')
     @patch("stream_read.PeakReflections")
     @patch('peak_h5.Peak')
@@ -53,7 +53,7 @@ class Test_bttn_peak(unittest.TestCase):
                            self.mock_peak]
         self.axis_list = [self.Mock_ax(), self.Mock_ax(), self.Mock_ax()]
         self.matrix = numpy.ones((2, 3))
-        self.bttn = bttn_peak.PeakButton(
+        self.bttn = PeakButton(
             fig=self.mock_fig, axs=self.mock_axs, matrix=self.matrix,
             ax=self.mock_ax, label=self.label, axis_list=self.axis_list,
             list_active_peak=self.list_active_mock_peak,
