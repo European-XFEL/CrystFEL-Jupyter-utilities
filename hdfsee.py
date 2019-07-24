@@ -8,6 +8,7 @@ refreshes (updates) the image and adds widgets.
 # avoid displaying the same image all over again in jupyter notebook.
 import argparse
 import matplotlib.pyplot as plt
+import numpy as np
 import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
@@ -147,7 +148,7 @@ class Image:
         # dispaly without laying the panels
         if Image.WHICH_ARGUMNENT_IS_USED['display_only_file']:
             # Just the image from file with no buttons or reconstruction.
-            self.matrix = data.np.copy(self.dict_witch_data["Panels"])
+            self.matrix = np.copy(self.dict_witch_data["Panels"])
             # Rotating to get the same image as CrystFEL hdfsee.
             self.matrix = self.matrix[::-1, :]
             # Creating the image with imshow().
@@ -234,7 +235,7 @@ class Image:
         Then adds panels (?).
         """
         # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = panel.np.ones(Image.IMAGE_SIZE)
+        self.matrix = np.ones(Image.IMAGE_SIZE)
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
         peaks_search, peaks_reflections =\
