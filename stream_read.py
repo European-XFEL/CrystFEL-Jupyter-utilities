@@ -50,10 +50,8 @@ def cell_parameters(astar, bstar, cstar):
         # magnitude of a vector x2
         mod2 = np.linalg.norm(x2)
         cosine = (np.sum(x1*x2)) / (mod1*mod2)
-        if (cosine > 1.0):
-            cosine = 1.0
-        if (cosine < -1.0):
-            cosine = -1.0
+        # Clip (limit) the value.
+        cosine = np.clip(cosine, -1, 1)
 
         # angle in degrees
         return np.rad2deg(np.arccos(cosine))
