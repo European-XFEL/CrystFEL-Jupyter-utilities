@@ -67,7 +67,7 @@ class Histogram:
 
                 Data for the histogram.
         """
-        self.__name = name
+        self.name = name
         self.axs = axs
         self.__bins = bins
         self.xlabel = xlabel
@@ -116,15 +116,15 @@ class Histogram:
         # y height is in the second column.
         # Drawing the grid:
         self.axs.grid(True)
-        self.xlim = self.axs.get_xlim()
+        self.__xlim = self.axs.get_xlim()
         self.__current_xlim = self.axs.get_xlim()
 
     def reset(self):
         """Restore the initial settings.
         """
-        self.was_clicked_before = False
-        self.range_green_space = None, None
-        self.__current_xlim = self.xlim
+        self.__was_clicked_before = False
+        self.__range_green_space = None, None
+        self.__current_xlim = self.__xlim
 
     def bool_crystal_exluded_green_space(self, data):
         """Method for checking if data is in the selection and if the
@@ -142,11 +142,11 @@ class Histogram:
 
         Boolean value.
         """
-        if self.range_green_space[0] is None or\
-           self.range_green_space[1] is None:
+        if self.__range_green_space[0] is None or\
+           self.__range_green_space[1] is None:
             return False
-        elif data < self.range_green_space[0] or\
-                data > self.range_green_space[1]:
+        elif data < self.__range_green_space[0] or\
+                data > self.__range_green_space[1]:
             return True
 
         return False
@@ -171,10 +171,10 @@ class Histogram:
     def draw_green_space(self):
         """Draw the range of ​​interest ('green')
         """
-        if self.range_green_space[0] is not None or\
-           self.range_green_space[1] is not None:
-            self.axs.axvspan(self.range_green_space[0],
-                             self.range_green_space[1],
+        if self.__range_green_space[0] is not None or\
+           self.__range_green_space[1] is not None:
+            self.axs.axvspan(self.__range_green_space[0],
+                             self.__range_green_space[1],
                              facecolor='#2ca02c', alpha=0.5)
 
     @property
@@ -214,23 +214,6 @@ class Histogram:
         """
         self.__bins = int(bins)
         # Dividing by 2 may give float number.
-
-    @property
-    def name(self):
-        """Get histogram name.
-        """
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        """Changing the histogram name.
-        Parameters
-        ----------
-        name : str
-
-            The new name of the histogram.
-        """
-        self.__name = name
 
     @property
     def list_colors(self):
