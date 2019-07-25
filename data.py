@@ -1,8 +1,19 @@
 """Module for creating functions on h5 files.
 """
+import logging
+import sys
 import h5py
 import numpy as np
-import sys
+
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+# create formatter and add it to the handlers
+formatter = logging.Formatter(
+    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+ch.setFormatter(formatter)
+# add the handlers to logger
+LOGGER.addHandler(ch)
 
 
 def list_datasets(dictionary, list_dataset):
@@ -73,7 +84,7 @@ def get_data_peaks(list_dataset):
     for dataset in list_dataset[::-1]:
         if dataset.name == "/processing/hitfinder/peakinfo-assembled":
             return dataset
-    print("lack Dataset /processing/hitfinder/peakinfo-assembled \
+    LOGGER.warning("Missing Dataset /processing/hitfinder/peakinfo-assembled \
 containing peaki cheetah")
 
 
@@ -101,8 +112,7 @@ def get_data_image(list_dataset):
         # we return the first datata with shape = 2
         if len(dataset.shape) == 2:
             return dataset
-    print("There is no data representing panels in the h5 file")
-    sys.exit()
+    raise Exception("There is no data representing panels in the h5 file")
 
 
 def get_diction_data(file):
@@ -137,5 +147,9 @@ def get_diction_data(file):
             dictionary = {"Panels": data, "Peaks": peaks}
             return dictionary
     except OSError:
-        print("Error opening the file H5")
+        LOGGER.critical("Error opening the file H5")
+        sys.exit()
+    except Exception:
+        exc_value = sys.exc_info()[1]
+        LOGGER.critical(str(exc_value))
         sys.exit()
