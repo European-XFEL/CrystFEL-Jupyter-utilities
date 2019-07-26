@@ -73,7 +73,7 @@ def get_data_peaks(list_dataset):
     for dataset in list_dataset[::-1]:
         if dataset.name == "/processing/hitfinder/peakinfo-assembled":
             return dataset
-    print("lack Dataset /processing/hitfinder/peakinfo-assembled \
+    print("Missing Dataset /processing/hitfinder/peakinfo-assembled \
 containing peaki cheetah")
 
 
