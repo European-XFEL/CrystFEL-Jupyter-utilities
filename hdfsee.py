@@ -7,13 +7,14 @@ refreshes (updates) the image and adds widgets.
 # Module for parsing command line arguments had to be moved here to
 # avoid displaying the same image all over again in jupyter notebook.
 import argparse
-import matplotlib.pyplot as plt
-import numpy as np
+import logging
 import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
 import cfelpyutils.crystfel_utils as c
 import cfelpyutils.geometry_utils as g
+import matplotlib.pyplot as plt
+import numpy as np
 
 import data
 import panel
@@ -22,7 +23,20 @@ from stream_read import search_peaks
 from widget import ContrastSlider, PeakButton, Radio
 
 
-# Creating arguments for parsing.
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+# create formatter and add it to the handlers
+formatter = logging.Formatter(
+    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+ch.setFormatter(formatter)
+# add the handlers to logger
+LOGGER.addHandler(ch)
+LOGGER.setLevel("INFO")
+
 
 class Image:
     """Class for the main image.
@@ -68,6 +82,7 @@ class Image:
 
         Flags list showing which type of peaks were selected.
     """
+    # Creating arguments for parsing.
     PARSER = argparse.ArgumentParser()
     PARSER.add_argument('filename', nargs=1, metavar="name.H5",
                         help='Display this image.')
@@ -99,7 +114,8 @@ class Image:
     # Image file without geometry.
     else:
         if ARGS.peaks:
-            print('Displaying panels without geometry reconstruction.')
+            LOGGER.warning(
+                'Displaying panels without geometry reconstruction.')
         FILE_STREAM_NAME = None
         FILE_GEOM_NAME = None
         WHICH_ARGUMNENT_IS_USED['display_only_file'] = True
@@ -110,7 +126,7 @@ class Image:
         # Tuple for the minimal images size.
         IMAGE_SIZE = g.compute_min_array_size(g.compute_pix_maps(GEOM))
     except FileNotFoundError:
-        print("Error while opening geometry file.")
+        LOGGER.critical("Error while opening geometry file.")
         sys.exit()
     except TypeError:
         # No geometry file was provided.
@@ -281,9 +297,10 @@ class Image:
                         detector.position[1]: detector.position[1] +
                         detector.array.shape[1]] = detector.get_array_rotated()
         except ValueError:
-            print("Wrong panel position: ", end="")
-            print(detector.name, end="Position:  ")
-            print(detector.position)
+            text = " ".join(["Wrong panel position",
+                             "{}, Position: {}".format(detector.name,
+                                                       detector.position)])
+            LOGGER.warning(text)
 
     def set_bad_place_in_view(self, bad_place):
         """Copying the bad pixel ranges to the image.
@@ -304,8 +321,7 @@ class Image:
                         bad_place.min_x: bad_place.min_x +
                         bad_place.array.shape[1]] = bad_place.get_array()
         except ValueError:
-            print("Wrong position: ", end="")
-            print(bad_place.name, bad_place.printer())
+            LOGGER.warning("Wrong mask position: {}".format(bad_place.name))
 
     def arrangment_bad_places(self):
         """Iterates through each bad pixel (?) region and positions it to the
