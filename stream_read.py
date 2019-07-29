@@ -1,7 +1,23 @@
 """Module for parsing indexing stream file produced by CrystFEL indexamajig.
 """
-import numpy as np
+import logging
 import sys
+
+import numpy as np
+
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+# create formatter and add it to the handlers
+formatter = logging.Formatter(
+    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+ch.setFormatter(formatter)
+# add the handlers to logger
+LOGGER.addHandler(ch)
+LOGGER.setLevel("INFO")
 
 
 def cell_parameters(astar, bstar, cstar):
@@ -139,8 +155,8 @@ def search_crystals_parameters(file_name):
                     if ((not flags["begin_crystal"]) and flags["name"]):
                         flags["begin_crystal"] = True
                     else:
-                        print("Error: duplicate data.")
-                        print(name)
+                        LOGGER.warning(
+                            "Error: duplicate data {}.".format(name))
                 elif flags["begin_crystal"]:
                     if "astar" in line:
                         # I found a line `astar`
@@ -175,7 +191,7 @@ def search_crystals_parameters(file_name):
                     # We need `astar`, `bstar` and `cstar`
                     # to calculate unit cell parameters
                     if not(flags["astar"] or flags["bstar"] or flags["cstar"]):
-                        print("Image {} has bad cell".format(name))
+                        LOGGER.warning("Image {} has bad cell".format(name))
                     else:
                         a, b, c, alfa, beta, gamma =\
                             cell_parameters(astar, bstar, cstar)
@@ -185,7 +201,8 @@ def search_crystals_parameters(file_name):
                             # if I do not have `lattice_type` ,`centering`
                             # or `unique_axis`then
                             # I keep the default (`triclinic` `P` , `?`)
-                            print("{} keep default triclinic P".format(name))
+                            LOGGER.warning(
+                                "{} keep default triclinic P".format(name))
                             lattice_type = "triclinic"
                             centering = "P"
                             unique_axis = "?"
@@ -202,16 +219,16 @@ def search_crystals_parameters(file_name):
                         for key in flags.keys():
                             flags[key] = False
     except TypeError:
-        print("Wrong path to the stream file.")
+        LOGGER.critical("Wrong path to the stream file.")
         sys.exit()
     except IndexError:
-        print("Enter path to the stream file.")
+        LOGGER.critical("Enter path to the stream file.")
         sys.exit()
     except FileNotFoundError:
-        print("File not found or not a indexing stream file.")
+        LOGGER.critical("File not found or not a indexing stream file.")
         sys.exit()
-    print("Loaded {} cells from {} chunks".format(len(crystals),
-                                                  chunks_counter))
+    LOGGER.info("Loaded {} cells from {} chunks".format(len(crystals),
+                                                        chunks_counter))
     return crystals
 
 
@@ -351,7 +368,7 @@ def search_peaks(file_stream, file_h5):
                     reflections_measured_after_indexing_flag = True
 
     except FileNotFoundError:
-        print('Error while opening stream file.')
+        LOGGER.warning('Error while opening stream file.')
         peaks_reflection = {}
         peaks_search = {}
         return (peaks_search, peaks_reflection)
@@ -360,7 +377,7 @@ def search_peaks(file_stream, file_h5):
         peaks_search = {}
         return (peaks_search, peaks_reflection)
     if not found_h5_in_stream:
-        print("No peaks for file in the stream file.")
+        LOGGER.warning("No peaks for file in the stream file.")
 
     return (peaks_search, peaks_reflection)
     # In case of error the dictionary is returned empty.
