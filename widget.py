@@ -108,7 +108,7 @@ class PeakButton(Button):
         for name in self.detectors:
             # loop through all peaks near_bragg
             for peak in self.detectors[name].get_peaks_reflection():
-                circle = plt.Circle(peak.get_position(), radius=5, color='r',
+                circle = plt.Circle(peak['position'], radius=5, color='r',
                                     fill=False)
                 # draw red circle
                 self.axs.add_artist(circle)
@@ -123,7 +123,7 @@ class PeakButton(Button):
         for name in self.detectors:
             # loop through all peaks list
             for peak in self.detectors[name].get_peaks_search():
-                circle = plt.Circle(peak.get_position(), radius=5, color='g',
+                circle = plt.Circle(peak['position'], radius=5, color='g',
                                     fill=False)
                 # draw red circle
                 self.axs.add_artist(circle)

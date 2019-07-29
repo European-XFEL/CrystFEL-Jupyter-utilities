@@ -215,144 +215,6 @@ def search_crystals_parameters(file_name):
     return crystals
 
 
-class PeakSearch:
-    """Class for representing a peak  object from the peak search
-    in the stream file.
-
-    Attributes
-    ----------
-    fs_px : double
-
-        Fast scan/pixel.
-    ss_px : double
-
-        Slow scan/pixel.
-    panel_name : str
-
-        The name of the panel to which the peak belongs.
-    position : tuple
-
-        Peak coordinates after panel reconstruction.
-    """
-    def __init__(self, fs, ss, recip, intesity, panel_name):
-        """
-        Parameters
-        ----------
-        fs : double
-
-            Fast scan/pixel.
-        ss : double
-
-            Slow scan/pixel.
-        panel_name : str
-
-            The name of the panel to which the peak belongs.
-        intesity : double
-
-            Intensity.
-        recip : double
-
-            Value `(1/d)/nm^-1`.
-        """
-        self.fs_px = fs
-        self.ss_px = ss
-        self.recip = recip
-        self.intesity = intesity
-        self.panel_name = panel_name
-        self.position = None
-
-    def get_position(self):
-        """Returns peak coordinates.
-        Returns
-        -------
-        position : tuple
-
-            Peak position.
-        """
-        return self.position
-
-
-class PeakReflections:
-    """Class for representing a peak object from reflections measured
-    after indexing in the stream file.
-
-    Attributes
-    ----------
-    fs_px : double
-
-        Fast scan/pixel.
-    ss_px : double
-
-        Slow scan/pixel.
-    panel_name : str
-
-        The name of the panel to which the peak belongs.
-    position : tuple
-
-        Peak coordinates after panel reconstruction.
-    """
-    def __init__(self, h, k, l, I, sigmaI, peak, background, fs_px, ss_px,
-                 panel_name):
-        """
-        Parameters
-        ----------
-        fs_px : double
-
-            Fast scan/pixel.
-        ss_px : double
-
-            Slow scan/pixel.
-        panel_name : str
-
-            The name of the panel to which the peak belongs.
-        h : int
-
-            The parameter 'h' of the reflection measured after indexing.
-        k : int
-
-            The parameter 'k' of the reflection measured after indexing.
-        l : int
-
-            The parameter 'l' of the reflection measured after indexing.
-        I : double
-
-            The parameter 'I' of the reflection measured after indexing.
-        sigmaI : double
-
-            Rhe parameter 'sigma(I)' of the reflection measured
-            after indexing.
-        peak : double
-
-            The parameter 'peak' of the reflection measured
-            after indexing.
-        background : double
-
-            The parameter 'background' of the reflection measured
-            after indexing.
-        """
-        self.h = h
-        self.k = k
-        self.l = l
-        self.I = I
-        self.sigmaI = sigmaI
-        self.peak = peak
-        self.background = background
-        self.fs_px = fs_px
-        self.ss_px = ss_px
-        self.panel_name = panel_name
-        self.position = None
-
-    def get_position(self):
-        """returns peak coordinates
-        Returns
-        -------
-        position : tuple
-
-            Peak position.
-        """
-        return self.position
-
-
 def search_peaks(file_stream, file_h5):
     """Searching peaks in indexing stream file.
     The function parses the file.
@@ -415,13 +277,17 @@ def search_peaks(file_stream, file_h5):
                     line2 = line.strip().split(' ')  # Dividing to columns.
                     while '' in line2:
                         line2.remove('')  # Remove empty chars.
-                    fs_px = float(line2[0])  # Get data for peaks.
-                    ss_px = float(line2[1])
-                    recip = float(line2[2])
-                    intesity = float(line2[3])
+                    fs_px = float(line2[0])  # Fast scan/pixel.
+                    ss_px = float(line2[1])  # Slow scan/pixel.
+                    recip = float(line2[2])  # Value `(1/d)/nm^-1`.
+                    intesity = float(line2[3])  # Intensity
+                    # The name of the panel to which the peak belongs.
                     panel_name = line2[4]
-                    peak = PeakSearch(fs_px, ss_px, recip, intesity,
-                                      panel_name)
+                    # dictionary representing peak data
+                    # from the peak search in the stream file.
+                    peak = {'fs_px': fs_px, 'ss_px': ss_px, 'recip': recip,
+                            'intesity': intesity, 'panel_name': panel_name,
+                            'position': None}
                     # Create an object with peak information.
                     if panel_name not in peaks_search.keys():
                         peaks_search[panel_name] = list()
@@ -441,19 +307,37 @@ def search_peaks(file_stream, file_h5):
                     line2 = line.strip().split(' ')  # Splitting to columns.
                     while '' in line2:
                         line2.remove('')  # Remove empty chars.
+                    # The parameter 'h'
+                    # of the reflection measured after indexing.
                     h = int(line2[0])
+                    # The parameter 'k'
+                    # of the reflection measured after indexing.
                     k = int(line2[1])
+                    # The parameter 'l'
+                    # of the reflection measured after indexing.
                     l = int(line2[2])
+                    # The parameter 'I'
+                    # of the reflection measured after indexing.
                     I = float(line2[3])
+                    # The parameter 'sigma(I)'
+                    # of the reflection measured after indexing.
                     sigmaI = float(line2[4])
+                    # The parameter 'peak'
+                    # of the reflection measured after indexing.
                     peak = float(line2[5])
+                    # The parameter 'background'
+                    # of the reflection measured after indexing.
                     background = float(line2[6])
-                    fs_px = float(line2[7])
-                    ss_px = float(line2[8])
+                    fs_px = float(line2[7])  # Fast scan/pixel.
+                    ss_px = float(line2[8])  # Slow scan/pixel.
+                    # The name of the panel to which the peak belongs.
                     panel_name = line2[9]
-                    peak = PeakReflections(h, k, l, I, sigmaI, peak,
-                                           background, fs_px,
-                                           ss_px, panel_name)
+                    # dictionary representing peak data from the reflections
+                    # measured after indexing in the stream file.
+                    peak = {'h': h, 'k': k, 'l': l, 'I': I, 'sigmaI': sigmaI,
+                            'peak': peak, 'background': background,
+                            'fs_px': fs_px, 'ss_px': ss_px,
+                            'panel_name': panel_name, 'position': None}
                     # Create an object.
                     if panel_name not in peaks_reflection.keys():
                         peaks_reflection[panel_name] = list()

@@ -191,36 +191,38 @@ class Detector:
         self.position = (pos_x, pos_y)
 
         # two loop for:
-        for peak_stream in self.peaks_search:
+        for peak_search in self.peaks_search:
             # for check peak detection
 
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
+            peak_search['ss_px'] -= self.min_ss
+            peak_search['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            peak_stream.ss_px = self.array.shape[0] - 1 - peak_stream.ss_px
-            posx = peak_stream.fs_px + self.position[1]
-            posy = peak_stream.ss_px + self.position[0]
+            peak_search['ss_px'] = \
+                self.array.shape[0] - 1 - peak_search['ss_px']
+            posx = peak_search['fs_px'] + self.position[1]
+            posy = peak_search['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
-            peak_stream.position = (posx, posy)
-        for peak_stream in self.peaks_reflection:
+            peak_search['position'] = (posx, posy)
+        for peak_reflection in self.peaks_reflection:
             # for script near bragg
 
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
+            peak_reflection['ss_px'] -= self.min_ss
+            peak_reflection['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            peak_stream.ss_px = self.array.shape[0] - 1 - peak_stream.ss_px
-            posx = peak_stream.fs_px + self.position[1]
-            posy = peak_stream.ss_px + self.position[0]
+            peak_reflection['ss_px'] = \
+                self.array.shape[0] - 1 - peak_reflection['ss_px']
+            posx = peak_reflection['fs_px'] + self.position[1]
+            posy = peak_reflection['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
-            peak_stream.position = (posx, posy)
+            peak_reflection['position'] = (posx, posy)
 
     def rot_y(self):
         """Rotation along y-axis, columns order is inversed, rows stay the same.
@@ -237,36 +239,38 @@ class Detector:
         self.position = (pos_x, pos_y)
 
         # two loop for:
-        for peak_stream in self.peaks_search:
+        for peak_search in self.peaks_search:
             # for check peak detection
 
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
+            peak_search['ss_px'] -= self.min_ss
+            peak_search['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            peak_stream.fs_px = self.array.shape[1] - 1 - peak_stream.fs_px
-            posx = peak_stream.fs_px + self.position[1]
-            posy = peak_stream.ss_px + self.position[0]
+            peak_search['fs_px'] =\
+                self.array.shape[1] - 1 - peak_search['fs_px']
+            posx = peak_search['fs_px'] + self.position[1]
+            posy = peak_search['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
-            peak_stream.position = (posx, posy)
-        for peak_stream in self.peaks_reflection:
+            peak_search['position'] = (posx, posy)
+        for peak_reflection in self.peaks_reflection:
             # for script near bragg
 
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
+            peak_reflection['ss_px'] -= self.min_ss
+            peak_reflection['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            peak_stream.fs_px = self.array.shape[1] - 1 - peak_stream.fs_px
-            posx = peak_stream.fs_px + self.position[1]
-            posy = peak_stream.ss_px + self.position[0]
+            peak_reflection['fs_px'] = \
+                self.array.shape[1] - 1 - peak_reflection['fs_px']
+            posx = peak_reflection['fs_px'] + self.position[1]
+            posy = peak_reflection['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
-            peak_stream.position = (posx, posy)
+            peak_reflection['position'] = (posx, posy)
 
     def rot_y_x(self):
         """Rotation along y=x diagonal.
@@ -285,43 +289,43 @@ class Detector:
         self.position = (pos_x, pos_y)
 
         # two loop for:
-        for peak_stream in self.peaks_search:
+        for peak_search in self.peaks_search:
             # for check peak detection
 
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
+            peak_search['ss_px'] -= self.min_ss
+            peak_search['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            old_fs_px = peak_stream.fs_px
-            old_ss_px = peak_stream.ss_px
-            peak_stream.ss_px = self.array.shape[0] - old_fs_px - 1
-            peak_stream.fs_px = self.array.shape[1] - old_ss_px - 1
-            posx = peak_stream.fs_px + self.position[1]
-            posy = peak_stream.ss_px + self.position[0]
+            old_fs_px = peak_search['fs_px']
+            old_ss_px = peak_search['ss_px']
+            peak_search['ss_px'] = self.array.shape[0] - old_fs_px - 1
+            peak_search['fs_px'] = self.array.shape[1] - old_ss_px - 1
+            posx = peak_search['fs_px'] + self.position[1]
+            posy = peak_search['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
-            peak_stream.position = (posx, posy)
+            peak_search['position'] = (posx, posy)
 
-        for peak_stream in self.peaks_reflection:
+        for peak_reflection in self.peaks_reflection:
             # for script near bragg
 
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
+            peak_reflection['ss_px'] -= self.min_ss
+            peak_reflection['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            old_fs_px = peak_stream.fs_px
-            old_ss_px = peak_stream.ss_px
-            peak_stream.ss_px = self.array.shape[0] - old_fs_px - 1
-            peak_stream.fs_px = self.array.shape[1] - old_ss_px - 1
-            posx = peak_stream.fs_px + self.position[1]
-            posy = peak_stream.ss_px + self.position[0]
+            old_fs_px = peak_reflection['fs_px']
+            old_ss_px = peak_reflection['ss_px']
+            peak_reflection['ss_px'] = self.array.shape[0] - old_fs_px - 1
+            peak_reflection['fs_px'] = self.array.shape[1] - old_ss_px - 1
+            posx = peak_reflection['fs_px'] + self.position[1]
+            posy = peak_reflection['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
-            peak_stream.position = (posx, posy)
+            peak_reflection['position'] = (posx, posy)
 
     def rot_y_2x(self):
         """Rotation along y=-x transpose.
@@ -337,40 +341,40 @@ class Detector:
         self.position = (pos_x, pos_y)
 
         # two loop for
-        for peak_stream in self.peaks_search:
+        for peak_search in self.peaks_search:
             # for check peak detection
 
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
+            peak_search['ss_px'] -= self.min_ss
+            peak_search['fs_px'] -= self.min_fs
 
-            old_ss_px = peak_stream.ss_px
-            peak_stream.ss_px = peak_stream.fs_px
-            peak_stream.fs_px = old_ss_px
-            posx = peak_stream.fs_px + self.position[1]
-            posy = peak_stream.ss_px + self.position[0]
+            old_ss_px = peak_search['ss_px']
+            peak_search['ss_px'] = peak_search['fs_px']
+            peak_search['fs_px'] = old_ss_px
+            posx = peak_search['fs_px'] + self.position[1]
+            posy = peak_search['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
-            peak_stream.position = (posx, posy)
+            peak_search['position'] = (posx, posy)
 
-        for peak_stream in self.peaks_reflection:
+        for peak_reflection in self.peaks_reflection:
             # for script near bragg
 
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
-            peak_stream.ss_px -= self.min_ss
-            peak_stream.fs_px -= self.min_fs
+            peak_reflection['ss_px'] -= self.min_ss
+            peak_reflection['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            old_ss_px = peak_stream.ss_px
-            peak_stream.ss_px = peak_stream.fs_px
-            peak_stream.fs_px = old_ss_px
-            posx = peak_stream.fs_px + self.position[1]
-            posy = peak_stream.ss_px + self.position[0]
+            old_ss_px = peak_reflection['ss_px']
+            peak_reflection['ss_px'] = peak_reflection['fs_px']
+            peak_reflection['fs_px'] = old_ss_px
+            posx = peak_reflection['fs_px'] + self.position[1]
+            posy = peak_reflection['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
-            peak_stream.position = (posx, posy)
+            peak_reflection['position'] = (posx, posy)
 
 
 def get_detectors(raw_data_from_h5, image_size, geom,
