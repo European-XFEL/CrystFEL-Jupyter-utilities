@@ -113,7 +113,7 @@ def get_data_image(list_dataset):
         # we return the first datata with shape = 2
         if len(dataset.shape) == 2:
             return dataset
-    raise Exception("There is no data representing panels in the h5 file") 
+    raise Exception("There is no data representing panels in the h5 file")
 
 
 def get_diction_data(file):
@@ -148,7 +148,6 @@ def get_diction_data(file):
             dictionary = {"Panels": data, "Peaks": peaks}
             return dictionary
     except OSError:
-        print("Error opening the file H5")
         LOGGER.critical("Error opening the file H5")
         sys.exit()
     except Exception:
