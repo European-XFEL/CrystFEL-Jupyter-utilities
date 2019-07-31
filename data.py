@@ -39,16 +39,33 @@ def list_datasets(dictionary, list_dataset):
 
 
 def catalog(dictionary):
-    """Creat recursively dictionary in dictionary
-    datagroup is key and value is diction witch file inside
-    if is dataset key is name dataset and value
-    is object dataset.
+    """Create a dictionary in the dictionary.
+    All datagroup are replaced with a dictionary with elements
+    in this datagroup.
+
+    Example result:
+
+    {datagroup1.name:
+        {dataset11.name: dataset11.object, dataset12.name: dataset12.object},
+     datagroup2.name:
+        {dataset21.name: datset21.object,
+         datagroup22.name:
+            {dataset221.name: dataset221.object}
+        },
+     dataset1.name: dataset1.object
+    }
 
     Parameters
     ----------
     dictionary : dict
 
-        Dictionary in dictionary with dataset.
+        Dictionary in dictionary with datagroup.
+        Example input:
+
+        {datagroup1.name: datagroup1.object,
+         datagroup2.name: datagroup2.object,
+         dataset1.name: dataset1.object
+        }
 
     Returns
     -------
