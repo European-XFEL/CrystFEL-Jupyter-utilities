@@ -39,9 +39,9 @@ def list_datasets(dictionary, list_dataset):
 
 
 def catalog(dictionary):
-    """Create a dictionary in the dictionary.
-    All datagroup are replaced with a dictionary with elements
-    in this datagroup.
+    """Create a nested dictionary with either datagroups or datasets names as keys.
+    For datagroups the value is a dictionary with elements of this datagroup.
+    For datasets the value is a reference to this dataset.
 
     Example result:
 
@@ -59,7 +59,8 @@ def catalog(dictionary):
     ----------
     dictionary : dict
 
-        Dictionary in dictionary with datagroup.
+        Nested dictionary with either datagroups or datasets names as keys.
+        the value is a reference to this datagroups or dataset object.
         Example input:
 
         {datagroup1.name: datagroup1.object,
@@ -71,7 +72,7 @@ def catalog(dictionary):
     -------
     dictionary : dict
 
-        Dictionary in a dictionary with dataset due to a datagroup.
+        Nested dictionary with the names of datagroups or datasets as keys.
     """
     for key in dictionary.keys():
         # name is instance datagroup
