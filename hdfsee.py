@@ -20,7 +20,7 @@ import data
 import panel
 import peak_h5
 from stream_read import search_peaks
-from widget import ContrastSlider, PeakButton, Radio
+from widget import ContrastSlider, PeakButtons, Radio
 
 
 # remove all the handlers.
@@ -74,13 +74,6 @@ class Image:
     bad_places : list
 
         Containing BadRegion object from 'panel' module.
-    axis_list : list
-
-        List of matplotlib.pyplot.axes objects for locations of the
-        buttons.
-    list_active_peak : list
-
-        Flags list showing which type of peaks were selected.
     """
     # Creating arguments for parsing.
     PARSER = argparse.ArgumentParser()
@@ -201,48 +194,25 @@ class Image:
             # h5 file in path /processing/hitfinder/peakinfo-assembled.
             # Position has to be saved to be able to
             # determine what has been clicked.
-            self.axis_list[0] = plt.axes([.90, 0.55, 0.09, 0.08],
-                                         facecolor='yellow')
-            # Only one button for showing peaks from h5 file.
-            self.peakbtn =\
-                PeakButton(fig=self.fig, peaks=self.peaks, matrix=self.matrix,
-                           title=Image.FILE_H5_NAME, axis_list=self.axis_list,
-                           radio=self.radio, slider=self.slider,
-                           list_active_peak=self.list_active_peak,
-                           axs=self.ax, detectors=self.detectors,
-                           ax=self.axis_list[0], label='cheetah peaks on/off')
             # For displaying peaks from stream file.
             if Image.WHICH_ARGUMNENT_IS_USED['dispaly_with_peaks']:
                 # Additional buttons for switching on/off
                 # peaks from stream file.
-                self.axis_list[1] = plt.axes([.90, 0.45, 0.09, 0.08],
-                                             facecolor='yellow')
-                # Button for peaks from stream (?).
-                # we can show peaks as shown near_bragg
-                # they are under line 'Reflections measured after indexing'
-                # we can show peaks as shown check_peak_detection
-                # they are under line 'Peaks from peak search'
-                self.peakbtn2 =\
-                    PeakButton(fig=self.fig, peaks=self.peaks,
-                               matrix=self.matrix, title=Image.FILE_H5_NAME,
-                               axis_list=self.axis_list, radio=self.radio,
-                               slider=self.slider,
-                               list_active_peak=self.list_active_peak,
-                               axs=self.ax, detectors=self.detectors,
-                               ax=self.axis_list[1],
-                               label='CrystFEL_peak on/off')
+                self.peak_buttons =\
+                    PeakButtons(fig=self.fig, peaks=self.peaks,
+                                number_peaks_button=3,
+                                matrix=self.matrix, title=self.ax.get_title(),
+                                radio=self.radio, slider=self.slider,
+                                ax=self.ax, panels=self.detectors)
+            else:
+                # Only one button for showing peaks from h5 file.
+                self.peak_buttons =\
+                    PeakButtons(fig=self.fig, peaks=self.peaks,
+                                number_peaks_button=1,
+                                matrix=self.matrix, title=self.ax.get_title(),
+                                radio=self.radio, slider=self.slider,
+                                ax=self.ax, panels=self.detectors)
 
-                self.axis_list[2] = plt.axes([.90, 0.35, 0.09, 0.08],
-                                             facecolor='yellow')
-                self.peakbtn3 =\
-                    PeakButton(fig=self.fig, peaks=self.peaks,
-                               matrix=self.matrix, title=Image.FILE_H5_NAME,
-                               axis_list=self.axis_list, radio=self.radio,
-                               slider=self.slider,
-                               list_active_peak=self.list_active_peak,
-                               axs=self.ax, detectors=self.detectors,
-                               ax=self.axis_list[2],
-                               label='CrystFEL_near_bragg_peak on/off')
         # Display the image:
         plt.show()
 
