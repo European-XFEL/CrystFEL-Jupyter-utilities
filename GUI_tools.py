@@ -266,7 +266,7 @@ class CellExplorer:
         True if all have been selected
         """
         for hist in self.histogram_list:
-            if not hist.was_clicked_before:
+            if not hist.get_was_clicked_before():
                 return False
         return True
 
@@ -320,7 +320,7 @@ class CellExplorer:
         """
         for hist in self.histogram_list:
             hist.reset()
-            hist.bins = self.bins
+            hist.set_bins(self.bins)
             ButtonBins.set_bins(self.bins)
         for bttn in self.buttons_list:
             bttn.reset_color()
@@ -328,9 +328,11 @@ class CellExplorer:
         if len(self.kwargs) == 0:
             self.crystals_excluded.clear()
             for hist_indx, hist_name in enumerate(self.histogram_order):
-                self.histogram_list[hist_indx].update(
+                self.histogram_list[hist_indx].set_data(
                     self.histograms_data[hist_name],
                     self.crystals_excluded)
+            for hist in self.histogram_list:
+                hist.update()
         else:
             self.parametres_used()
 
@@ -355,7 +357,7 @@ class CellExplorer:
         """
         for hist in self.histogram_list:
             if hist.axs == event.inaxes:
-                hist.update_current_xlim()
+                hist.set_current_xlim(hist.get_current_xlim())
 
     def press(self, event):
         """Method for keyboard handling.
@@ -368,19 +370,19 @@ class CellExplorer:
         if event.key == '+':
             for index, boolean in enumerate(Span.get_all_used()):
                 if boolean:
-                    bins = self.histogram_list[index].bins
+                    bins = self.histogram_list[index].get_bins()
                     if bins < 512:
                         bins *= 2
-                        self.histogram_list[index].bins = bins
+                        self.histogram_list[index].set_bins(bins)
                         self.histogram_list[index].update()
                         self.histogram_list[index].draw_green_space()
         elif event.key == '-':
             for index, boolean in enumerate(Span.get_all_used()):
                 if boolean:
-                    bins = self.histogram_list[index].bins
+                    bins = self.histogram_list[index].get_bins()
                     if bins > 2:
                         bins /= 2
-                        self.histogram_list[index].bins = bins
+                        self.histogram_list[index].set_bins(bins)
                         self.histogram_list[index].update()
                         self.histogram_list[index].draw_green_space()
 
@@ -397,8 +399,8 @@ class CellExplorer:
             hist.draw_green_space()
             m, s = stats.norm.fit(hist.data_included)
             # Computing mu and sigma
-            lnspc = np.linspace(hist.current_xlim[0],
-                                hist.current_xlim[1], 80)
+            lnspc = np.linspace(hist.get_current_xlim()[0],
+                                hist.get_current_xlim()[1], 80)
             # Table 80 argumnets x by equal distances [0,1,2]
             pdf_g = stats.norm.pdf(lnspc, m, s)
             # Theoretical value for our argumnets
@@ -406,9 +408,9 @@ class CellExplorer:
             # Setting for relative 3/4 of the height;
             # each histogram has other y axis scale
             # and maximum value.
-            position_y_text = 0.75*hist.axs.get_ylim()[1]
+            position_y_text = 0.75*hist.get_current_ylim()[1]
             # Each text will begin with each histogram:
-            position_x_text = hist.current_xlim[0]
+            position_x_text = hist.get_current_xlim()[0]
 
             hist.axs.text(position_x_text, position_y_text,
                           r"$\mu = {}\ \sigma = {}$".format(np.round(m, 2),
@@ -416,7 +418,7 @@ class CellExplorer:
                           fontsize=10)
             hist.axs.grid(True)
 if __name__ == "__main__":
-    streamfile = '/home/tsachanowski/Dokumenty/stream_klaster/Process.stream'
+    streamfile = '/home/tsachanowski/Dokumenty/Process.stream'
     RUN = CellExplorer(streamfile)
     RUN = CellExplorer(streamfile, alfa=(80, 90),
                        beta=(80, 90), gamma=(80, 90))

@@ -69,10 +69,10 @@ class Histogram:
         """
         self.name = name
         self.axs = axs
-        self.__bins = bins
+        self.bins = bins
         self.xlabel = xlabel
-        self.__was_clicked_before = False
-        self.__range_green_space = [None, None]
+        self.was_clicked_before = False
+        self.range_green_space = [None, None]
         # Try/except necessary - not all histograms contain values depending
         # on centering type.
         self.cryst_list = ['P', 'A', 'B', 'C', 'I', 'F', 'H', 'R']
@@ -97,9 +97,8 @@ class Histogram:
 
         self.color_exclude = 'lightgray'
 
-        self.__list_colors = \
-            [colors[centering] for centering in self.cryst_list]
-        self.__list_colors.append(self.color_exclude)
+        self.list_colors = [colors[color] for color in self.cryst_list]
+        self.list_colors.append(self.color_exclude)
 
         self.axs.set_title("Histogram of " + self.name)
         self.axs.set_xlabel(self.xlabel)
@@ -107,7 +106,7 @@ class Histogram:
         _, _, self.patches = self.axs.hist(x=self.list_data, bins=self.bins,
                                            density=1, stacked=True, alpha=0.9,
                                            range=(self.min, self.max),
-                                           color=self.__list_colors,
+                                           color=self.list_colors,
                                            histtype='stepfilled')
         # Draw the histogram
         # histtype = 'stepfilled' because for the default type refreshing is
@@ -116,15 +115,15 @@ class Histogram:
         # y height is in the second column.
         # Drawing the grid:
         self.axs.grid(True)
-        self.__xlim = self.axs.get_xlim()
-        self.__current_xlim = self.axs.get_xlim()
+        self.xlim = self.axs.get_xlim()
+        self.current_xlim = self.axs.get_xlim()
 
     def reset(self):
         """Restore the initial settings.
         """
-        self.__was_clicked_before = False
-        self.__range_green_space = None, None
-        self.__current_xlim = self.__xlim
+        self.was_clicked_before = False
+        self.range_green_space = [None, None]
+        self.current_xlim = self.xlim
 
     def bool_crystal_exluded_green_space(self, data):
         """Method for checking if data is in the selection and if the
@@ -151,22 +150,20 @@ class Histogram:
 
         return False
 
-    @property
-    def range_green_space(self):
-        return self.__range_green_space
-
-    @range_green_space.setter
-    def range_green_space(self, args):
+    def set_range_green_space(self, minimum, maximum):
         """Setting the range of selection.
 
         Parameters
         ----------
 
-        args : tuple
+        minimum : double
 
-            Left and right position the range of ​​interest.
+            Left position the range of ​​interest.
+        maximum : double
+
+            Right position the range of ​​interest.
         """
-        self.__range_green_space = args
+        self.range_green_space = [minimum, maximum]
 
     def draw_green_space(self):
         """Draw the range of ​​interest ('green')
@@ -177,15 +174,7 @@ class Histogram:
                              self.__range_green_space[1],
                              facecolor='#2ca02c', alpha=0.5)
 
-    @property
-    def was_clicked_before(self):
-        """Get a boolean value that specifies
-        if the histogram had the range selected.
-        """
-        return self.__was_clicked_before
-
-    @was_clicked_before.setter
-    def was_clicked_before(self, true_false):
+    def set_was_clicked_before(self, true_false):
         """Set flag was_clicked_before.
 
         Parametetrs
@@ -194,16 +183,14 @@ class Histogram:
 
            value changing the flag was_clicked_before
         """
-        self.__was_clicked_before = true_false
+        self.was_clicked_before = true_false
 
-    @property
-    def bins(self):
-        """Get bins.
+    def get_was_clicked_before(self):
+        """Return flag was_clicked_before.
         """
-        return self.__bins
+        return self.was_clicked_before
 
-    @bins.setter
-    def bins(self, bins):
+    def set_bins(self, bins):
         """Changing number of bins.
 
         Parameters
@@ -212,24 +199,53 @@ class Histogram:
 
             Number of bins.
         """
-        self.__bins = int(bins)
+        self.bins = int(bins)
         # Dividing by 2 may give float number.
 
-    @property
-    def list_colors(self):
-        """Get list of colors of the histogram.
-
-        Returns
-        -------
-        list_colors : list
-
-            The list  with colors for each centerning
-            in the histogram.
+    def get_bins(self):
+        """Get bins.
         """
-        return self.__list_colors
+        return self.bins
 
-    @list_colors.setter
-    def list_colors(self, colors):
+    def set_name(self, name):
+        """Changing the histogram name.
+        Parameters
+        ----------
+        name : str
+
+            The new name of the histogram.
+        """
+        self.name = name
+
+    def set_data(self, data_to_histogram, data_excluded):
+        """Updating the data.
+
+        Parameters
+        ----------
+
+        data_to_histogram : dict
+
+            Data for the histogram.
+        data_excluded : list
+
+            Data excluded for the histogram.
+        """
+        try:
+            self.data_excluded = data_excluded
+        except KeyError:
+            self.data_excluded = []
+
+        self.list_data = []
+        self.data_included = []
+        for k, a_cryst in enumerate(self.cryst_list):
+            try:
+                self.list_data.append(data_to_histogram[a_cryst])
+            except KeyError:
+                self.list_data.append([])
+            self.data_included += self.list_data[k]
+        self.list_data.append(self.data_excluded)
+
+    def set_colour(self, colors):
         """Set colors.
 
         Parameters
@@ -239,51 +255,20 @@ class Histogram:
 
             Colors of changing the bars in the histogram.
         """
-        self.__list_colors = \
-            [colors[centering] for centering in self.cryst_list]
-        self.__list_colors.append(self.color_exclude)
+        self.list_colors = [colors[color] for color in self.cryst_list]
+        self.list_colors.append(self.color_exclude)
 
-    def update_colors(self):
+    def update_color(self):
         """Loop for each bin and updating colour for the next in colour loop.
         """
 
         for patch_index in range(9):
             for box in self.patches[patch_index]:
-                box.set_facecolor(self.__list_colors[patch_index])
+                box.set_facecolor(self.list_colors[patch_index])
 
-    def update(self, data_to_histogram=None, data_excluded=None):
+    def update(self):
         """Updates a single histogram.
-
-        Parameters
-        ----------
-
-        data_to_histogram : dict
-
-            Data for the histogram.
-            Default : None when we only refresh histogram.
-        data_excluded : list
-
-            Data excluded for the histogram.
-            Default is None when we only refresh histogram.
         """
-        # update new data to the histogram when selecting the range.
-        if (data_to_histogram is not None and data_excluded is not None):
-            try:
-                self.data_excluded = data_excluded
-            except KeyError:
-                self.data_excluded = []
-
-            self.list_data = []
-            self.data_included = []
-            for k, a_cryst in enumerate(self.cryst_list):
-                try:
-                    self.list_data.append(data_to_histogram[a_cryst])
-                except KeyError:
-                    self.list_data.append([])
-                self.data_included += self.list_data[k]
-            self.list_data.append(self.data_excluded)
-
-        # Refresh histogram
         # Clear subplot
         self.axs.clear()
         self.axs.set_title("Histogram of " + self.name)
@@ -292,14 +277,25 @@ class Histogram:
         _, _, self.patches = self.axs.hist(x=self.list_data, bins=self.bins,
                                            density=1, stacked=True, alpha=0.9,
                                            range=(self.min, self.max),
-                                           color=self.__list_colors,
+                                           color=self.list_colors,
                                            histtype='stepfilled')
         # Draw mesh
         self.axs.grid(True)
-        self.axs.set_xlim(self.__current_xlim)
+        self.axs.set_xlim(self.current_xlim)
 
-    @property
-    def current_xlim(self):
+    def set_current_xlim(self, xlim):
+        """Set current x limits of the histogram.
+
+        Parameters
+        ----------
+
+        xlim : touple
+
+            The new x-axis limits.
+        """
+        self.current_xlim = xlim
+
+    def get_current_xlim(self):
         """Get current x-axis limits of the histogram.
 
         Returns
@@ -308,9 +304,15 @@ class Histogram:
 
             The x-axis limits of the histogram.
         """
-        return self.__current_xlim
+        return self.axs.get_xlim()
 
-    def update_current_xlim(self):
-        """Update the histogram position by moving it with the move button
+    def get_current_ylim(self):
+        """Get current y-axis limits of the histogram.
+
+        Returns
+        -------
+        ylim : touple
+
+            The y-axis limits of the histogram.
         """
-        self.__current_xlim = self.axs.get_xlim()
+        return self.axs.get_ylim()
