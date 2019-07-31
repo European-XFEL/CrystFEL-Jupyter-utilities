@@ -313,14 +313,14 @@ class ButtonBins(Button):
             if ButtonBins.__bins < 512:
                 ButtonBins.__bins *= 2
                 for his in self.histogram_list:
-                    his.set_bins(ButtonBins.__bins)
+                    his.bins = ButtonBins.__bins
                     his.update()
                     his.draw_green_space()
         elif self.label == '-':
             if ButtonBins.__bins > 2:
                 ButtonBins.__bins /= 2
                 for his in self.histogram_list:
-                    his.set_bins(ButtonBins.__bins)
+                    his.bins = ButtonBins.__bins
                     his.update()
                     his.draw_green_space()
         self.fig.canvas.draw()
@@ -562,10 +562,10 @@ class CenteringButton(Button):
         # change name color in diction for key PABCFHIR is label button
         self.histogram_colors[self.label.get_text()] = self.color
         for hist in self.histogram_list:  # Loop for each histogram.
-            hist.set_colour(self.histogram_colors)  # Setting new colour
+            hist.list_colors = self.histogram_colors  # Setting new colour
             # in a given histogram.
             # Refresh each histogram (clear image and draw again)
-            hist.update_color()
+            hist.update_colors()
         self.fig.canvas.draw()  # Redraw the current figure.
 
     def reset_color(self):
@@ -575,10 +575,10 @@ class CenteringButton(Button):
         self.color = self.list_color[0]
         self.histogram_colors[self.label.get_text()] = self.color
         for hist in self.histogram_list:  # Loop for each histogram.
-            hist.set_colour(self.histogram_colors)  # Setting new colour
+            hist.list_colors = self.histogram_colors  # Setting new colour
             # in a given histogram.
             # Refresh each histogram (clear image and draw again)
-            hist.update_color()
+            hist.update_colors()
 
 
 class Span:
@@ -680,15 +680,15 @@ class Span:
 
         if left_posx == right_posx:  # Clicking resets the selection.
             # set flags
-            self.histogram_list[self.index].set_was_clicked_before(False)
-            self.histogram_list[self.index].set_range_green_space(None, None)
+            self.histogram_list[self.index].was_clicked_before = False
+            self.histogram_list[self.index].range_green_space = None, None
 
         else:
             # set flags this histogram was clicked
-            self.histogram_list[self.index].set_was_clicked_before(True)
+            self.histogram_list[self.index].was_clicked_before = True
             # set range green space
-            self.histogram_list[self.index].set_range_green_space(left_posx,
-                                                                  right_posx)
+            self.histogram_list[self.index].range_green_space =\
+                left_posx, right_posx
         for crystal in self.all_crystals_list:
             # Loop for each histogram checking if it belongs to the selection.
             if not self.is_exluded(crystal):
@@ -744,6 +744,5 @@ class Span:
 
         # set data and refresh hist
         for hist in self.histogram_list:
-            hist.set_data(data_excluded=data_excluded[hist.name],
-                          data_to_histogram=data_included[hist.name])
-            hist.update()
+            hist.update(data_excluded=data_excluded[hist.name],
+                        data_to_histogram=data_included[hist.name])
