@@ -13,8 +13,7 @@ class Test_Span(unittest.TestCase):
     @patch('histogram.Histogram')
     @patch('matplotlib.pyplot')
     def setUp(self, Mock_plt, Mock_hist):
-        self.plt_mock = Mock_plt()
-        self.fig = self.plt_mock.figure()
+        self.fig = Mock_plt.figure()
         self.all_crystals_list = [{'name': 'Image filename: db.h5',
                                    'a': 1, 'b': 1,
                                    'c': 1, 'alfa': 90,
@@ -43,24 +42,40 @@ class Test_Span(unittest.TestCase):
     def test_onselect(self):
         self.span.onselect(20, 100)
         self.assertEqual(
-            self.mock_hist.bool_crystal_exluded_green_space.call_count, 2)
-        assert self.histogram_list[self.index].set_range_green_space.called
-        self.histogram_list[
-            self.index].set_range_green_space.assert_called_once_with(
-                20, 100)
-        self.histogram_list[
-            self.index].set_was_clicked_before.assert_called_once_with(True)
+            self.mock_hist.was_clicked_before, True)
+        self.assertEqual(
+            self.mock_hist.range_green_space, (20, 100))
         self.assertEqual(len(self.crystals_excluded), 2)
+        self.span.onselect(20, 20)
+        self.assertEqual(
+            self.mock_hist.was_clicked_before, False)
+        self.assertEqual(
+            self.mock_hist.range_green_space, (None, None))
 
     @patch('widget.crystlib')
     def test_data_update(self, Mock_crystlib):
+        self.mock_hist.reset_mock()
         self.span.data_update()
-
         assert Mock_crystlib.histograms_data.called
         Mock_crystlib.histograms_data.assert_called_once_with(
             Span.get_crystals_included_list())
-        for i in range(5):
-            assert self.histogram_list[i].set_data.called
-            assert self.histogram_list[i].update.called
+        self.assertEqual(self.mock_hist.update.call_count, 6)
+
+    def test_is_exluded(self):
+        crystal = {'name': 'Image filename: db2.cxi',
+                   'a': 40, 'b': 40,
+                   'c': 40, 'alfa': 120,
+                   'beta': 120, 'gamma': 120,
+                   'lattice_type': "triclinic",
+                   'centering': "P", "unique_axis": "b"}
+        self.mock_hist.reset_mock()
+        self.mock_hist.bool_crystal_exluded_green_space.return_value = False
+        self.span.is_exluded(crystal)
+        self.assertEqual(
+            self.mock_hist.bool_crystal_exluded_green_space.call_count, 6)
+
+        self.mock_hist.bool_crystal_exluded_green_space.return_value = True
+        self.assertEqual(self.span.is_exluded(crystal), True)
+
 if __name__ == '__main__':
         unittest.main()
