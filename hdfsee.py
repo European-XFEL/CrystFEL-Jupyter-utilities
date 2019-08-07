@@ -316,6 +316,3 @@ class Image:
         for key in self.detectors:
             detector = self.detectors[key]
             self.set_panel_in_view(detector)
-
-
-IMAGE = Image()
