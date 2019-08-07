@@ -75,59 +75,68 @@ class Image:
 
         Containing BadRegion object from 'panel' module.
     """
-    # Creating arguments for parsing.
-    PARSER = argparse.ArgumentParser()
-    PARSER.add_argument('filename', nargs=1, metavar="name.H5",
-                        help='Display this image.')
-    PARSER.add_argument('-g', "--geomfile", nargs=1, metavar='name.GEOM',
-                        help='Use geometry from file' +
-                        ' to display arrnagmrnt panels')
-    PARSER.add_argument('-p', '--peaks', nargs=1, metavar='name.STREAM',
-                        help='use to display peaks' +
-                        ' from stream is used only witch geom')
-    # Parsing command line arguments.
-    ARGS = PARSER.parse_args()
-    # Variable for running mode.
-    WHICH_ARGUMNENT_IS_USED = {'display_only_file': False,
-                               'display_arrangment_view': False,
-                               'dispaly_with_peaks': False}
-    # Variable for filename.
-    FILE_H5_NAME = ARGS.filename[0]
-    if ARGS.geomfile:
-        # Check if the geometry file was provided.
-        FILE_GEOM_NAME = ARGS.geomfile[0]
-        if ARGS.peaks:
-            FILE_STREAM_NAME = ARGS.peaks[0]
-            WHICH_ARGUMNENT_IS_USED['dispaly_with_peaks'] = True
-            WHICH_ARGUMNENT_IS_USED['display_arrangment_view'] = False
+    @staticmethod
+    def argparsing():
+        """Creating arguments for parsing and parsing command line arguments.
+        """
+        # Creating arguments for parsing.
+        PARSER = argparse.ArgumentParser()
+        PARSER.add_argument('filename', nargs=1, metavar="name.H5",
+                            help='Display this image.')
+        PARSER.add_argument('-g', "--geomfile", nargs=1, metavar='name.GEOM',
+                            help='Use geometry from file' +
+                            ' to display arrnagmrnt panels')
+        PARSER.add_argument('-p', '--peaks', nargs=1, metavar='name.STREAM',
+                            help='use to display peaks' +
+                            ' from stream is used only witch geom')
+        # Parsing command line arguments.
+        ARGS = PARSER.parse_args()
+        # Variable for running mode.
+        Image.WHICH_ARGUMNENT_IS_USED = {'display_only_file': False,
+                                         'display_arrangment_view': False,
+                                         'dispaly_with_peaks': False}
+        # Variable for filename.
+        Image.FILE_H5_NAME = ARGS.filename[0]
+        if ARGS.geomfile:
+            # Check if the geometry file was provided.
+            Image.FILE_GEOM_NAME = ARGS.geomfile[0]
+            if ARGS.peaks:
+                Image.FILE_STREAM_NAME = ARGS.peaks[0]
+                Image.WHICH_ARGUMNENT_IS_USED['dispaly_with_peaks'] = True
+                Image.WHICH_ARGUMNENT_IS_USED['display_arrangment_view'] = False
+            else:
+                # Only the geometry file was provided.
+                Image.FILE_STREAM_NAME = None
+                Image.WHICH_ARGUMNENT_IS_USED['display_arrangment_view'] = True
+        # Image file without geometry.
         else:
-            # Only the geometry file was provided.
-            FILE_STREAM_NAME = None
-            WHICH_ARGUMNENT_IS_USED['display_arrangment_view'] = True
-    # Image file without geometry.
-    else:
-        if ARGS.peaks:
-            LOGGER.warning(
-                'Displaying panels without geometry reconstruction.')
-        FILE_STREAM_NAME = None
-        FILE_GEOM_NAME = None
-        WHICH_ARGUMNENT_IS_USED['display_only_file'] = True
+            if ARGS.peaks:
+                LOGGER.warning(
+                    'Displaying panels without geometry reconstruction.')
+            Image.FILE_STREAM_NAME = None
+            Image.FILE_GEOM_NAME = None
+            Image.WHICH_ARGUMNENT_IS_USED['display_only_file'] = True
 
-    try:
-        GEOM = c.load_crystfel_geometry(FILE_GEOM_NAME)
-        # Dictionary with information about the image: panels, bad places.
-        # Tuple for the minimal images size.
-        IMAGE_SIZE = g.compute_min_array_size(g.compute_pix_maps(GEOM))
-    except FileNotFoundError:
-        LOGGER.critical("Error while opening geometry file.")
-        sys.exit()
-    except TypeError:
-        # No geometry file was provided.
-        IMAGE_SIZE = None
+        try:
+            Image.GEOM = c.load_crystfel_geometry(Image.FILE_GEOM_NAME)
+            # Dictionary with information about the image: panels, bad places.
+            # Tuple for the minimal images size.
+            Image.IMAGE_SIZE = \
+                g.compute_min_array_size(g.compute_pix_maps(Image.GEOM))
+        except FileNotFoundError:
+            LOGGER.critical("Error while opening geometry file.")
+            sys.exit()
+        except TypeError:
+            # No geometry file was provided.
+            Image.IMAGE_SIZE = None
 
     def __init__(self):
         """Method for initializing image and checking options how to run code.
         """
+        # method for parsing command line arguments had to be moved here to.
+        # avoid displaying the same image all over again in jupyter notebook.
+        Image.argparsing()
+
         # Dictionary containing panels and peaks info from the h5 file.
         self.dict_witch_data = data.get_diction_data(Image.FILE_H5_NAME)
 
