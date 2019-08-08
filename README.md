@@ -61,15 +61,15 @@ Features buttons for changing contrast and colour space, displaying diffraction 
 
 1. Basic displaynig of the data as it is:
 
-        python hdfsee.py <filename>
+        python hdfsee_run.py <filename>
 
 2. Displaying the image with geometry reconstruction:
 
-        python hdfsee.py <filename> -g <geometry file>
+        python hdfsee_run.py <filename> -g <geometry file>
 
 3. Displaying the image with geometry reconstruction and peaks written in the indexing.stream file produced by indexamajig:
 
-        python hdfsee.py <filename> -g <geometry file> -p <stream file>
+        python hdfsee_run.py <filename> -g <geometry file> -p <stream file>
 
 ## check-peak-detection.sh
 
