@@ -28,7 +28,9 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 `h5py`  
 `jupyter notebook`  
 `matplotlib`  
-`Python >= 3.5`
+`numpy`  
+`Python >= 3.5`  
+`scipy`
 
 ## Tests
 `python -m unittest discover -s tests/ -p 'unit_*' -v`
