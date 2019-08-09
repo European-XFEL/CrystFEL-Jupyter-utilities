@@ -1,5 +1,4 @@
-# Description :
-
+# Description:
 H5see is a project with graphical tools from CrystFEL implemented in Python.
 The project is intended to work as a wrapper for CrystFEL tools when it is not
 possible to use a graphical environment but graphical (interactive) features
@@ -21,67 +20,44 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 * R. A. Kirian, X. Wang, U. Weierstall, K. E. Schmidt, J. C. H. Spence, M. Hunter, P. Fromme, T. White, H. N. Chapman and J. Holton. "Femtosecond protein nanocrystallography - data analysis methods". Optics Express 18 (2010) p5713.
 
 ## Tools
-
-* hdfsee.py - for displaying a diffraction image from a h5 file.
-
+* hdfsee.py - for displaying a diffraction image from a h5 file.  
 * GUI_tools.py - displaying histograms from a indexing.stream file (produced by indexamajig) and fitting gaussian curves.
 
 ## Dependencies
-
-```CrystFEL``` <http://www.desy.de/~twhite/crystfel/install.html>
-
-```Python 3 environment```
-
-```matplotlib```
-
-```jupyter notebook```
-
-```bash kernel```
-
-```cfelpyutils```
-
-```ccp4```
-
-```dirax```
-
-```hdf5```
-
-```xds```
+`CrystFEL` <http://www.desy.de/~twhite/crystfel/install.html>  
+`Python 3 environment`  
+`matplotlib`  
+`jupyter notebook`  
+`bash kernel`  
+`cfelpyutils`  
+`ccp4`  
+`dirax`  
+`hdf5`  
+`xds`  
 
 ## Tests
-
 `python -m unittest discover -s tests/ -p 'unit_*' -v`
 
 ## hdfsee.py usage
-
 The tool is designed to work with h5 files (hdf5). Tested only with LCLS specific data structure <http://www.cxidb.org/data/21/cxidb-21-run0130.tar>
 Features buttons for changing contrast and colour space, displaying diffraction peaks from indexing.stream file or peaks embedded in the h5 file.
 
 ### Example usage
-
-1. Basic displaynig of the data as it is:
-
-        python hdfsee_run.py <filename>
-
-2. Displaying the image with geometry reconstruction:
-
-        python hdfsee_run.py <filename> -g <geometry file>
-
-3. Displaying the image with geometry reconstruction and peaks written in the indexing.stream file produced by indexamajig:
-
-        python hdfsee_run.py <filename> -g <geometry file> -p <stream file>
+1. Basic displaynig of the data as it is:  
+   `python hdfsee_run.py <filename>`
+2. Displaying the image with geometry reconstruction:  
+    `python hdfsee_run.py <filename> -g <geometry file>`  
+3. Displaying the image with geometry reconstruction and peaks written in the indexing.stream file produced by indexamajig:  
+    `python hdfsee_run.py <filename> -g <geometry file> -p <stream file>`
 
 ## check-peak-detection.sh
-
-        ./check-peak-detection.sh <stream file> <geometry file>
+`./check-peak-detection.sh <stream file> <geometry file>`
 
 **Instructions for running on maxwell cluster**  
-
 #####TODO#####
 
 ## GUI_tools.py usage
-
-GUI_tools.py is a ```cell_explorer``` tool from CrystFEL ported to Python.
+GUI_tools.py is a `cell_explorer` tool from CrystFEL ported to Python.
 To select a range of intrerest for gaussian fitting press and hold left mouse button,
 release the button after the selection is ready. To deselect click left mouse button
 anywhere on the plot. Pressing '+' or '-' changes the binning size by a factor
@@ -89,9 +65,7 @@ of 2 (128 -> 64). Pressing 'g' key fitts the gaussian curve to the selected rang
 and displays fitting parameters.
 
 ### Example
-
-        python GUI_tools.py Klaster.stream
+`python GUI_tools.py Klaster.stream`
 
 ### Example in jupyter notebook
-
-```magic-cell_explorer_and_hdfsee.ipynb```
+`magic-cell_explorer_and_hdfsee.ipynb`
