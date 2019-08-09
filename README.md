@@ -24,16 +24,11 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 * GUI_tools.py - displaying histograms from a indexing.stream file (produced by indexamajig) and fitting gaussian curves.
 
 ## Dependencies
-`CrystFEL` <http://www.desy.de/~twhite/crystfel/install.html>  
-`Python 3 environment`  
-`matplotlib`  
-`jupyter notebook`  
-`bash kernel`  
 `cfelpyutils`  
-`ccp4`  
-`dirax`  
-`hdf5`  
-`xds`  
+`h5py`  
+`jupyter notebook`  
+`matplotlib`  
+`Python >= 3.5`
 
 ## Tests
 `python -m unittest discover -s tests/ -p 'unit_*' -v`
