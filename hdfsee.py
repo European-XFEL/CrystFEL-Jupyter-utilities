@@ -279,7 +279,8 @@ class Image:
             text = " ".join(["Wrong panel position",
                              "{}, Position: {}".format(detector.name,
                                                        detector.position)])
-            LOGGER.warning(text)
+            LOGGER.critical(text)
+            sys.exit()
 
     def set_bad_place_in_view(self, bad_place):
         """Copying the bad pixel ranges to the image.
@@ -300,7 +301,8 @@ class Image:
                         bad_place.min_x: bad_place.min_x +
                         bad_place.array.shape[1]] = bad_place.get_array()
         except ValueError:
-            LOGGER.warning("Wrong mask position: {}".format(bad_place.name))
+            LOGGER.critical("Wrong mask position: {}".format(bad_place.name))
+            sys.exit()
 
     def arrangment_bad_places(self):
         """Iterates through each bad pixel (?) region and positions it to the
