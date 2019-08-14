@@ -62,7 +62,13 @@ of 2 (128 -> 64). Pressing 'g' key fitts the gaussian curve to the selected rang
 and displays fitting parameters.
 
 ### Example
-`python GUI_tools.py Klaster.stream`
-
+1. Run from the command line:  
+   `python cell_explorer_run.py <stream file>`
+2. Run from code cell in jupyter-notebook:  
+   ```
+   from GUI_tools import CellExplorer
+   %matplotlib notebook
+   RUN = CellExplorer(<stream file>)
+   ```
 ### Example in jupyter notebook
 `magic-cell_explorer_and_hdfsee.ipynb`
