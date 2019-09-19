@@ -220,13 +220,13 @@ def search_crystals_parameters(file_name):
                             flags[key] = False
     except TypeError:
         LOGGER.critical("Wrong path to the stream file.")
-        sys.exit()
+        sys.exit(1)
     except IndexError:
         LOGGER.critical("Enter path to the stream file.")
-        sys.exit()
+        sys.exit(1)
     except FileNotFoundError:
         LOGGER.critical("File not found or not a indexing stream file.")
-        sys.exit()
+        sys.exit(1)
     LOGGER.info("Loaded {} cells from {} chunks".format(len(crystals),
                                                         chunks_counter))
     return crystals

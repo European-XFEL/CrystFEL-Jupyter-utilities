@@ -125,7 +125,7 @@ class Image:
                 g.compute_min_array_size(g.compute_pix_maps(Image.geom))
         except FileNotFoundError:
             LOGGER.critical("Error while opening geometry file.")
-            sys.exit()
+            sys.exit(1)
         except TypeError:
             # No geometry file was provided.
             Image.image_size = None
@@ -280,7 +280,7 @@ class Image:
                              "{}, Position: {}".format(detector.name,
                                                        detector.position)])
             LOGGER.critical(text)
-            sys.exit()
+            sys.exit(1)
 
     def set_bad_place_in_view(self, bad_place):
         """Copying the bad pixel ranges to the image.
@@ -302,7 +302,7 @@ class Image:
                         bad_place.array.shape[1]] = bad_place.get_array()
         except ValueError:
             LOGGER.critical("Wrong mask position: {}".format(bad_place.name))
-            sys.exit()
+            sys.exit(1)
 
     def arrangment_bad_places(self):
         """Iterates through each bad pixel (?) region and positions it to the

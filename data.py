@@ -167,8 +167,8 @@ def get_diction_data(file):
             return dictionary
     except OSError:
         LOGGER.critical("Error opening the file H5")
-        sys.exit()
+        sys.exit(1)
     except Exception:
         exc_value = sys.exc_info()[1]
         LOGGER.critical(str(exc_value))
-        sys.exit()
+        sys.exit(1)
