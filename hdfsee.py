@@ -80,55 +80,55 @@ class Image:
         """Creating arguments for parsing and parsing command line arguments.
         """
         # Creating arguments for parsing.
-        PARSER = argparse.ArgumentParser()
-        PARSER.add_argument('filename', nargs=1, metavar="name.H5",
+        parser = argparse.ArgumentParser()
+        parser.add_argument('filename', nargs=1, metavar="name.H5",
                             help='Display this image.')
-        PARSER.add_argument('-g', "--geomfile", nargs=1, metavar='name.GEOM',
+        parser.add_argument('-g', "--geomfile", nargs=1, metavar='name.GEOM',
                             help='Use geometry from file' +
                             ' to display arrnagmrnt panels')
-        PARSER.add_argument('-p', '--peaks', nargs=1, metavar='name.STREAM',
+        parser.add_argument('-p', '--peaks', nargs=1, metavar='name.STREAM',
                             help='use to display peaks' +
                             ' from stream is used only witch geom')
         # Parsing command line arguments.
-        ARGS = PARSER.parse_args()
+        args = parser.parse_args()
         # Variable for running mode.
-        Image.WHICH_ARGUMNENT_IS_USED = {'display_only_file': False,
-                                         'display_arrangment_view': False,
-                                         'dispaly_with_peaks': False}
+        Image.which_argument_is_used = {'display_only_file': False,
+                                        'display_arrangment_view': False,
+                                        'dispaly_with_peaks': False}
         # Variable for filename.
-        Image.FILE_H5_NAME = ARGS.filename[0]
-        if ARGS.geomfile:
+        Image.file_h5_name = args.filename[0]
+        if args.geomfile:
             # Check if the geometry file was provided.
-            Image.FILE_GEOM_NAME = ARGS.geomfile[0]
-            if ARGS.peaks:
-                Image.FILE_STREAM_NAME = ARGS.peaks[0]
-                Image.WHICH_ARGUMNENT_IS_USED['dispaly_with_peaks'] = True
-                Image.WHICH_ARGUMNENT_IS_USED['display_arrangment_view'] = False
+            Image.file_geom_name = args.geomfile[0]
+            if args.peaks:
+                Image.file_stream_name = args.peaks[0]
+                Image.which_argument_is_used['dispaly_with_peaks'] = True
+                Image.which_argument_is_used['display_arrangment_view'] = False
             else:
                 # Only the geometry file was provided.
-                Image.FILE_STREAM_NAME = None
-                Image.WHICH_ARGUMNENT_IS_USED['display_arrangment_view'] = True
+                Image.file_stream_name = None
+                Image.which_argument_is_used['display_arrangment_view'] = True
         # Image file without geometry.
         else:
-            if ARGS.peaks:
+            if args.peaks:
                 LOGGER.warning(
                     'Displaying panels without geometry reconstruction.')
-            Image.FILE_STREAM_NAME = None
-            Image.FILE_GEOM_NAME = None
-            Image.WHICH_ARGUMNENT_IS_USED['display_only_file'] = True
+            Image.file_stream_name = None
+            Image.file_geom_name = None
+            Image.which_argument_is_used['display_only_file'] = True
 
         try:
-            Image.GEOM = c.load_crystfel_geometry(Image.FILE_GEOM_NAME)
+            Image.geom = c.load_crystfel_geometry(Image.file_geom_name)
             # Dictionary with information about the image: panels, bad places.
             # Tuple for the minimal images size.
-            Image.IMAGE_SIZE = \
-                g.compute_min_array_size(g.compute_pix_maps(Image.GEOM))
+            Image.image_size = \
+                g.compute_min_array_size(g.compute_pix_maps(Image.geom))
         except FileNotFoundError:
             LOGGER.critical("Error while opening geometry file.")
             sys.exit()
         except TypeError:
             # No geometry file was provided.
-            Image.IMAGE_SIZE = None
+            Image.image_size = None
 
     def __init__(self):
         """Method for initializing image and checking options how to run code.
@@ -138,7 +138,7 @@ class Image:
         Image.argparsing()
 
         # Dictionary containing panels and peaks info from the h5 file.
-        self.dict_witch_data = data.get_diction_data(Image.FILE_H5_NAME)
+        self.dict_witch_data = data.get_diction_data(Image.file_h5_name)
 
         # Creating a figure of the right size. (why 10x10?)
         # used 10X10 because default size is to small in notebook
@@ -147,7 +147,7 @@ class Image:
         # fiugre doesn't has a subplot and we add one
         self.ax = self.fig.add_subplot(111)
         # Setting the title to filename path.
-        self.ax.set_title(Image.FILE_H5_NAME)
+        self.ax.set_title(Image.file_h5_name)
         # Setting the contrast.
         self.vmax = 600
         self.vmin = 0
@@ -164,7 +164,7 @@ class Image:
 
         # For displaying the image in the right orientation (?).
         # dispaly without laying the panels
-        if Image.WHICH_ARGUMNENT_IS_USED['display_only_file']:
+        if Image.which_argument_is_used['display_only_file']:
             # Just the image from file with no buttons or reconstruction.
             self.matrix = np.copy(self.dict_witch_data["Panels"])
             # Rotating to get the same image as CrystFEL hdfsee.
@@ -204,7 +204,7 @@ class Image:
             # Position has to be saved to be able to
             # determine what has been clicked.
             # For displaying peaks from stream file.
-            if Image.WHICH_ARGUMNENT_IS_USED['dispaly_with_peaks']:
+            if Image.which_argument_is_used['dispaly_with_peaks']:
                 # Additional buttons for switching on/off
                 # peaks from stream file.
                 self.peak_buttons =\
@@ -230,22 +230,22 @@ class Image:
         Then adds panels (?).
         """
         # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = np.ones(Image.IMAGE_SIZE)
+        self.matrix = np.ones(Image.image_size)
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
         peaks_search, peaks_reflections =\
-            search_peaks(Image.FILE_STREAM_NAME,
-                         Image.FILE_H5_NAME)
+            search_peaks(Image.file_stream_name,
+                         Image.file_h5_name)
         self.detectors =\
             panel.get_detectors(self.dict_witch_data["Panels"],
-                                Image.IMAGE_SIZE, Image.GEOM, peaks_search,
+                                Image.image_size, Image.geom, peaks_search,
                                 peaks_reflections)
         # Creating a peak list from the h5 file.
         self.peaks = peak_h5.get_list_peaks(self.dict_witch_data["Peaks"],
-                                            Image.IMAGE_SIZE)
+                                            Image.image_size)
         # Creating a bad pixel mask (?).
-        self.bad_places = panel.bad_places(Image.IMAGE_SIZE,
-                                           Image.GEOM)
+        self.bad_places = panel.bad_places(Image.image_size,
+                                           Image.geom)
         # Arranging the panels.
         self.arrangement_panels()
         # Masking the bad pixels (?).
