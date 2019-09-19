@@ -2,8 +2,24 @@
 Creates a detector list from a geometry file (crystfel type) and
 matrix size for the image.
 """
+import logging
+import sys
 
 import numpy as np
+
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+# create formatter and add it to the handlers
+formatter = logging.Formatter(
+    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+ch.setFormatter(formatter)
+# add the handlers to logger
+LOGGER.addHandler(ch)
+LOGGER.setLevel("INFO")
 
 
 class Detector:
@@ -173,8 +189,8 @@ class Detector:
             elif self.xfs > 0 and self.yss > 0:
                 self.rot_x()
         else:
-            print(self.name, "Unknown rotation!")
-            exit()
+            LOGGER.critical("{} Unknown rotation!".format(self.name))
+            sys.exit(1)
 
     def rot_x(self):
         """Rotation along x-axis, columns stay the same, rows are switched.
