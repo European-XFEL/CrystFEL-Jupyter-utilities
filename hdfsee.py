@@ -85,7 +85,7 @@ class Image:
                             help='Display this image.')
         parser.add_argument('-g', "--geomfile", nargs=1, metavar='name.GEOM',
                             help='Use geometry from file' +
-                            ' to display arrnagmrnt panels')
+                            ' to display arrangment panels')
         parser.add_argument('-p', '--peaks', nargs=1, metavar='name.STREAM',
                             help='use to display peaks' +
                             ' from stream is used only witch geom')
