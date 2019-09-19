@@ -6,6 +6,9 @@ import sys
 import h5py
 import numpy as np
 
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
 LOGGER = logging.getLogger(__name__)
 # create console handler with a higher log level
 ch = logging.StreamHandler()
