@@ -153,10 +153,10 @@ class Detector:
 
             The numpy.array for panel after rotation.
         """
-        self.with_rotatioon()
+        self.type_rotation()
         return self.array
 
-    def with_rotatioon(self):
+    def type_rotation(self):
         """By comparing xfs, yfs, xss and yss verifies which kind of rotation
         should be applied.
         """
