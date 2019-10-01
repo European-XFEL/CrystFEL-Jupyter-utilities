@@ -11,8 +11,7 @@ import logging
 import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
-import cfelpyutils.crystfel_utils as c
-import cfelpyutils.geometry_utils as g
+from cfelpyutils import crystfel_utils, geometry_utils
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -118,11 +117,12 @@ class Image:
             Image.which_argument_is_used['display_only_file'] = True
 
         try:
-            Image.geom = c.load_crystfel_geometry(Image.file_geom_name)
+            Image.geom = crystfel_utils.load_crystfel_geometry(
+                Image.file_geom_name)
             # Dictionary with information about the image: panels, bad places.
             # Tuple for the minimal images size.
-            Image.image_size = \
-                g.compute_min_array_size(g.compute_pix_maps(Image.geom))
+            Image.image_size = geometry_utils.compute_min_array_size(
+                geometry_utils.compute_pix_maps(Image.geom))
         except FileNotFoundError:
             LOGGER.critical("Error while opening geometry file.")
             sys.exit(1)
