@@ -173,7 +173,7 @@ class Image:
             # Slider position.
             axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                         ax=axes, label="Kontrast",
+                                         ax=axes, label="Contrast",
                                          vmin=self.vmin, vmax=self.vmax)
             # Radio (?) position.
             # Position RadioButton
@@ -189,7 +189,7 @@ class Image:
             # Slider position.
             axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                         ax=axes, label="Kontrast",
+                                         ax=axes, label="Contrast",
                                          vmin=self.vmin, vmax=self.vmax)
             # Radio position.
             axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
