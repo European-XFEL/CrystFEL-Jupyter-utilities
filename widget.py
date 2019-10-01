@@ -439,7 +439,8 @@ class ContrastSlider(Slider):
         self.vmax = vmax
         self.vmin = vmin
         # Initialize parent constructor.
-        super(ContrastSlider, self).__init__(ax, label, vmin, 600, valinit=255)
+        super(ContrastSlider, self).__init__(
+            ax, label, self.vmin, self.vmax, valinit=(self.vmin + self.vmax)/2)
         # On click reaction.
         super(ContrastSlider, self).on_changed(self.on_check)
 
