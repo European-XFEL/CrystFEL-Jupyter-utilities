@@ -159,8 +159,6 @@ class Image:
         self.peaks = None
         self.detectors = None
         self.bad_places = None
-        self.axis_list = [False, False, False]
-        self.list_active_peak = [False, False, False]
 
         # For displaying the image in the right orientation (?).
         # dispaly without laying the panels
