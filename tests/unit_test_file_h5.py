@@ -71,7 +71,10 @@ class TestH5(unittest.TestCase):
         diction = data.catalog(diction)
         lista = []
         data.list_datasets(diction, lista)
-        self.assertListEqual(lista, self.test_list)
+        for elem in lista:
+            self.assertIn(elem, self.test_list)
+        for elem in self.test_list:
+            self.assertIn(elem, lista)
 
     def test_get_data_peaks(self):
         diction = {x: self.h5file[x] for x in self.h5file}

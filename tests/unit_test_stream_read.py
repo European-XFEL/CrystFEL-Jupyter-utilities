@@ -106,8 +106,8 @@ class Test_Stream_read(unittest.TestCase):
             s = stream_read.search_peaks(self.file_name, "db.h5")
             assert m.called
             m.assert_called_once_with(self.file_name)
-            self.assertEqual(list(s[0].keys()), self.peak_list)
-            self.assertEqual(list(s[1].keys()), self.peak_reflections_list)
+            self.assertEqual(list(s[0].keys()).sort(), self.peak_list.sort())
+            self.assertEqual(list(s[1].keys()).sort(), self.peak_reflections_list.sort())
 
 if __name__ == '__main__':
         unittest.main()
