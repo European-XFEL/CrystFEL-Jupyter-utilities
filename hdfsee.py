@@ -316,3 +316,109 @@ class Image:
         for key in self.detectors:
             detector = self.detectors[key]
             self.set_panel_in_view(detector)
+
+    def local_range(self, panel):
+        """Calculates the location of the two extreme corners of the panel.
+
+        Parameters
+        ----------
+        panel : dict
+
+            A CrystFEL geometry data for panel.
+
+        Returns
+        -------
+        (local_xmin, local_xmax, local_ymin, local_ymax) : tuple
+
+            The location of the two extreme corners of the panel.
+        """
+        if (np.abs(panel['xfs']) < np.abs(panel['xss']) and
+                np.abs(panel['yfs']) > np.abs(panel['yss'])):
+            if panel['xss'] > 0 and panel['yfs'] < 0:
+
+                # After rotation along y=x
+                local_xmax = panel['cnx']
+                local_ymin = panel['cny']
+                local_xmin = \
+                    panel['cnx'] - panel['max_ss'] + panel['min_ss'] - 1
+                local_ymax = \
+                    panel['cny'] + panel['max_fs'] - panel['min_fs'] + 1
+
+            elif panel['xss'] < 0 and panel['yfs'] > 0:
+
+                # After rotation along y=-x
+                local_xmin = panel['cnx']
+                local_ymax = panel['cny']
+                local_xmax = \
+                    panel['cnx'] + panel['max_ss'] - panel['min_ss'] + 1
+                local_ymin = \
+                    panel['cny'] - panel['max_fs'] + panel['min_fs'] - 1
+        elif np.abs(panel['xfs']) > np.abs(panel['xss']) and \
+                np.abs(panel['yfs']) < np.abs(panel['yss']):
+            if panel['xfs'] < 0 and panel['yss'] < 0:
+
+                # After rotation along y-axis
+                local_xmax = panel['cnx']
+                local_ymax = panel['cny']
+                local_xmin = \
+                    panel['cnx'] - panel['max_fs'] + panel['min_fs'] - 1
+                local_ymin = \
+                    panel['cny'] - panel['max_ss'] + panel['min_ss'] - 1
+
+            elif panel['xfs'] > 0 and panel['yss'] > 0:
+
+                # After rotation along x-axis
+                local_xmin = panel['cnx']
+                local_ymin = panel['cny']
+                local_xmax = \
+                    panel['cnx'] + panel['max_fs'] - panel['min_fs'] + 1
+                local_ymax = \
+                    panel['cny'] + panel['max_ss'] - panel['min_ss'] + 1
+
+        return (local_xmin, local_xmax, local_ymin, local_ymax)
+
+    def find_image_size(self, geom):
+        """Finds a matrix size that allows you to hold all the panels.
+
+        Parameters
+        ----------
+        geom : dict
+
+            Dictionary with the geometry information loaded from the geomfile.
+
+        Returns
+        -------
+        (kolumns, rows,  center_x, center_y) : tuple
+
+            kolumns, rows : Matrix size used in imshow.
+            center_x, center_y : Displacement of centre.
+        """
+        # current lenght and height.
+        x_min = x_max = y_min = y_max = 0
+
+        # I am looking for the most remote panel points.
+        for name in geom["panels"]:
+            local_xmin, local_xmax, local_ymin, local_ymax = \
+                self.local_range(geom["panels"][name])
+            if local_xmax > x_max:
+                x_max = local_xmax
+            elif local_xmin < x_min:
+                x_min = local_xmin
+            if local_ymax > y_max:
+                y_max = local_ymax
+            elif local_ymin < y_min:
+                y_min = local_ymin
+
+        # The number of columns.
+        kolumns = x_max - x_min
+        # The number of rows.
+        rows = y_max - y_min
+
+        # Displacement of centre.
+        center_y = -int(x_max-kolumns/2)
+        center_x = int(y_max-rows/2)
+        # conversion to integer.
+        rows = int(np.ceil(rows))
+        kolumns = int(np.ceil(kolumns))
+
+        return(kolumns, rows, center_x, center_y)
