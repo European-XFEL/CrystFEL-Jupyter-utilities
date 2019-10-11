@@ -120,15 +120,12 @@ class Image:
             Image.geom = crystfel_utils.load_crystfel_geometry(
                 Image.file_geom_name)
             # Dictionary with information about the image: panels, bad places.
-            # Tuple for the minimal images size.
-            Image.image_size = geometry_utils.compute_min_array_size(
-                geometry_utils.compute_pix_maps(Image.geom))
         except FileNotFoundError:
             LOGGER.critical("Error while opening geometry file.")
             sys.exit(1)
         except TypeError:
             # No geometry file was provided.
-            Image.image_size = None
+            Image.geom = None
 
     def __init__(self):
         """Method for initializing image and checking options how to run code.
@@ -227,8 +224,9 @@ class Image:
         """Creating the image filled with ones (?) and applies bad pixel mask (?).
         Then adds panels (?).
         """
+        columns, rows, center_x, center_y = self.find_image_size(Image.geom)
         # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = np.ones(Image.image_size)
+        self.matrix = np.ones((columns, rows))
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
         peaks_search, peaks_reflections =\
@@ -236,14 +234,13 @@ class Image:
                          Image.file_h5_name)
         self.detectors =\
             panel.get_detectors(self.dict_witch_data["Panels"],
-                                Image.image_size, Image.geom, peaks_search,
+                                (columns, rows), Image.geom, peaks_search,
                                 peaks_reflections)
         # Creating a peak list from the h5 file.
         self.peaks = peak_h5.get_list_peaks(self.dict_witch_data["Peaks"],
-                                            Image.image_size)
+                                            (columns, rows))
         # Creating a bad pixel mask (?).
-        self.bad_places = panel.bad_places(Image.image_size,
-                                           Image.geom)
+        self.bad_places = panel.bad_places((columns, rows), Image.geom)
         # Arranging the panels.
         self.arrangement_panels()
         # Masking the bad pixels (?).
