@@ -160,8 +160,17 @@ class Detector:
         """
         return self.peaks_reflection
 
-    def get_array_rotated(self):
+    def get_array_rotated(self, center_x, center_y):
         """Returns array data for each panel after rotation.
+
+        Parameters
+        ----------
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
 
         Returns
         -------
@@ -169,31 +178,49 @@ class Detector:
 
             The numpy.array for panel after rotation.
         """
-        self.type_rotation()
+        self.type_rotation(center_x, center_y)
         return self.array
 
-    def type_rotation(self):
+    def type_rotation(self, center_x, center_y):
         """By comparing xfs, yfs, xss and yss verifies which kind of rotation
         should be applied.
+
+        Parameters
+        ----------
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         """
         if np.abs(self.xfs) < np.abs(self.xss) and \
                 np.abs(self.yfs) > np.abs(self.yss):
             if self.xss > 0 and self.yfs < 0:
-                self.rot_y_x()
+                self.rot_y_x(center_x, center_y)
             elif self.xss < 0 and self.yfs > 0:
-                self.rot_y_2x()
+                self.rot_y_2x(center_x, center_y)
         elif np.abs(self.xfs) > np.abs(self.xss) and \
                 np.abs(self.yfs) < np.abs(self.yss):
             if self.xfs < 0 and self.yss < 0:
-                self.rot_y()
+                self.rot_y(center_x, center_y)
             elif self.xfs > 0 and self.yss > 0:
-                self.rot_x()
+                self.rot_x(center_x, center_y)
         else:
             LOGGER.critical("{} Unknown rotation!".format(self.name))
             sys.exit(1)
 
-    def rot_x(self):
+    def rot_x(self, center_x, center_y):
         """Rotation along x-axis, columns stay the same, rows are switched.
+
+        Parameters
+        ----------
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         """
         # rotation x
         self.array = self.array[::-1, :]
@@ -203,8 +230,8 @@ class Detector:
                     self.array.shape[0], 0))
         # position y
         pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
-        # position
-        self.position = (pos_x, pos_y)
+        # position + displacement.
+        self.position = (pos_x + center_x, pos_y + center_y)
 
         # two loop for:
         for peak_search in self.peaks_search:
@@ -240,8 +267,17 @@ class Detector:
             # new position of the peak in the panel after rotation
             peak_reflection['position'] = (posx, posy)
 
-    def rot_y(self):
+    def rot_y(self, center_x, center_y):
         """Rotation along y-axis, columns order is inversed, rows stay the same.
+
+        Parameters
+        ----------
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         """
         # rotation y
         self.array = self.array[:, ::-1]
@@ -251,8 +287,8 @@ class Detector:
             int(self.array.shape[1])
         # position x
         pos_x = int(self.image_size[0]/2) - int(self.corner_y)
-        # position
-        self.position = (pos_x, pos_y)
+        # position + displacement.
+        self.position = (pos_x + center_x, pos_y + center_y)
 
         # two loop for:
         for peak_search in self.peaks_search:
@@ -288,8 +324,17 @@ class Detector:
             # new position of the peak in the panel after rotation
             peak_reflection['position'] = (posx, posy)
 
-    def rot_y_x(self):
+    def rot_y_x(self, center_x, center_y):
         """Rotation along y=x diagonal.
+
+        Parameters
+        ----------
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         """
         # rotation y=x digonal
         self.array = np.rot90(self.array)[:, ::-1]
@@ -301,8 +346,8 @@ class Detector:
         # position x
         pos_x = int(np.round(self.image_size[0]/2.0 - self.corner_y -
                     self.array.shape[0], 0))
-        # position
-        self.position = (pos_x, pos_y)
+        # position + displacement.
+        self.position = (pos_x + center_x, pos_y + center_y)
 
         # two loop for:
         for peak_search in self.peaks_search:
@@ -343,8 +388,17 @@ class Detector:
             # new position of the peak in the panel after rotation
             peak_reflection['position'] = (posx, posy)
 
-    def rot_y_2x(self):
+    def rot_y_2x(self, center_x, center_y):
         """Rotation along y=-x transpose.
+
+        Parameters
+        ----------
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         """
         # rotation y=-x transpose
         self.array = np.transpose(self.array)
@@ -353,8 +407,8 @@ class Detector:
         pos_x = int(np.round(self.image_size[0]/2.0 - self.corner_y, 0))
         # position y
         pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
-        # position
-        self.position = (pos_x, pos_y)
+        # position + displacement.
+        self.position = (pos_x + center_x, pos_y + center_y)
 
         # two loop for
         for peak_search in self.peaks_search:

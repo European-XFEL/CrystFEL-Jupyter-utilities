@@ -242,14 +242,14 @@ class Image:
         # Creating a bad pixel mask (?).
         self.bad_places = panel.bad_places((columns, rows), Image.geom)
         # Arranging the panels.
-        self.arrangement_panels()
+        self.arrangement_panels(center_x, center_y)
         # Masking the bad pixels (?).
         self.arrangment_bad_places()
         # Displaying the image.
         self.image = plt.imshow(self.matrix, cmap=self.cmap, vmax=self.vmax,
                                 vmin=self.vmin, animated=True)
 
-    def set_panel_in_view(self, detector):
+    def set_panel_in_view(self, detector, center_x, center_y):
         """Positions (?) the detector in the right place on the matrix.
         Changes the 1 values to the correct pixel value.
 
@@ -258,7 +258,12 @@ class Image:
         detector : The: class Detectror object
 
             Detector which has been set in the image.
+        center_x : int
 
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         Raises
         ------
         ValueError
@@ -269,7 +274,8 @@ class Image:
             self.matrix[detector.position[0]: detector.position[0] +
                         detector.array.shape[0],
                         detector.position[1]: detector.position[1] +
-                        detector.array.shape[1]] = detector.get_array_rotated()
+                        detector.array.shape[1]] = \
+                            detector.get_array_rotated(center_x, center_y)
         except ValueError:
             text = " ".join(["Wrong panel position",
                              "{}, Position: {}".format(detector.name,
@@ -307,12 +313,21 @@ class Image:
             bad_place = self.bad_places[name_bad_place]
             self.set_bad_place_in_view(bad_place)
 
-    def arrangement_panels(self):
+    def arrangement_panels(self, center_x, center_y):
         """Iterates through each detector (?) and positions them.
+
+        Parameters
+        ----------
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         """
         for key in self.detectors:
             detector = self.detectors[key]
-            self.set_panel_in_view(detector)
+            self.set_panel_in_view(detector, center_x, center_y)
 
     def local_range(self, panel):
         """Calculates the location of the two extreme corners of the panel.
