@@ -19,9 +19,9 @@ class Test_Stream_read(unittest.TestCase):
                                    [+0.0115679, +0.0777724, -0.0235210],
                                    [+0.0019407, +0.0171354, +0.0576783]]))
         array = np.linalg.inv(array)
-        self.a = np.linalg.norm(array[0, :])
-        self.b = np.linalg.norm(array[1, :])
-        self.c = np.linalg.norm(array[2, :])
+        self.a = np.linalg.norm(array[0, :])*10
+        self.b = np.linalg.norm(array[1, :])*10
+        self.c = np.linalg.norm(array[2, :])*10
         mod1 = np.linalg.norm(array[0, :])
         mod2 = np.linalg.norm(array[1, :])
         mod3 = np.linalg.norm(array[2, :])
@@ -106,8 +106,8 @@ class Test_Stream_read(unittest.TestCase):
             s = stream_read.search_peaks(self.file_name, "db.h5")
             assert m.called
             m.assert_called_once_with(self.file_name)
-            self.assertEqual(list(s[0].keys()), self.peak_list)
-            self.assertEqual(list(s[1].keys()), self.peak_reflections_list)
+            self.assertEqual(list(s[0].keys()).sort(), self.peak_list.sort())
+            self.assertEqual(list(s[1].keys()).sort(), self.peak_reflections_list.sort())
 
 if __name__ == '__main__':
         unittest.main()

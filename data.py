@@ -1,8 +1,23 @@
 """Module for creating functions on h5 files.
 """
+import logging
+import sys
+
 import h5py
 import numpy as np
-import sys
+
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+# create formatter and add it to the handlers
+formatter = logging.Formatter(
+    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+ch.setFormatter(formatter)
+# add the handlers to logger
+LOGGER.addHandler(ch)
 
 
 def list_datasets(dictionary, list_dataset):
@@ -27,22 +42,40 @@ def list_datasets(dictionary, list_dataset):
 
 
 def catalog(dictionary):
-    """Creat recursively dictionary in dictionary
-    datagroup is key and value is diction witch file inside
-    if is dataset key is name dataset and value
-    is object dataset.
+    """Create a nested dictionary with either datagroups or datasets names as keys.
+    For datagroups the value is a dictionary with elements of this datagroup.
+    For datasets the value is a reference to this dataset.
+
+    Example result:
+
+    {datagroup1.name:
+        {dataset11.name: dataset11.object, dataset12.name: dataset12.object},
+     datagroup2.name:
+        {dataset21.name: datset21.object,
+         datagroup22.name:
+            {dataset221.name: dataset221.object}
+        },
+     dataset1.name: dataset1.object
+    }
 
     Parameters
     ----------
     dictionary : dict
 
-        Dictionary in dictionary with dataset.
+        Nested dictionary with either datagroups or datasets names as keys.
+        the value is a reference to this datagroups or dataset object.
+        Example input:
+
+        {datagroup1.name: datagroup1.object,
+         datagroup2.name: datagroup2.object,
+         dataset1.name: dataset1.object
+        }
 
     Returns
     -------
     dictionary : dict
 
-        Dictionary in a dictionary with dataset due to a datagroup.
+        Nested dictionary with the names of datagroups or datasets as keys.
     """
     for key in dictionary.keys():
         # name is instance datagroup
@@ -73,8 +106,8 @@ def get_data_peaks(list_dataset):
     for dataset in list_dataset[::-1]:
         if dataset.name == "/processing/hitfinder/peakinfo-assembled":
             return dataset
-    print("lack Dataset /processing/hitfinder/peakinfo-assembled \
-containing peaki cheetah")
+    LOGGER.warning("Missing Dataset /processing/hitfinder/peakinfo-assembled \
+        containing peaki cheetah")
 
 
 def get_data_image(list_dataset):
@@ -101,8 +134,7 @@ def get_data_image(list_dataset):
         # we return the first datata with shape = 2
         if len(dataset.shape) == 2:
             return dataset
-    print("There is no data representing panels in the h5 file")
-    sys.exit()
+    raise Exception("There is no data representing panels in the h5 file")
 
 
 def get_diction_data(file):
@@ -137,5 +169,9 @@ def get_diction_data(file):
             dictionary = {"Panels": data, "Peaks": peaks}
             return dictionary
     except OSError:
-        print("Error opening the file H5")
-        sys.exit()
+        LOGGER.critical("Error opening the file H5")
+        sys.exit(1)
+    except Exception:
+        exc_value = sys.exc_info()[1]
+        LOGGER.critical(str(exc_value))
+        sys.exit(1)

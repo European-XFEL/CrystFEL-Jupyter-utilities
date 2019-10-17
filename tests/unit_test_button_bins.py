@@ -12,10 +12,10 @@ class Test_button_bins(unittest.TestCase):
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')
     def setUp(self, Mock_ax, Mock_plt, Mock_hist):
-        self.plt_mock = Mock_plt()
-        self.fig = self.plt_mock.figure()
-        self.ax = Mock_ax()
-        self.hist = Mock_hist()
+
+        self.fig = Mock_plt.figure()
+        self.ax = Mock_ax
+        self.hist = Mock_hist
         self.label = "+"
         self.histogram_list = [self.hist, self.hist]
         self.bttn = ButtonBins(
@@ -25,16 +25,14 @@ class Test_button_bins(unittest.TestCase):
     @patch('matplotlib.backend_bases.Event')
     def test_change_bins(self, Mock_event):
         ButtonBins.set_bins(100)
-        event = Mock_event
-        self.bttn.change_bins(event)
+        self.bttn.change_bins(Mock_event)
         assert self.fig.canvas.draw.called
-        assert self.hist.set_bins.called
+        self.assertEqual(self.hist.bins, 200)
         assert self.hist.draw_green_space.called
         assert self.hist.update.called
-        self.hist.set_bins.assert_called_with(200)
         self.bttn.label = '-'
         ButtonBins.set_bins(600)
-        self.bttn.change_bins(event)
-        self.hist.set_bins.assert_called_with(300)
+        self.bttn.change_bins(Mock_event)
+        self.assertEqual(self.hist.bins, 300)
 if __name__ == '__main__':
         unittest.main()

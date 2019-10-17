@@ -71,7 +71,10 @@ class TestH5(unittest.TestCase):
         diction = data.catalog(diction)
         lista = []
         data.list_datasets(diction, lista)
-        self.assertListEqual(lista, self.test_list)
+        for elem in lista:
+            self.assertIn(elem, self.test_list)
+        for elem in self.test_list:
+            self.assertIn(elem, lista)
 
     def test_get_data_peaks(self):
         diction = {x: self.h5file[x] for x in self.h5file}
@@ -92,7 +95,7 @@ class TestH5(unittest.TestCase):
     def test_get_diction_data(self):
         self.h5file.close()
         data_test = data.get_diction_data('tests/sample.h5')
-        data1 = {"Paneles": numpy.linspace(0, 120, 120, endpoint=False,
+        data1 = {"Panels": numpy.linspace(0, 120, 120, endpoint=False,
                                            dtype='int32').reshape(10, 12),
                  "Peaks": numpy.array([[401.771728515625, 138.53125,
                                         409.2867736816406, 3.0],
@@ -100,8 +103,8 @@ class TestH5(unittest.TestCase):
                                         1977.989501953125, 5.0],
                                        [-365.4927673339844, -172.0950164794922,
                                         576.232666015625, 3.0]])}
-        numpy.testing.assert_array_equal(data1["Paneles"],
-                                         data_test["Paneles"])
+        numpy.testing.assert_array_equal(data1["Panels"],
+                                         data_test["Panels"])
         numpy.testing.assert_array_equal(data1["Peaks"], data_test["Peaks"])
 if __name__ == '__main__':
         unittest.main()

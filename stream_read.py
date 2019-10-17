@@ -1,7 +1,23 @@
 """Module for parsing indexing stream file produced by CrystFEL indexamajig.
 """
-import numpy as np
+import logging
 import sys
+
+import numpy as np
+
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+# create formatter and add it to the handlers
+formatter = logging.Formatter(
+    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+ch.setFormatter(formatter)
+# add the handlers to logger
+LOGGER.addHandler(ch)
+LOGGER.setLevel("INFO")
 
 
 def cell_parameters(astar, bstar, cstar):
@@ -50,10 +66,8 @@ def cell_parameters(astar, bstar, cstar):
         # magnitude of a vector x2
         mod2 = np.linalg.norm(x2)
         cosine = (np.sum(x1*x2)) / (mod1*mod2)
-        if (cosine > 1.0):
-            cosine = 1.0
-        if (cosine < -1.0):
-            cosine = -1.0
+        # Clip (limit) the value.
+        cosine = np.clip(cosine, -1, 1)
 
         # angle in degrees
         return np.rad2deg(np.arccos(cosine))
@@ -141,8 +155,8 @@ def search_crystals_parameters(file_name):
                     if ((not flags["begin_crystal"]) and flags["name"]):
                         flags["begin_crystal"] = True
                     else:
-                        print("Error: duplicate data.")
-                        print(name)
+                        LOGGER.warning(
+                            "Error: duplicate data {}.".format(name))
                 elif flags["begin_crystal"]:
                     if "astar" in line:
                         # I found a line `astar`
@@ -173,11 +187,11 @@ def search_crystals_parameters(file_name):
                         unique_axis = line.strip().split(' ')[2]
 
                 if "--- End crystal" in line:
-                        # the end line of cryst. info.
+                    # the end line of cryst. info.
                     # We need `astar`, `bstar` and `cstar`
                     # to calculate unit cell parameters
                     if not(flags["astar"] or flags["bstar"] or flags["cstar"]):
-                        print("Image {} has bad cell".format(name))
+                        LOGGER.warning("Image {} has bad cell".format(name))
                     else:
                         a, b, c, alfa, beta, gamma =\
                             cell_parameters(astar, bstar, cstar)
@@ -187,7 +201,8 @@ def search_crystals_parameters(file_name):
                             # if I do not have `lattice_type` ,`centering`
                             # or `unique_axis`then
                             # I keep the default (`triclinic` `P` , `?`)
-                            print("{} keep default triclinic P".format(name))
+                            LOGGER.warning(
+                                "{} keep default triclinic P".format(name))
                             lattice_type = "triclinic"
                             centering = "P"
                             unique_axis = "?"
@@ -204,155 +219,17 @@ def search_crystals_parameters(file_name):
                         for key in flags.keys():
                             flags[key] = False
     except TypeError:
-        print("Wrong path to the stream file.")
-        sys.exit()
+        LOGGER.critical("Wrong path to the stream file.")
+        sys.exit(1)
     except IndexError:
-        print("Enter path to the stream file.")
-        sys.exit()
+        LOGGER.critical("Enter path to the stream file.")
+        sys.exit(1)
     except FileNotFoundError:
-        print("File not found or not a indexing stream file.")
-        sys.exit()
-    print("Loaded {} cells from {} chunks".format(len(crystals),
-                                                  chunks_counter))
+        LOGGER.critical("File not found or not a indexing stream file.")
+        sys.exit(1)
+    LOGGER.info("Loaded {} cells from {} chunks".format(len(crystals),
+                                                        chunks_counter))
     return crystals
-
-
-class PeakSearch:
-    """Class for representing a peak  object from the peak search
-    in the stream file.
-
-    Attributes
-    ----------
-    fs_px : double
-
-        Fast scan/pixel.
-    ss_px : double
-
-        Slow scan/pixel.
-    panel_name : str
-
-        The name of the panel to which the peak belongs.
-    position : tuple
-
-        Peak coordinates after panel reconstruction.
-    """
-    def __init__(self, fs, ss, recip, intesity, panel_name):
-        """
-        Parameters
-        ----------
-        fs : double
-
-            Fast scan/pixel.
-        ss : double
-
-            Slow scan/pixel.
-        panel_name : str
-
-            The name of the panel to which the peak belongs.
-        intesity : double
-
-            Intensity.
-        recip : double
-
-            Value `(1/d)/nm^-1`.
-        """
-        self.fs_px = fs
-        self.ss_px = ss
-        self.recip = recip
-        self.intesity = intesity
-        self.panel_name = panel_name
-        self.position = None
-
-    def get_position(self):
-        """Returns peak coordinates.
-        Returns
-        -------
-        position : tuple
-
-            Peak position.
-        """
-        return self.position
-
-
-class PeakReflections:
-    """Class for representing a peak object from reflections measured
-    after indexing in the stream file.
-
-    Attributes
-    ----------
-    fs_px : double
-
-        Fast scan/pixel.
-    ss_px : double
-
-        Slow scan/pixel.
-    panel_name : str
-
-        The name of the panel to which the peak belongs.
-    position : tuple
-
-        Peak coordinates after panel reconstruction.
-    """
-    def __init__(self, h, k, l, I, sigmaI, peak, background, fs_px, ss_px,
-                 panel_name):
-        """
-        Parameters
-        ----------
-        fs_px : double
-
-            Fast scan/pixel.
-        ss_px : double
-
-            Slow scan/pixel.
-        panel_name : str
-
-            The name of the panel to which the peak belongs.
-        h : int
-
-            The parameter 'h' of the reflection measured after indexing.
-        k : int
-
-            The parameter 'k' of the reflection measured after indexing.
-        l : int
-
-            The parameter 'l' of the reflection measured after indexing.
-        I : double
-
-            The parameter 'I' of the reflection measured after indexing.
-        sigmaI : double
-
-            Rhe parameter 'sigma(I)' of the reflection measured
-            after indexing.
-        peak : double
-
-            The parameter 'peak' of the reflection measured
-            after indexing.
-        background : double
-
-            The parameter 'background' of the reflection measured
-            after indexing.
-        """
-        self.h = h
-        self.k = k
-        self.l = l
-        self.I = I
-        self.sigmaI = sigmaI
-        self.peak = peak
-        self.background = background
-        self.fs_px = fs_px
-        self.ss_px = ss_px
-        self.panel_name = panel_name
-        self.position = None
-
-    def get_position(self):
-        """returns peak coordinates
-        Returns
-        -------
-        position : tuple
-
-            Peak position.
-        """
-        return self.position
 
 
 def search_peaks(file_stream, line_name, look_for):
@@ -399,7 +276,6 @@ def search_peaks(file_stream, line_name, look_for):
     try:
         with open(file_stream) as file:
             for line in file:
-                
                 # Check if line contains
                 if line.startswith(look_for):
                     # a h5 filename.
@@ -421,13 +297,17 @@ def search_peaks(file_stream, line_name, look_for):
                     line2 = line.strip().split(' ')  # Dividing to columns.
                     while '' in line2:
                         line2.remove('')  # Remove empty chars.
-                    fs_px = float(line2[0])  # Get data for peaks.
-                    ss_px = float(line2[1])
-                    recip = float(line2[2])
-                    intesity = float(line2[3])
+                    fs_px = float(line2[0])  # Fast scan/pixel.
+                    ss_px = float(line2[1])  # Slow scan/pixel.
+                    recip = float(line2[2])  # Value `(1/d)/nm^-1`.
+                    intesity = float(line2[3])  # Intensity
+                    # The name of the panel to which the peak belongs.
                     panel_name = line2[4]
-                    peak = PeakSearch(fs_px, ss_px, recip, intesity,
-                                      panel_name)
+                    # dictionary representing peak data
+                    # from the peak search in the stream file.
+                    peak = {'fs_px': fs_px, 'ss_px': ss_px, 'recip': recip,
+                            'intesity': intesity, 'panel_name': panel_name,
+                            'position': None}
                     # Create an object with peak information.
                     if panel_name not in peaks_search.keys():
                         peaks_search[panel_name] = list()
@@ -447,19 +327,37 @@ def search_peaks(file_stream, line_name, look_for):
                     line2 = line.strip().split(' ')  # Splitting to columns.
                     while '' in line2:
                         line2.remove('')  # Remove empty chars.
+                    # The parameter 'h'
+                    # of the reflection measured after indexing.
                     h = int(line2[0])
+                    # The parameter 'k'
+                    # of the reflection measured after indexing.
                     k = int(line2[1])
+                    # The parameter 'l'
+                    # of the reflection measured after indexing.
                     l = int(line2[2])
+                    # The parameter 'I'
+                    # of the reflection measured after indexing.
                     I = float(line2[3])
+                    # The parameter 'sigma(I)'
+                    # of the reflection measured after indexing.
                     sigmaI = float(line2[4])
+                    # The parameter 'peak'
+                    # of the reflection measured after indexing.
                     peak = float(line2[5])
+                    # The parameter 'background'
+                    # of the reflection measured after indexing.
                     background = float(line2[6])
-                    fs_px = float(line2[7])
-                    ss_px = float(line2[8])
+                    fs_px = float(line2[7])  # Fast scan/pixel.
+                    ss_px = float(line2[8])  # Slow scan/pixel.
+                    # The name of the panel to which the peak belongs.
                     panel_name = line2[9]
-                    peak = PeakReflections(h, k, l, I, sigmaI, peak,
-                                           background, fs_px,
-                                           ss_px, panel_name)
+                    # dictionary representing peak data from the reflections
+                    # measured after indexing in the stream file.
+                    peak = {'h': h, 'k': k, 'l': l, 'I': I, 'sigmaI': sigmaI,
+                            'peak': peak, 'background': background,
+                            'fs_px': fs_px, 'ss_px': ss_px,
+                            'panel_name': panel_name, 'position': None}
                     # Create an object.
                     if panel_name not in peaks_reflection.keys():
                         peaks_reflection[panel_name] = list()
@@ -473,7 +371,7 @@ def search_peaks(file_stream, line_name, look_for):
                     reflections_measured_after_indexing_flag = True
 
     except FileNotFoundError:
-        print('Error while opening stream file.')
+        LOGGER.warning('Error while opening stream file.')
         peaks_reflection = {}
         peaks_search = {}
         return (peaks_search, peaks_reflection)
@@ -482,7 +380,7 @@ def search_peaks(file_stream, line_name, look_for):
         peaks_search = {}
         return (peaks_search, peaks_reflection)
     if not found_h5_in_stream:
-        print("No peaks for file in the stream file.")
+        LOGGER.warning("No peaks for file in the stream file.")
 
     return (peaks_search, peaks_reflection)
     # In case of error the dictionary is returned empty.

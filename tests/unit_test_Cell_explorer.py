@@ -33,8 +33,8 @@ class Test_CellExplorer(unittest.TestCase):
         self.mock_centering_button = mock_centering_button
         self.mock_stats = mock_stats
         self.mock_stream_read = mock_stream_read
-        self.figure = mock_plt.figure()
-        self.mock_ax = mock_ax()
+        self.figure = mock_plt.figure
+        self.mock_ax = mock_ax
         self.mock_plt.subplots.return_value = (self.figure, self.mock_ax)
         self.mock_crystlib.crystals_list.return_value = [1, 2, 3, 4]
         self.mock_stats.norm.fit.return_value = (1, 2)
@@ -57,6 +57,8 @@ class Test_CellExplorer(unittest.TestCase):
         self.figure.canvas.mpl_connect.called
 
     def test_gauss_draw(self):
+
+        self.assertEqual(self.mock_histogram().update.call_count, 6)
         self.assertEqual(self.mock_stats.norm.fit.call_count, 6)
         self.mock_stats.norm.pdf.assert_called_with([0, 1, 2, 3, 4, 5, 6, 7],
                                                     1, 2)
@@ -64,29 +66,45 @@ class Test_CellExplorer(unittest.TestCase):
                                                            6, 7],
                                                           [1, 2, 2, 4, 2, 2,
                                                            1])
-        assert self.mock_histogram().get_current_ylim.called
+        assert self.mock_histogram().axs.get_ylim.called
         assert self.mock_histogram().axs.text.called
+        self.mock_numpy.round.assert_called_with(2, 2)
 
     @patch('matplotlib.backend_bases.MouseEvent')
     def test_rememmber_pos_panel(self, mock_event):
         mock_event.inaxes = self.mock_histogram().axs
         self.cell.rememmber_pos_panel(mock_event)
-        assert self.mock_histogram().set_current_xlim.called
+        assert self.mock_histogram().update_current_xlim.called
+        self.assertEqual(
+            self.mock_histogram().update_current_xlim.call_count, 6)
 
-    def test_home_reset(self):
+    @patch('GUI_tools.ButtonBins')
+    def test_home_reset(self, mock_ButtonBins):
+        self.mock_histogram.reset_mock()
         self.cell.home_reset()
         assert self.mock_histogram().reset.called
         self.assertEqual(self.mock_histogram().reset.call_count, 6)
+        self.assertEqual(mock_ButtonBins.set_bins.call_count, 6)
+        mock_ButtonBins.set_bins.assert_called_with(16)
         self.assertEqual(
             self.mock_centering_button().reset_color.call_count, 8)
-
+        self.assertEqual(self.mock_histogram().update.call_count, 6)
         assert self.figure.canvas.draw.called
+
+    def test_was_all_hist_selected(self):
+        self.mock_histogram.reset_mock()
+        self.mock_histogram().was_clicked_before = False
+        self.assertEqual(self.cell.was_all_hist_selected(), False)
+        self.mock_histogram().was_clicked_before = True
+        self.assertEqual(self.cell.was_all_hist_selected(), True)
 
     @patch('matplotlib.backend_bases.MouseEvent')
     def test_save_file(self, mock_event):
+        self.mock_histogram.reset_mock()
+        self.mock_histogram().was_clicked_before = True
         self.cell.save_file(mock_event)
         self.assertEqual(
-            self.mock_histogram().get_was_clicked_before.call_count, 6)
+            self.cell.was_all_hist_selected(), True)
         self.assertEqual(self.mock_stats.norm.fit.call_count, 6)
 
 if __name__ == '__main__':

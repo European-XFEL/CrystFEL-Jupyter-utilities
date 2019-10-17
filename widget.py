@@ -1,26 +1,42 @@
 """Module for centering switches and handling mouse events.
 """
+import logging
 import itertools
+
 from matplotlib.widgets import Button, RadioButtons, SpanSelector, Slider
 import matplotlib.pyplot as plt
 
 import crystlib
 
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+# create formatter and add it to the handlers
+formatter = logging.Formatter(
+    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+ch.setFormatter(formatter)
+# add the handlers to logger
+LOGGER.addHandler(ch)
+LOGGER.setLevel("INFO")
+
 
 class PeakButtons:
-    """A GUI button used to visible others peaks in image
+    """A GUI buttons used to visible others peaks in image
 
     Attributes
     ----------
     fig : The class:`matplotlib.figure.Figure`.
 
         The Figure which will be redraw.
-    axs : The class:`matplotlib.axes.Axes`
+    ax : The class:`matplotlib.axes.Axes`
 
         The Axes contains most of the figure elements.
     axis_list : list
 
-        Position button in figure(object matplotlib.pyplot.axis).
+        Position button in figure (object matplotlib.pyplot.axis).
     list_active_peak : list
 
         Flags with peaks are enabled/disabled.
@@ -47,25 +63,26 @@ class PeakButtons:
         2- Only two buttons for peaks from stream.
         3- three buttons for all peaks.
     """
-    def __init__(self, fig, ax, matrix, peaks, number_peaks_button, panels, title, radio, slider):
+    def __init__(self, fig, ax, matrix, peaks, number_peaks_button, panels,
+                 title, radio, slider):
         """
         Parameters
         ----------
         fig : The class:`matplotlib.figure.Figure`.
 
-            The Figure which will be redraw
+            The Figure which will be redraw.
         ax : The class:`matplotlib.axes.Axes`
 
             The Axes contains most of the figure elements
         matrix : numpy.array object
 
-            data with pixels
+            Data with pixels.
         panels : dict
 
-            object class Panel with peaks.
+            Objects class Detector with peaks.
         peaks -  list
 
-            Peaks form h5 file.
+            Objects class Peak form h5 file.
         number_peaks_button : int
 
             Number of buttons.
@@ -88,14 +105,16 @@ class PeakButtons:
         self.slider = slider
         self.buttons = []
         if number_peaks_button != 2:
-            self.axis_list[0] = plt.axes([.90, 0.55, 0.09, 0.08], facecolor='yellow')
+            self.axis_list[0] = plt.axes([.90, 0.55, 0.09, 0.08],
+                                         facecolor='yellow')
             button = Button(ax=self.axis_list[0],
                             label='cheetah peaks on/off')
             button.on_clicked(self.peaks_on_of)
             self.buttons.append(button)
             # On click reaction.
         if number_peaks_button != 1:
-            self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08], facecolor='yellow'))
+            self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08],
+                                          facecolor='yellow'))
             # Creat button object.
             button = Button(ax=self.axis_list[1],
                             label='peaks_search on/off')
@@ -103,7 +122,8 @@ class PeakButtons:
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
             self.buttons.append(button)
-            self.axis_list[2] = (plt.axes([.90, 0.35, 0.09, 0.08], facecolor='yellow'))
+            self.axis_list[2] = (plt.axes([.90, 0.35, 0.09, 0.08],
+                                          facecolor='yellow'))
             button = Button(ax=self.axis_list[2],
                             label='peaks_reflections on/off')
             # On click reaction.
@@ -121,7 +141,7 @@ class PeakButtons:
         for name in self.panels:
             # loop through all peaks near_bragg
             for peak in self.panels[name].get_peaks_reflection():
-                circle = plt.Circle(peak.get_position(), radius=5, color='r',
+                circle = plt.Circle(peak['position'], radius=5, color='r',
                                     fill=False)
                 # draw red circle
                 self.ax.add_artist(circle)
@@ -136,7 +156,7 @@ class PeakButtons:
         for name in self.panels:
             # loop through all peaks list
             for peak in self.panels[name].get_peaks_search():
-                circle = plt.Circle(peak.get_position(), radius=5, color='g',
+                circle = plt.Circle(peak['position'], radius=5, color='g',
                                     fill=False)
                 # draw red circle
                 self.ax.add_artist(circle)
@@ -169,7 +189,7 @@ class PeakButtons:
         vmin = self.slider.get_vmin()
         # created new image we have a new reference
         image = self.ax.imshow(self.matrix, cmap=cmap, vmax=vmax,
-                                vmin=vmin, animated=True)
+                               vmin=vmin, animated=True)
         # when we clicked button 'cheetah peaks on/off'
         if event.inaxes == self.axis_list[0]:
             # 'cheetah peaks on/off' was enabled
@@ -223,11 +243,12 @@ class PeakButtons:
                 # and draw we don't change flags
                 self.visual_peaks_search()
             if self.list_active_peak[2]:
-                # 'CrystFEL_near_bragg_peak on/off' and change flags was enabled 
+                # 'CrystFEL_near_bragg_peak on/off'
+                # and change flags was enabled
                 # we don't draw
                 self.list_active_peak[2] = False
             else:
-                # 'CrystFEL_near_bragg_peak on/off' was disabled 
+                # 'CrystFEL_near_bragg_peak on/off' was disabled
                 # and change flags
                 # we don't draw
                 self.list_active_peak[2] = True
@@ -239,6 +260,7 @@ class PeakButtons:
         # set a new reference in the widgets
         self.radio.set_image(image)
         self.slider.set_image(image)
+
 
 class ButtonBins(Button):
     """A GUI button to change the number of bins in all histograms
@@ -303,14 +325,14 @@ class ButtonBins(Button):
             if ButtonBins.__bins < 512:
                 ButtonBins.__bins *= 2
                 for his in self.histogram_list:
-                    his.set_bins(ButtonBins.__bins)
+                    his.bins = ButtonBins.__bins
                     his.update()
                     his.draw_green_space()
         elif self.label == '-':
             if ButtonBins.__bins > 2:
                 ButtonBins.__bins /= 2
                 for his in self.histogram_list:
-                    his.set_bins(ButtonBins.__bins)
+                    his.bins = ButtonBins.__bins
                     his.update()
                     his.draw_green_space()
         self.fig.canvas.draw()
@@ -429,7 +451,8 @@ class ContrastSlider(Slider):
         self.vmax = vmax
         self.vmin = vmin
         # Initialize parent constructor.
-        super(ContrastSlider, self).__init__(ax, label, vmin, vmax, valinit=int((vmax+vmin)/2))
+        super(ContrastSlider, self).__init__(
+            ax, label, self.vmin, self.vmax, valinit=(self.vmin + self.vmax)/2)
         # On click reaction.
         super(ContrastSlider, self).on_changed(self.on_check)
 
@@ -551,10 +574,10 @@ class CenteringButton(Button):
         # change name color in diction for key PABCFHIR is label button
         self.histogram_colors[self.label.get_text()] = self.color
         for hist in self.histogram_list:  # Loop for each histogram.
-            hist.set_colour(self.histogram_colors)  # Setting new colour
+            hist.list_colors = self.histogram_colors  # Setting new colour
             # in a given histogram.
             # Refresh each histogram (clear image and draw again)
-            hist.update_color()
+            hist.update_colors()
         self.fig.canvas.draw()  # Redraw the current figure.
 
     def reset_color(self):
@@ -564,10 +587,10 @@ class CenteringButton(Button):
         self.color = self.list_color[0]
         self.histogram_colors[self.label.get_text()] = self.color
         for hist in self.histogram_list:  # Loop for each histogram.
-            hist.set_colour(self.histogram_colors)  # Setting new colour
+            hist.list_colors = self.histogram_colors  # Setting new colour
             # in a given histogram.
             # Refresh each histogram (clear image and draw again)
-            hist.update_color()
+            hist.update_colors()
 
 
 class Span:
@@ -669,23 +692,24 @@ class Span:
 
         if left_posx == right_posx:  # Clicking resets the selection.
             # set flags
-            self.histogram_list[self.index].set_was_clicked_before(False)
-            self.histogram_list[self.index].set_range_green_space(None, None)
+            self.histogram_list[self.index].was_clicked_before = False
+            self.histogram_list[self.index].range_green_space = None, None
 
         else:
             # set flags this histogram was clicked
-            self.histogram_list[self.index].set_was_clicked_before(True)
+            self.histogram_list[self.index].was_clicked_before = True
             # set range green space
-            self.histogram_list[self.index].set_range_green_space(left_posx,
-                                                                  right_posx)
+            self.histogram_list[self.index].range_green_space =\
+                left_posx, right_posx
         for crystal in self.all_crystals_list:
             # Loop for each histogram checking if it belongs to the selection.
             if not self.is_exluded(crystal):
                 # If the crystal meets all conditions it is added.
                 Span.__crystals_included.append(crystal)
 
-        print("Selected {} of {} cells".format(len(Span.__crystals_included),
-              len(self.all_crystals_list)))
+        LOGGER.info(
+            "Selected {} of {} cells".format(len(Span.__crystals_included),
+                                             len(self.all_crystals_list)))
 
         self.data_update()
         for hist in self.histogram_list:
@@ -733,6 +757,5 @@ class Span:
 
         # set data and refresh hist
         for hist in self.histogram_list:
-            hist.set_data(data_excluded=data_excluded[hist.name],
-                          data_to_histogram=data_included[hist.name])
-            hist.update()
+            hist.update(data_excluded=data_excluded[hist.name],
+                        data_to_histogram=data_included[hist.name])

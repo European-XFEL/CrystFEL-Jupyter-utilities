@@ -3,6 +3,22 @@ gets the poles connection matrix from the h5 file,
 all peaks are kept in the list
 """
 
+import logging
+
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+# create formatter and add it to the handlers
+formatter = logging.Formatter(
+    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+ch.setFormatter(formatter)
+# add the handlers to logger
+LOGGER.addHandler(ch)
+LOGGER.setLevel("INFO")
+
 
 class Peak:
     """Peak representation from the file h5
@@ -71,4 +87,4 @@ def get_list_peaks(matrix, image_size):
 
         return peaks
     except IndexError:
-        print("peaks error")
+        LOGGER.warning("Problem with peaks from the h5 file.")
