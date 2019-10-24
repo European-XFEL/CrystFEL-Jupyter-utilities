@@ -4,7 +4,6 @@ import logging
 import sys
 
 import h5py
-import numpy as np
 
 # remove all the handlers.
 for handler in logging.root.handlers[:]:
@@ -39,8 +38,8 @@ def list_datasets(fileh5, list_dataset):
         else:
             list_dataset.append(fileh5[name])
 
-def get_data_peaks(list_dataset):
-    """Returned Dataset with peaks data from 'hitfinder/peakinfo'.
+def get_peaks_data(list_dataset):
+    """Returned numpy.ndarray with peaks data from 'hitfinder/peakinfo'.
 
     Parameters
     ----------
@@ -63,34 +62,46 @@ def get_data_peaks(list_dataset):
         containing peaki cheetah")
 
 
-def get_data_image(list_dataset):
+def get_panels_data(list_dataset, event=None):
     """Look for a raw data from h5 with a specific name '/data/data'
-    if we don't find it we return the first datata with shape = 2.
+    for LCLS file or '/entry_1/data_1/data' for cxi file.
+    if we don't find it we return the first datata with shape = 2 or 3 (cxi).
 
     Parameters
     ----------
     list_dataset : list
 
         List with dataset from h5py.
+    event : int
 
+        Event to show from multi-event file.
     Returns
     -------
-    dataset : The class 'h5py._hl.dataset.Dataset'
+    dataset[...] : The class 'numpy.ndarray'
 
-        Dataset with panels data.
+        Panels data.
     """
     for dataset in list_dataset:
-        # panel data
-        if dataset.name == "/data/data":
-            return dataset
+        if event is None:
+            # panels data in LCLS file
+            if dataset.name == "/data/data":
+                return dataset[...]
+        else:
+            # panels data in cxi file.
+            if dataset.name == "/entry_1/data_1/data":
+                return dataset[event]
     for dataset in list_dataset:
-        # we return the first datata with shape = 2
-        if len(dataset.shape) == 2:
-            return dataset
+        # we return the first datata with shape = 2 or 3(cxi)
+        if event is None:
+            if len(dataset.shape) == 2:
+                return dataset[...]
+        else:
+            if len(dataset.shape) == 3:
+                return dataset[...]
     raise Exception("There is no data representing panels in the h5 file")
 
 
-def get_diction_data(file):
+def get_diction_data(file, event=None):
     """Opens the H5 file and creates a dictionary
     with two entries: "Panels" with image data and
     "Peaks" with peaks data.
@@ -100,12 +111,14 @@ def get_diction_data(file):
     file : Python unicode str (on py3)
 
         Path to hdf5 file.
+    event : int
 
+        Event to show from multi-event file.
     Returns
     -------
-    dictionary : dict
+    all_data : dict
 
-        Dictionary with two entries: image data and peaks data.
+        Dictionary with two entries: panels data and peaks data.
     """
     # the variable contains all dataset from H5
     list_dataset = []
@@ -114,11 +127,17 @@ def get_diction_data(file):
             # create a list of all datasets
             list_datasets(fileh5, list_dataset)
             # copies the necessary matrices data
-            data = np.copy(get_data_image(list_dataset))
-            peaks = np.copy(get_data_peaks(list_dataset))
-            # create a word with dnaymi
-            dictionary = {"Panels": data, "Peaks": peaks}
-            return dictionary
+            # data in LCLS file.
+            if event is None:
+                data = get_panels_data(list_dataset)
+                peaks = get_peaks_data(list_dataset)
+            # data in cxi file.
+            else:
+                data = get_panels_data(list_dataset, event)
+                peaks = None
+            # create a dictionary with all data.
+            all_data = {"Panels": data, "Peaks": peaks}
+            return all_data
     except OSError:
         LOGGER.critical("Error opening the file H5")
         sys.exit(1)
