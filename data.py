@@ -30,13 +30,14 @@ def list_datasets(fileh5, list_dataset):
         H5py file with image data.
     list_dataset : list
 
-        List with all dataset from h5py.
+        List of all datasets from h5py.
     """
     for name in fileh5:
         if isinstance(fileh5[name], h5py.Group):
             list_datasets(fileh5[name], list_dataset)
         else:
             list_dataset.append(fileh5[name])
+
 
 def get_peaks_data(list_dataset):
     """Returned numpy.ndarray with peaks data from 'hitfinder/peakinfo'.
@@ -45,7 +46,7 @@ def get_peaks_data(list_dataset):
     ----------
     list_dataset : list
 
-        List with dataset from h5py.
+        List of all datasets from h5py.
 
     Returns
     -------
@@ -71,7 +72,7 @@ def get_panels_data(list_dataset, event=None):
     ----------
     list_dataset : list
 
-        List with dataset from h5py.
+       List of all datasets from h5py.
     event : int
 
         Event to show from multi-event file.
@@ -91,7 +92,7 @@ def get_panels_data(list_dataset, event=None):
             if dataset.name == "/entry_1/data_1/data":
                 return dataset[event]
     for dataset in list_dataset:
-        # we return the first datata with shape = 2 or 3(cxi)
+        # we return the first data with shape = 2 or 3(cxi)
         if event is None:
             if len(dataset.shape) == 2:
                 return dataset[...]
@@ -103,7 +104,7 @@ def get_panels_data(list_dataset, event=None):
 
 def get_diction_data(file, event=None):
     """Opens the H5 file and creates a dictionary
-    with two entries: "Panels" with image data and
+    with two entries: "Panels" with panels data and
     "Peaks" with peaks data.
 
     Parameters
