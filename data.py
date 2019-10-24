@@ -50,15 +50,15 @@ def get_data_peaks(list_dataset):
 
     Returns
     -------
-    dataset : The class 'h5py._hl.dataset.Dataset'
+    dataset[...] : The class 'numpy.ndarray'
 
-        Dataset with peaks data.
+        Peaks data.
     """
     # we are looking for the end because in LCLS H5.
     # this datasets is near the end.
     for dataset in list_dataset[::-1]:
         if dataset.name == "/processing/hitfinder/peakinfo-assembled":
-            return dataset
+            return dataset[...]
     LOGGER.warning("Missing Dataset /processing/hitfinder/peakinfo-assembled \
         containing peaki cheetah")
 
