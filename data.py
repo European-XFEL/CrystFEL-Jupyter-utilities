@@ -20,25 +20,24 @@ ch.setFormatter(formatter)
 LOGGER.addHandler(ch)
 
 
-def list_datasets(dictionary, list_dataset):
+def list_datasets(fileh5, list_dataset):
     """Recursively searches all Datasets
     from the h5 file and add at the end of the list.
 
     Parameters
     ----------
-    dictionary : dict
+    fileh5 : class h5py._hl.files.File
 
-        Dictionary in a dictionary with dataset due to a datagroup.
+        H5py file with image data.
     list_dataset : list
 
         List with all dataset from h5py.
     """
-    for name in dictionary:
-        if isinstance(dictionary[name], h5py.Group):
-            list_datasets(dictionary[name], list_dataset)
-
+    for name in fileh5:
+        if isinstance(fileh5[name], h5py.Group):
+            list_datasets(fileh5[name], list_dataset)
         else:
-            list_dataset.append(dictionary[name])
+            list_dataset.append(fileh5[name])
 
 def get_data_peaks(list_dataset):
     """Returned Dataset with peaks data from 'hitfinder/peakinfo'.
