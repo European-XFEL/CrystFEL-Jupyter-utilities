@@ -34,57 +34,11 @@ def list_datasets(dictionary, list_dataset):
         List with all dataset from h5py.
     """
     for name in dictionary:
-        if isinstance(dictionary[name], dict):
+        if isinstance(dictionary[name], h5py.Group):
             list_datasets(dictionary[name], list_dataset)
 
         else:
             list_dataset.append(dictionary[name])
-
-
-def catalog(dictionary):
-    """Create a nested dictionary with either datagroups or datasets names as keys.
-    For datagroups the value is a dictionary with elements of this datagroup.
-    For datasets the value is a reference to this dataset.
-
-    Example result:
-
-    {datagroup1.name:
-        {dataset11.name: dataset11.object, dataset12.name: dataset12.object},
-     datagroup2.name:
-        {dataset21.name: datset21.object,
-         datagroup22.name:
-            {dataset221.name: dataset221.object}
-        },
-     dataset1.name: dataset1.object
-    }
-
-    Parameters
-    ----------
-    dictionary : dict
-
-        Nested dictionary with either datagroups or datasets names as keys.
-        the value is a reference to this datagroups or dataset object.
-        Example input:
-
-        {datagroup1.name: datagroup1.object,
-         datagroup2.name: datagroup2.object,
-         dataset1.name: dataset1.object
-        }
-
-    Returns
-    -------
-    dictionary : dict
-
-        Nested dictionary with the names of datagroups or datasets as keys.
-    """
-    for key in dictionary.keys():
-        # name is instance datagroup
-        if isinstance(dictionary[key], h5py.Group):
-            dictionary[key] = {z: dictionary[key][z] for z in dictionary[key]}
-            # if is I create recursively dictionary with file in that group
-            catalog(dictionary[key])
-    return dictionary
-
 
 def get_data_peaks(list_dataset):
     """Returned Dataset with peaks data from 'hitfinder/peakinfo'.
@@ -158,10 +112,8 @@ def get_diction_data(file):
     list_dataset = []
     try:
         with h5py.File(file, "r") as fileh5:
-            dictionary = {x: fileh5[x] for x in fileh5}
-            dictionary = catalog(dictionary)
             # create a list of all datasets
-            list_datasets(dictionary, list_dataset)
+            list_datasets(fileh5, list_dataset)
             # copies the necessary matrices data
             data = np.copy(get_data_image(list_dataset))
             peaks = np.copy(get_data_peaks(list_dataset))
