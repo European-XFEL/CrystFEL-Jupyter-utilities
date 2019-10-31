@@ -465,6 +465,15 @@ class ContrastSlider(Slider):
             ax, label, self.vmin, self.vmax, valinit=(self.vmin + self.vmax)/2)
         # On click reaction.
         super(ContrastSlider, self).on_changed(self.on_check)
+        # Set position `Contrast` label
+        # get positoin x Slider.
+        pos_x = self.ax.get_position().get_points()[0][0]
+        # get position y Slider.
+        pos_y = self.ax.get_position().get_points()[1][0]
+        # set label position.
+        self.label.set_position((pos_x, pos_y + 0.1))
+        # Disabled value text.
+        self.valtext.set_visible(False)
 
     def on_check(self, event):
         """When the button is clicked, call this func with event
