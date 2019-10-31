@@ -139,7 +139,7 @@ class Image:
 
         # Creating a figure of the right size. (why 10x10?)
         # used 10X10 because default size is to small in notebook
-        self.fig = plt.figure(figsize=(10, 10))
+        self.fig = plt.figure(figsize=(9.5, 9.5))
         # Adding subplot (?).
         # fiugre doesn't has a subplot and we add one
         self.ax = self.fig.add_subplot(111)
