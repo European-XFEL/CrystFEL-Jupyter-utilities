@@ -168,7 +168,7 @@ class Image:
             self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
                                         vmax=self.vmax, vmin=self.vmin)
             # Slider position.
-            axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
+            axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                          ax=axes, label="Contrast",
                                          vmin=self.vmin, vmax=self.vmax)
@@ -184,7 +184,7 @@ class Image:
             # Panels reconstruction:
             self.display_arrangment_view()
             # Slider position.
-            axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
+            axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                          ax=axes, label="Contrast",
                                          vmin=self.vmin, vmax=self.vmax)
