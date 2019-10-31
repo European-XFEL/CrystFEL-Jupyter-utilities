@@ -117,7 +117,7 @@ class PeakButtons:
                                           facecolor='yellow'))
             # Creat button object.
             button = Button(ax=self.axis_list[1],
-                            label='peaks_search on/off')
+                            label='peaks_search   on/off')
             # On click reaction.
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
@@ -130,6 +130,12 @@ class PeakButtons:
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
             self.buttons.append(button)
+
+        for button in self.buttons:
+            button.label.set_fontsize(8)
+            button.label.set_wrap(True)
+            button.label.set_fontstretch(200)
+            button.label.set_linespacing(2)
 
     def visual_peaks_reflection(self):
         """Draw peaks from line `reflections measured after indexing`
