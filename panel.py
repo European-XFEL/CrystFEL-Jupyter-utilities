@@ -448,63 +448,6 @@ class Detector:
             peak_reflection['position'] = (posx, posy)
 
 
-def get_detectors(raw_data_from_h5, image_size, geom,
-                  peaks_search, peaks_reflections):
-    """Creates a dictionary with detector class objects as items
-    and panel names as in the geometry file as keys.
-    Function reads 'raw' data for each panel from the h5 file.
-
-    Parameters
-    ----------
-    raw_data_from_h5 : numpy.array
-
-        Data from h5 for all detectors.
-    image_size : tuple
-
-        Image size.
-    geom : dict
-
-        Dictionary with the geometry information loaded from the geomfile.
-    peaks_search : dict
-
-        Dictionary with list of Peaskdetector name and value list.
-
-    Returns
-    -------
-    panels : dict
-
-        Dictionary with class Detector object.
-            """
-    panels = {panel_name: Detector(name=panel_name, image_size=image_size,
-                                   corner_x=geom["panels"][panel_name]["cnx"],
-                                   corner_y=geom["panels"][panel_name]["cny"],
-                                   min_fs=geom["panels"][panel_name]["min_fs"],
-                                   min_ss=geom["panels"][panel_name]["min_ss"],
-                                   max_fs=geom["panels"][panel_name]["max_fs"],
-                                   max_ss=geom["panels"][panel_name]["max_ss"],
-                                   xfs=geom["panels"][panel_name]["xfs"],
-                                   yfs=geom["panels"][panel_name]["yfs"],
-                                   xss=geom["panels"][panel_name]["xss"],
-                                   yss=geom["panels"][panel_name]["yss"],
-                                   data=raw_data_from_h5)
-              for panel_name in geom["panels"]}
-
-    # complete all panels  with a list of peaks they have.
-    # peaks which `cheack peak detection` shows
-    # and peaks which  `near bragg` shows.
-    for name in panels:
-        try:
-            panels[name].peaks_search = peaks_search[name]
-        except:
-            pass
-        try:
-            panels[name].peaks_reflection = peaks_reflections[name]
-        except:
-            pass
-
-    return panels
-
-
 class BadRegion:
     """Class for mapping bad pixel regions on the image. Regions are read from the
     geometry file.

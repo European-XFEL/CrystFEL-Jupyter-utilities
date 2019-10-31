@@ -8,6 +8,7 @@ refreshes (updates) the image and adds widgets.
 # avoid displaying the same image all over again in jupyter notebook.
 import argparse
 import logging
+import re
 import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
@@ -16,7 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import data
-import panel
+from panel import Detector, bad_places
 import peak_h5
 from stream_read import search_peaks
 from widget import ContrastSlider, PeakButtons, Radio
@@ -220,6 +221,62 @@ class Image:
         # Display the image:
         plt.show()
 
+    def __panels_create(self, geom, image_size, event=None):
+        """Creates a dictionary of panels with panels objects as items
+    and panel names as in the geometry file as keys.
+
+        Parameters
+        ----------
+        geom : dict
+
+            Dictionary with the geometry information loaded from the geomfile.
+        image_size : touple
+
+            numpy.array shape storing the minimum array size used in image.
+        event : Python unicode str (on py3)
+
+            Event to show from multi-event file.
+
+        Returns
+        -------
+        panels : Dict
+
+        Dictionary with panels object.
+        """
+        panels = {}
+
+        for name in geom['panels']:
+            if event is None:
+                panel_data = self.dict_witch_data["Panels"]
+            else:
+                idx = int(re.findall('\d+', name)[0])
+                panel_data = self.dict_witch_data["Panels"][idx]
+
+            panel = Detector(name=name, image_size=image_size,
+                             corner_x=geom["panels"][name]["cnx"],
+                             corner_y=geom["panels"][name]["cny"],
+                             min_fs=geom["panels"][name]["min_fs"],
+                             min_ss=geom["panels"][name]["min_ss"],
+                             max_fs=geom["panels"][name]["max_fs"],
+                             max_ss=geom["panels"][name]["max_ss"],
+                             xfs=geom["panels"][name]["xfs"],
+                             yfs=geom["panels"][name]["yfs"],
+                             xss=geom["panels"][name]["xss"],
+                             yss=geom["panels"][name]["yss"],
+                             data=panel_data)
+                # some panels haven't peaks
+            try:
+                panel.peaks_search = peaks_search[name]
+            except:
+                pass
+            try:
+                panel.peaks_reflection = peaks_reflections[name]
+            except:
+                pass
+            panels[name] = panel
+
+        return panels
+
     def display_arrangment_view(self):
         """Creating the image filled with ones (?) and applies bad pixel mask (?).
         Then adds panels (?).
@@ -229,19 +286,15 @@ class Image:
         self.matrix = np.ones((columns, rows))
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
-        line_name = Image.file_h5_name.strip().split('/')[-1]
-        peaks_search, peaks_reflections =\
-            search_peaks(Image.file_stream_name, line_name, 'Image filename:')
 
-        self.detectors =\
-            panel.get_detectors(self.dict_witch_data["Panels"],
-                                (columns, rows), Image.geom, peaks_search,
-                                peaks_reflections)
+        self.detectors = self.__panels_create(geom=Image.geom,
+                                              image_size=(columns, rows))
+
         # Creating a peak list from the h5 file.
         self.peaks = peak_h5.get_list_peaks(self.dict_witch_data["Peaks"],
                                             (columns, rows))
         # Creating a bad pixel mask (?).
-        self.bad_places = panel.bad_places((columns, rows), Image.geom)
+        self.bad_places = bad_places((columns, rows), Image.geom)
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
         # Masking the bad pixels (?).
