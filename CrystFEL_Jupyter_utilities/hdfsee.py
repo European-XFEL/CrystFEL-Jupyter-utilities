@@ -15,11 +15,11 @@ from cfelpyutils import crystfel_utils, geometry_utils
 import matplotlib.pyplot as plt
 import numpy as np
 
-import data
-import panel
-import peak_h5
-from stream_read import search_peaks
-from widget import ContrastSlider, PeakButtons, Radio
+from .data import get_diction_data
+from .panel import bad_places,  get_detectors
+from .peak_h5 import get_list_peaks
+from .stream_read import search_peaks
+from .widget import ContrastSlider, PeakButtons, Radio
 
 
 # remove all the handlers.
@@ -137,7 +137,7 @@ class Image:
         Image.argparsing()
 
         # Dictionary containing panels and peaks info from the h5 file.
-        self.dict_witch_data = data.get_diction_data(Image.file_h5_name)
+        self.dict_witch_data = get_diction_data(Image.file_h5_name)
 
         # Creating a figure of the right size. (why 10x10?)
         # used 10X10 because default size is to small in notebook
@@ -235,14 +235,13 @@ class Image:
             search_peaks(Image.file_stream_name,
                          Image.file_h5_name)
         self.detectors =\
-            panel.get_detectors(self.dict_witch_data["Panels"],
-                                (columns, rows), Image.geom, peaks_search,
-                                peaks_reflections)
+            get_detectors(self.dict_witch_data["Panels"],
+                          (columns, rows), Image.geom, peaks_search,
+                          peaks_reflections)
         # Creating a peak list from the h5 file.
-        self.peaks = peak_h5.get_list_peaks(self.dict_witch_data["Peaks"],
-                                            (columns, rows))
+        self.peaks = get_list_peaks(self.dict_witch_data["Peaks"], (columns, rows))
         # Creating a bad pixel mask (?).
-        self.bad_places = panel.bad_places((columns, rows), Image.geom)
+        self.bad_places = bad_places((columns, rows), Image.geom)
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
         # Masking the bad pixels (?).

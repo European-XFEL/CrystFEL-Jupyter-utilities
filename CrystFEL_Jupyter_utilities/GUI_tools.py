@@ -9,11 +9,11 @@ from matplotlib.backend_bases import NavigationToolbar2
 import numpy as np
 from scipy import stats
 
-import crystlib
-from histogram import Histogram
-import stream_read
-from widget import Button, ButtonBins, Span, CenteringButton
-from zoompan import ZoomOnWheel
+from .crystlib import histograms_data
+from .histogram import Histogram
+from .stream_read import search_crystals_parameters
+from .widget import Button, ButtonBins, Span, CenteringButton
+from .zoompan import ZoomOnWheel
 
 __all__ = ['CellExplorer']
 
@@ -45,11 +45,9 @@ class CellExplorer:
         self.axs_list = self.axs_list.ravel()
         # Reshaping matrix to vector: [1][1] to [4]
         # all crystals find in file
-        self.all_crystals_list = \
-            stream_read.search_crystals_parameters(self.stream_name)
+        self.all_crystals_list = search_crystals_parameters(self.stream_name)
         # Crystals selected by Spanselector (with their colours)
-        self.histograms_data =\
-            crystlib.histograms_data(self.all_crystals_list)
+        self.histograms_data = histograms_data(self.all_crystals_list)
         # Dictionary with a, b, c, alpha, beta, gamma as keys,
         # ABCFHIR with list of data as values
         self.crystals_excluded = []
