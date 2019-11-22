@@ -108,7 +108,7 @@ class PeakButtons:
             self.axis_list[0] = plt.axes([.90, 0.55, 0.09, 0.08],
                                          facecolor='yellow')
             button = Button(ax=self.axis_list[0],
-                            label='cheetah peaks on/off')
+                            label='peaks_cheetah on/off')
             button.on_clicked(self.peaks_on_of)
             self.buttons.append(button)
             # On click reaction.
