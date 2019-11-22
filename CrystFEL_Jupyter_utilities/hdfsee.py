@@ -36,6 +36,8 @@ ch.setFormatter(formatter)
 LOGGER.addHandler(ch)
 LOGGER.setLevel("INFO")
 
+__all__ = ['Image']
+
 
 class Image:
     """Class for the main image.

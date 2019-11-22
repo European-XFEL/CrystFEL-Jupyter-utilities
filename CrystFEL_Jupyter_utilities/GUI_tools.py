@@ -15,6 +15,8 @@ import stream_read
 from widget import Button, ButtonBins, Span, CenteringButton
 from zoompan import ZoomOnWheel
 
+__all__ = ['CellExplorer']
+
 
 class CellExplorer:
     """Displaying the 6 subplots, each containing a histogram with data from
