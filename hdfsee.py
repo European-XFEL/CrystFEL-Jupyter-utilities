@@ -18,7 +18,6 @@ import numpy as np
 
 import data
 from panel import Detector, bad_places
-import peak_h5
 from stream_read import search_peaks
 from widget import ContrastSlider, PeakButtons, Radio
 
@@ -277,6 +276,37 @@ class Image:
 
         return panels
 
+    def cheetah_peaks_list(peaks_data, image_size):
+        """Return a list of cheetah peaks form H5
+        gets a peaks_data with data for all peaks given
+        file h5.
+
+        Parameters
+        ----------
+        peaks_data : numpy.array
+
+            Data for cheetah peaks from h5 file.
+        image_size : touple
+
+            numpy.array shape storing the minimum array size used in image.
+        Returns
+        -------
+        peaks : list
+
+            List of class Peak object.
+        """
+        try:
+            peaks = []
+            # peaks_data[:,] next rows
+            for row in peaks_data[:, ]:
+                posx = row[0] + image_size[1]/2.0
+                posy = -row[1] + image_size[0]/2.0
+                peak = {"posx": posx, "posy": posy, "position": (posx, posy)}
+                peaks.append(peak)
+            return peaks
+        except IndexError:
+            LOGGER.warning("Problem with peaks from the h5 file.")
+
     def display_arrangment_view(self):
         """Creating the image filled with ones (?) and applies bad pixel mask (?).
         Then adds panels (?).
@@ -291,8 +321,8 @@ class Image:
                                               image_size=(columns, rows))
 
         # Creating a peak list from the h5 file.
-        self.peaks = peak_h5.get_list_peaks(self.dict_witch_data["Peaks"],
-                                            (columns, rows))
+        self.peaks = self.cheetah_peaks_list(self.dict_witch_data["Peaks"],
+                                             (columns, rows))
         # Creating a bad pixel mask (?).
         self.bad_places = bad_places((columns, rows), Image.geom)
         # Arranging the panels.

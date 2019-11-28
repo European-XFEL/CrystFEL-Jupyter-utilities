@@ -167,7 +167,7 @@ class PeakButtons:
         try:
             # loop through all peaks list
             for peak in self.peaks:
-                circle = plt.Circle((peak['posx'], peak['posy']), radius=5,
+                circle = plt.Circle(peak['position'], radius=5,
                                     color='y', fill=False)
                 # draw yellow circle
                 self.ax.add_artist(circle)
