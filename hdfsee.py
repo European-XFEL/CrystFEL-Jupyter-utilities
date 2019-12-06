@@ -263,20 +263,48 @@ class Image:
                              xss=geom["panels"][name]["xss"],
                              yss=geom["panels"][name]["yss"],
                              data=panel_data)
-                # some panels haven't peaks
-            try:
-                panel.peaks_search = peaks_search[name]
-            except:
-                pass
-            try:
-                panel.peaks_reflection = peaks_reflections[name]
-            except:
-                pass
+
             panels[name] = panel
 
         return panels
 
-    def cheetah_peaks_list(peaks_data, image_size):
+    def add_stream_peaks(self, panels, streamfile, event=None):
+        """Search for peaks `peak search` and `peak reflection` from streamfile.
+
+       Parameters
+        ----------
+        streamfile : Python unicode str (on py3)
+
+            Path to stream file.
+        panels : list
+
+            List of panels object.
+        event : Python unicode str (on py3)
+
+            Event to show from multi-event file.
+        """
+        if event is None:
+            line_name = Image.file_h5_name.strip().split('/')[-1]
+            peaks_search, peaks_reflection =\
+                search_peaks(streamfile, line_name, 'Image filename:')
+            print(len(peaks_search), len(peaks_reflection))
+        else:
+            peaks_search, peaks_reflection = \
+                search_peaks(streamfile, event, 'Event')
+        # add peaks to each panel,not everyone can have them.
+        for name in panels:
+            # peaks_search doesn't have the key panel.name
+            try:
+                panels[name].peaks_search = peaks_search[name]
+            except:
+                pass
+            # peaks_reflection doesn't have the key panel.name
+            try:
+                panels[name].peaks_reflection = peaks_reflection[name]
+            except:
+                pass
+
+    def cheetah_peaks_list(self, peaks_data, image_size):
         """Return a list of cheetah peaks form H5
         gets a peaks_data with data for all peaks given
         file h5.
@@ -319,7 +347,8 @@ class Image:
 
         self.detectors = self.__panels_create(geom=Image.geom,
                                               image_size=(columns, rows))
-
+        if Image.which_argument_is_used['dispaly_with_peaks']:
+            self.add_stream_peaks(self.detectors, Image.file_stream_name)
         # Creating a peak list from the h5 file.
         self.peaks = self.cheetah_peaks_list(self.dict_witch_data["Peaks"],
                                              (columns, rows))
