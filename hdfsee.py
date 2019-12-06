@@ -383,7 +383,7 @@ class Image:
         self.peaks = self.cheetah_peaks_list(self.dict_witch_data["Peaks"],
                                              (columns, rows))
         # Creating a bad pixel mask (?).
-        self.bad_places = bad_places((columns, rows), Image.geom)
+        self.bad_places = bad_places((columns, rows), Image.geom, center_x, center_y)
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
         # Masking the bad pixels (?).
