@@ -90,7 +90,7 @@ def get_panels_data(list_dataset, event=None):
         else:
             # panels data in cxi file.
             if dataset.name == "/entry_1/data_1/data":
-                return dataset[event]
+                return dataset[int(event)]
     for dataset in list_dataset:
         # we return the first data with shape = 2 or 3(cxi)
         if event is None:
