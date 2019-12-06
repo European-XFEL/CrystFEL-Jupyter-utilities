@@ -139,12 +139,9 @@ class Image:
 
         # Creating a figure of the right size. (why 10x10?)
         # used 10X10 because default size is to small in notebook
-        self.fig = plt.figure(figsize=(10, 10))
-        # Adding subplot (?).
-        # fiugre doesn't has a subplot and we add one
-        self.ax = self.fig.add_subplot(111)
-        # Setting the title to filename path.
-        self.ax.set_title(Image.file_h5_name)
+        self.fig, self.ax = self.__creat_figure(path=Image.file_h5_name,
+                                                figsize=(10, 10))
+
         # Setting the contrast.
         self.vmax = 600
         self.vmin = 0
@@ -219,6 +216,39 @@ class Image:
 
         # Display the image:
         plt.show()
+
+    def __creat_figure(self, path, figsize=(10, 10), event=None):
+        """Creats new figure object, adds subplot.
+
+        Parameters
+        ----------
+        path : Python unicode str (on py3).
+
+            Path to the image data file.
+        figsize : tuple
+
+            Figure size (default = (10, 10)).
+        event : Python unicode str (on py3)
+
+            Event to show from multi-event file.
+
+        Returns
+        -------
+        fig : The class:`matplotlib.figure.Figure`.
+
+            The Figure which will be redraw.
+        ax : The class:`matplotlib.axes.Axes`
+
+            The Axes contains most of the figure elements.
+        """
+        fig, ax = plt.subplots(figsize=figsize)
+        event_name = " Event " + str(event)
+        if event is None:
+            event_name = ""
+        # Setting the title to filename path.
+        ax.set_title(path + event_name)
+
+        return fig, ax
 
     def __panels_create(self, geom, image_size, event=None):
         """Creates a dictionary of panels with panels objects as items
