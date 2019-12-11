@@ -1,7 +1,9 @@
+#!/usr/bin/env python
+
 """Module to run the program from the console.
 Parse a command line.
 """
-# !/usr/bin/env python
+
 import argparse
 from GUI_tools import CellExplorer
 
