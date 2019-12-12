@@ -36,4 +36,17 @@ setup(name='CrystFEL_Jupyter_utilities',
       ],
 
       python_requires='>=3.5',
+      classifiers=[
+          'Development Status :: 1 - Alpha',
+          'Environment :: Console',
+          'Intended Audience :: Developers',
+          'Intended Audience :: Science/Research',
+          'License :: OSI Approved :: BSD License',
+          'Operating System :: POSIX :: Linux',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
+          'Topic :: Scientific/Engineering :: Information Analysis',
+          'Topic :: Scientific/Engineering :: Physics',
+      ]
 )
