@@ -353,17 +353,18 @@ class Image:
 
             List of class Peak object.
         """
+        peaks = []
         try:
-            peaks = []
             # peaks_data[:,] next rows
             for row in peaks_data[:, ]:
                 posx = row[0] + image_size[1]/2.0
                 posy = -row[1] + image_size[0]/2.0
                 peak = {"posx": posx, "posy": posy, "position": (posx, posy)}
                 peaks.append(peak)
-            return peaks
-        except IndexError:
+        except Exception:
             LOGGER.warning("Problem with peaks from the h5 file.")
+        finally:
+            return peaks
 
     def display_arrangment_view(self):
         """Creating the image filled with ones (?) and applies bad pixel mask (?).
