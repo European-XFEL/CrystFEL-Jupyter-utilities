@@ -88,6 +88,8 @@ class Image:
         parser.add_argument('-p', '--peaks', nargs=1, metavar='name.STREAM',
                             help='use to display peaks' +
                             ' from stream is used only witch geom')
+        parser.add_argument('-e', '--event', nargs=1, metavar='name.EVENT',
+                            help='Event to show from multi-event file.')
         # Parsing command line arguments.
         args = parser.parse_args()
         # Variable for running mode.
@@ -107,13 +109,21 @@ class Image:
                 # Only the geometry file was provided.
                 Image.file_stream_name = None
                 Image.which_argument_is_used['display_arrangment_view'] = True
+            if args.event:
+                Image.event = args.event[0]
+            else:
+                Image.event = None
         # Image file without geometry.
         else:
+            if args.event:
+                LOGGER.warning(
+                    'Can not use without geometry reconstruction.')
             if args.peaks:
                 LOGGER.warning(
                     'Displaying panels without geometry reconstruction.')
             Image.file_stream_name = None
             Image.file_geom_name = None
+            Image.event = None
             Image.which_argument_is_used['display_only_file'] = True
 
         try:
@@ -135,12 +145,13 @@ class Image:
         Image.argparsing()
 
         # Dictionary containing panels and peaks info from the h5 file.
-        self.dict_witch_data = data.get_diction_data(Image.file_h5_name)
+        self.dict_witch_data = data.get_diction_data(Image.file_h5_name, Image.event)
 
         # Creating a figure of the right size. (why 10x10?)
         # used 10X10 because default size is to small in notebook
         self.fig, self.ax = self.__creat_figure(path=Image.file_h5_name,
-                                                figsize=(10, 10))
+                                                figsize=(10, 10),
+                                                event=Image.event)
 
         # Setting the contrast.
         self.vmax = 600
@@ -376,19 +387,19 @@ class Image:
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
 
-        self.detectors = self.__panels_create(geom=Image.geom,
+        self.detectors = self.__panels_create(geom=Image.geom, event=Image.event,
                                               image_size=(columns, rows))
         if Image.which_argument_is_used['dispaly_with_peaks']:
-            self.add_stream_peaks(self.detectors, Image.file_stream_name)
+            self.add_stream_peaks(self.detectors, Image.file_stream_name, Image.event)
         # Creating a peak list from the h5 file.
         self.peaks = self.cheetah_peaks_list(self.dict_witch_data["Peaks"],
                                              (columns, rows))
         # Creating a bad pixel mask (?).
-        self.bad_places = bad_places((columns, rows), Image.geom, center_x, center_y)
+        #self.bad_places = bad_places((columns, rows), Image.geom, center_x, center_y)
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
         # Masking the bad pixels (?).
-        self.arrangment_bad_places()
+        #self.arrangment_bad_places()
         # Displaying the image.
         self.image = plt.imshow(self.matrix, cmap=self.cmap, vmax=self.vmax,
                                 vmin=self.vmin, animated=True)
