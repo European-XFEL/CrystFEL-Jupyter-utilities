@@ -383,12 +383,11 @@ class Image:
         """
         columns, rows, center_x, center_y = self.find_image_size(Image.geom)
         # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = np.ones((columns, rows))
+        self.matrix = np.ones((rows, columns))
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
-
         self.detectors = self.__panels_create(geom=Image.geom, event=Image.event,
-                                              image_size=(columns, rows))
+                                              image_size=(rows, columns))
         if Image.which_argument_is_used['dispaly_with_peaks']:
             self.add_stream_peaks(self.detectors, Image.file_stream_name, Image.event)
         # Creating a peak list from the h5 file.
