@@ -82,7 +82,7 @@ class Image:
         ----------
         path : Python unicode str (on py3).
 
-            Path to cxi file.
+            Path to h5 file.
        geomfile : Python unicode str (on py3)
 
             Path to geomfile file.
@@ -96,12 +96,9 @@ class Image:
         # Dictionary containing panels and peaks info from the h5 file.
         self.dict_witch_data = get_diction_data(self.path)
 
-        # Creating a figure of the right size. (why 10x10?)
+        # Creating a figure and suplot
         # used 10X10 because default size is to small in notebook
-        self.fig = plt.figure(figsize=(10, 10))
-        # Adding subplot (?).
-        # fiugre doesn't has a subplot and we add one
-        self.ax = self.fig.add_subplot(111)
+        self.fig, self.ax = plt.subplots(figsize=(10, 10))
         # Setting the title to filename path.
         self.ax.set_title(self.path)
         # Setting the contrast.
