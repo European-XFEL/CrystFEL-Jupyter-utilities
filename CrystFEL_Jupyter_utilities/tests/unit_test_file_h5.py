@@ -1,10 +1,8 @@
 import h5py
 import numpy
 import os
-import sys
 import unittest
 
-sys.path.insert(0, os.getcwd())
 import CrystFEL_Jupyter_utilities.data as data
 
 
