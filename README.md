@@ -31,9 +31,14 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 `numpy`  
 `Python >= 3.5`  
 `scipy`
+## Installing
+`git clone` <https://github.com/European-XFEL/CrystFEL-Jupyter-utilities.git>  
+`python setup.py install`
 
 ## Tests
-`python -m unittest discover -s tests/ -p 'unit_*' -v`
+`python -m unittest discover -s CrystFEL_Jupyter_utilities/tests/ -p 'unit_*' -v`  
+or  
+`python setup.py test`
 
 ## hdfsee.py usage
 The tool is designed to work with h5 files (hdf5). Tested only with LCLS specific data structure <http://www.cxidb.org/data/21/cxidb-21-run0130.tar>
