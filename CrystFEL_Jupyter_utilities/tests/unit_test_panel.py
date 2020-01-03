@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch, Mock
 
 sys.path.insert(0,  os.getcwd())
-import panel
+import CrystFEL_Jupyter_utilities.panel as panel
 
 
 class TestPanel(unittest.TestCase):

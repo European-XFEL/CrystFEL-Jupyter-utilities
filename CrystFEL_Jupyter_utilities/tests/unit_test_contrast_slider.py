@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch, Mock
 
 sys.path.insert(0, os.getcwd())
-from widget import ContrastSlider
+from CrystFEL_Jupyter_utilities.widget import ContrastSlider
 
 
 class Test_ContrastSlider(unittest.TestCase):

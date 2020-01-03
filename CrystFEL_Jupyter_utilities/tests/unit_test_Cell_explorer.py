@@ -5,26 +5,26 @@ import unittest
 from unittest.mock import patch, Mock
 
 sys.path.insert(0, os.getcwd())
-from GUI_tools import CellExplorer
+from CrystFEL_Jupyter_utilities.GUI_tools import CellExplorer
 
 
 class Test_CellExplorer(unittest.TestCase):
-    @patch('GUI_tools.stream_read')
-    @patch('GUI_tools.stats')
-    @patch('GUI_tools.CenteringButton')
-    @patch('GUI_tools.ButtonBins')
-    @patch('GUI_tools.Button')
-    @patch('GUI_tools.Span')
-    @patch('GUI_tools.np')
-    @patch('GUI_tools.Histogram')
-    @patch('GUI_tools.crystlib')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.search_crystals_parameters')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.stats')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.CenteringButton')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.ButtonBins')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.Button')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.Span')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.np')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.Histogram')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.histograms_data')
     @patch('matplotlib.axes.Axes')
-    @patch('GUI_tools.plt')
-    def setUp(self, mock_plt, mock_ax, mock_crystlib, mock_histogram,
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.plt')
+    def setUp(self, mock_plt, mock_ax, mock_histograms_data, mock_histogram,
               mock_numpy, mock_span, mock_button_bins, mock_buton,
-              mock_centering_button, mock_stats, mock_stream_read):
+              mock_centering_button, mock_stats, mock_search_crystals_parameters):
         self.mock_plt = mock_plt
-        self.mock_crystlib = mock_crystlib
+        self.mock_histograms_data = mock_histograms_data
         self.mock_histogram = mock_histogram
         self.mock_numpy = mock_numpy
         self.mock_span = mock_span
@@ -32,11 +32,11 @@ class Test_CellExplorer(unittest.TestCase):
         self.mock_buton = mock_buton
         self.mock_centering_button = mock_centering_button
         self.mock_stats = mock_stats
-        self.mock_stream_read = mock_stream_read
+        self.mock_search_crystals_parameters = mock_search_crystals_parameters
         self.figure = mock_plt.figure
         self.mock_ax = mock_ax
         self.mock_plt.subplots.return_value = (self.figure, self.mock_ax)
-        self.mock_crystlib.crystals_list.return_value = [1, 2, 3, 4]
+        self.mock_histograms_data.crystals_list.return_value = [1, 2, 3, 4]
         self.mock_stats.norm.fit.return_value = (1, 2)
         self.mock_numpy.linspace.return_value = [0, 1, 2, 3, 4, 5, 6, 7]
         self.mock_stats.norm.pdf.return_value = [1, 2, 2, 4, 2, 2, 1]
@@ -47,9 +47,9 @@ class Test_CellExplorer(unittest.TestCase):
         assert self.mock_plt.subplots.called
         assert self.mock_ax.ravel.called
         assert self.mock_plt.show.called
-        assert self.mock_crystlib.histograms_data.called
-        assert self.mock_stream_read.search_crystals_parameters.called
-        self.mock_stream_read.search_crystals_parameters.called_with(
+        assert self.mock_histograms_data.called
+        assert self.mock_search_crystals_parameters.called
+        self.mock_search_crystals_parameters.called_with(
             "test_file")
         self.assertEqual(self.mock_histogram.call_count, 6)
         self.assertEqual(self.mock_span.call_count, 6)
@@ -78,7 +78,7 @@ class Test_CellExplorer(unittest.TestCase):
         self.assertEqual(
             self.mock_histogram().update_current_xlim.call_count, 6)
 
-    @patch('GUI_tools.ButtonBins')
+    @patch('CrystFEL_Jupyter_utilities.GUI_tools.ButtonBins')
     def test_home_reset(self, mock_ButtonBins):
         self.mock_histogram.reset_mock()
         self.cell.home_reset()

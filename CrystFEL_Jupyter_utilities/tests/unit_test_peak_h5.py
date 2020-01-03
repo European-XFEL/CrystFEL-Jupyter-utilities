@@ -3,7 +3,7 @@ import numpy
 import os
 import sys
 sys.path.insert(0, os.getcwd())
-import peak_h5
+import CrystFEL_Jupyter_utilities.peak_h5 as peak_h5
 
 
 class TestPanel(unittest.TestCase):

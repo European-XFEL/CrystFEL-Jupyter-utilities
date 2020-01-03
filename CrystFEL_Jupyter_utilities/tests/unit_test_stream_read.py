@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import mock_open, patch
 
 sys.path.insert(0, os.getcwd())
-import stream_read
+import CrystFEL_Jupyter_utilities.stream_read as stream_read
 
 
 class Test_Stream_read(unittest.TestCase):
