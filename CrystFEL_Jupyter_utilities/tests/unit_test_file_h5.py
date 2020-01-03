@@ -104,5 +104,6 @@ class TestH5(unittest.TestCase):
         numpy.testing.assert_array_equal(data1["Panels"],
                                          data_test["Panels"])
         numpy.testing.assert_array_equal(data1["Peaks"], data_test["Peaks"])
+
 if __name__ == '__main__':
         unittest.main()
