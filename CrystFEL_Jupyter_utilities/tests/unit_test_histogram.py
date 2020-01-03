@@ -2,11 +2,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy
 import os
-import sys
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0, os.getcwd())
 import CrystFEL_Jupyter_utilities.histogram as histogram
 
 

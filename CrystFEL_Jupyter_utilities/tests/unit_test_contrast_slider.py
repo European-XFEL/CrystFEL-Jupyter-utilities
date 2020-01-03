@@ -3,7 +3,6 @@ import sys
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0, os.getcwd())
 from CrystFEL_Jupyter_utilities.widget import ContrastSlider
 
 
@@ -42,7 +41,6 @@ class Test_ContrastSlider(unittest.TestCase):
     def test_vamx_vmin(self):
         self.assertEqual(self.slider.get_vmax(), self.vmax)
         self.assertEqual(self.slider.get_vmin(), self.vmin)
-
 
 if __name__ == '__main__':
         unittest.main()

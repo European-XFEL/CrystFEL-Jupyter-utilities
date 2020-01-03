@@ -1,9 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
 import os
-import sys
-
-sys.path.insert(0, os.getcwd())
 
 from CrystFEL_Jupyter_utilities.widget import Radio
 

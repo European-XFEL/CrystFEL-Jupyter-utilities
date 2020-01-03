@@ -1,9 +1,7 @@
 import os
-import sys
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0, os.getcwd())
 from CrystFEL_Jupyter_utilities.widget import CenteringButton
 
 
