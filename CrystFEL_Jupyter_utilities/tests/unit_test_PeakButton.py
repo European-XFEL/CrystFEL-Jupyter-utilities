@@ -1,7 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy
-import os
 import unittest
 from unittest.mock import patch, Mock
 

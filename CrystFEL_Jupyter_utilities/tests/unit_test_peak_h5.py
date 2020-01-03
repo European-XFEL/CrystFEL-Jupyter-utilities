@@ -1,6 +1,5 @@
 import unittest
 import numpy
-import os
 
 import CrystFEL_Jupyter_utilities.peak_h5 as peak_h5
 

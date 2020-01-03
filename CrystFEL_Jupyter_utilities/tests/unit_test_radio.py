@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch, Mock
-import os
 
 from CrystFEL_Jupyter_utilities.widget import Radio
 

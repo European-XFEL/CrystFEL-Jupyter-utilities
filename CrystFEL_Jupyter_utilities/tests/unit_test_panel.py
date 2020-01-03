@@ -1,6 +1,4 @@
-
 import numpy
-import os
 import unittest
 from unittest.mock import patch, Mock
 
@@ -106,5 +104,6 @@ class TestPanel(unittest.TestCase):
                                      self.peaks_search, self.peaks_reflections)
         self.assertListEqual([1, 2, 3], panels['q0a0'].peaks_search)
         self.assertListEqual([3, 3, 3], panels['q1a1'].peaks_reflection)
+
 if __name__ == '__main__':
         unittest.main()
