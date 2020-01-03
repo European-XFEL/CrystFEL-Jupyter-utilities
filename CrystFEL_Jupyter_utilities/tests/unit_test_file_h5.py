@@ -1,18 +1,16 @@
 import h5py
 import numpy
-import os
 import unittest
+import tempfile
 
 import CrystFEL_Jupyter_utilities.data as data
 
 
 class TestH5(unittest.TestCase):
     def setUp(self):
-        if os.path.exists("CrystFEL_Jupyter_utilities/tests/sample.h5"):
-            os.remove("CrystFEL_Jupyter_utilities/tests/sample.h5")
-        else:
-            pass
-        self.h5file = h5py.File("CrystFEL_Jupyter_utilities/tests/sample.h5", 'a')
+        self.temporaryfile = tempfile.NamedTemporaryFile(delete=True)
+
+        self.h5file = h5py.File(self.temporaryfile)
 
         dts_data = \
             self.h5file.create_dataset("/data/data", (10, 12), dtype='i')
@@ -54,10 +52,6 @@ class TestH5(unittest.TestCase):
 
     def tearDown(self):
         self.h5file.close()
-        if os.path.exists("CrystFEL_Jupyter_utilities/tests/sample.h5"):
-            os.remove("CrystFEL_Jupyter_utilities/tests/sample.h5")
-        else:
-            pass
 
     def test_catalog(self):
         diction = {x: self.h5file[x] for x in self.h5file}
@@ -92,7 +86,7 @@ class TestH5(unittest.TestCase):
 
     def test_get_diction_data(self):
         self.h5file.close()
-        data_test = data.get_diction_data('CrystFEL_Jupyter_utilities/tests/sample.h5')
+        data_test = data.get_diction_data(self.temporaryfile.name)
         data1 = {"Panels": numpy.linspace(0, 120, 120, endpoint=False,
                                            dtype='int32').reshape(10, 12),
                  "Peaks": numpy.array([[401.771728515625, 138.53125,
