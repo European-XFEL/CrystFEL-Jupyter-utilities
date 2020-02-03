@@ -34,7 +34,14 @@ setup(name='CrystFEL_Jupyter_utilities',
           'numpy',
           'scipy',
       ],
-
+      extras_require={
+        'docs': [
+               'ipython',
+           ],
+          'test': [
+              'coverage<5',
+          ]
+      },
       python_requires='>=3.5',
       classifiers=[
           'Development Status :: 1 - Alpha',
