@@ -108,7 +108,7 @@ class PeakButtons:
             self.axis_list[0] = plt.axes([.90, 0.55, 0.09, 0.08],
                                          facecolor='yellow')
             button = Button(ax=self.axis_list[0],
-                            label='cheetah peaks on/off')
+                            label='peaks_cheetah on/off')
             button.on_clicked(self.peaks_on_of)
             self.buttons.append(button)
             # On click reaction.
@@ -117,7 +117,7 @@ class PeakButtons:
                                           facecolor='yellow'))
             # Creat button object.
             button = Button(ax=self.axis_list[1],
-                            label='peaks_search on/off')
+                            label='peaks_search   on/off')
             # On click reaction.
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
@@ -130,6 +130,12 @@ class PeakButtons:
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
             self.buttons.append(button)
+
+        for button in self.buttons:
+            button.label.set_fontsize(8)
+            button.label.set_wrap(True)
+            button.label.set_fontstretch(200)
+            button.label.set_linespacing(2)
 
     def visual_peaks_reflection(self):
         """Draw peaks from line `reflections measured after indexing`
@@ -455,6 +461,15 @@ class ContrastSlider(Slider):
             ax, label, self.vmin, self.vmax, valinit=(self.vmin + self.vmax)/2)
         # On click reaction.
         super(ContrastSlider, self).on_changed(self.on_check)
+        # Set position `Contrast` label
+        # get positoin x Slider.
+        pos_x = self.ax.get_position().get_points()[0][0]
+        # get position y Slider.
+        pos_y = self.ax.get_position().get_points()[1][0]
+        # set label position.
+        self.label.set_position((pos_x, pos_y + 0.1))
+        # Disabled value text.
+        self.valtext.set_visible(False)
 
     def on_check(self, event):
         """When the button is clicked, call this func with event
