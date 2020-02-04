@@ -21,6 +21,8 @@ def find_version(*parts):
 
 setup(name='CrystFEL_Jupyter_utilities',
       version=find_version("CrystFEL_Jupyter_utilities","__init__.py"),
+      author="European XFEL GmbH, National Centre for Nuclear Research",
+      author_email="da-support@xfel.eu",
       url="https://github.com/European-XFEL/CrystFEL-Jupyter-utilities",
       long_description=read("README.md"),
       long_description_content_type='text/markdown',
