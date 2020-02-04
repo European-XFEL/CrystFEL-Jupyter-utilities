@@ -13,10 +13,17 @@ from cfelpyutils import crystfel_utils, geometry_utils
 import matplotlib.pyplot as plt
 import numpy as np
 
+from .data import get_diction_data
 from .panel import Detector, bad_places
 from .stream_read import search_peaks
 from .widget import ContrastSlider, PeakButtons, Radio
 
+# remove all the handlers.
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+LOGGER = logging.getLogger(__name__)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
 # create formatter and add it to the handlers
 formatter = logging.Formatter(
     '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
@@ -67,7 +74,7 @@ class Image:
     """
 
 
-    def __init__(self, path, geomfile=None, streamfile=None):
+    def __init__(self, path, geomfile=None, streamfile=None, event=None):
         """Method for initializing image and checking options how to run code.
 
         Parameters
@@ -85,14 +92,15 @@ class Image:
         self.path = path
         self.geomfile = geomfile
         self.streamfile = streamfile
+        self.event = event
         # Dictionary containing panels and peaks info from the h5 file.
         self.dict_witch_data = get_diction_data(self.path, self.event)
 
         # Creating a figure and suplot
         # used 10X10 because default size is to small in notebook
-        self.fig, self.ax = self.__creat_figure(path=Image.file_h5_name,
+        self.fig, self.ax = self.__creat_figure(path=self.path,
                                                 figsize=(9.5, 9.5),
-                                                event=Image.event)
+                                                event=self.event)
 
         # Setting the contrast.
         self.vmax = 600
@@ -272,13 +280,13 @@ class Image:
             Event to show from multi-event file.
         """
         if event is None:
-            line_name = Image.file_h5_name.strip().split('/')[-1]
+            line_name = self.path.strip().split('/')[-1]
             peaks_search, peaks_reflection =\
                 search_peaks(streamfile, line_name, 'Image filename:')
             print(len(peaks_search), len(peaks_reflection))
         else:
             peaks_search, peaks_reflection = \
-                search_peaks(streamfile, event, 'Event')
+                search_peaks(streamfile, str(event), 'Event')
         # add peaks to each panel,not everyone can have them.
         for name in panels:
             # peaks_search doesn't have the key panel.name
@@ -335,8 +343,8 @@ class Image:
         # as class Panel objects.
         self.detectors = self.__panels_create(geom=self.geom, event=self.event,
                                               image_size=(rows, columns))
-        if Image.which_argument_is_used['dispaly_with_peaks']:
-            self.add_stream_peaks(self.detectors, self.streamfile, Image.event)
+        if self.streamfile is not None:
+            self.add_stream_peaks(self.detectors, self.streamfile, self.event)
         # Creating a peak list from the h5 file.
         self.peaks = self.cheetah_peaks_list(self.dict_witch_data["Peaks"],
                                              (columns, rows))
@@ -346,7 +354,7 @@ class Image:
         # Add mask
         if self.event is None:
             # Creating a bad pixel mask (?).
-            self.bad_places = bad_places((columns, rows), Image.geom, center_x, center_y)
+            self.bad_places = bad_places((columns, rows), self.geom, center_x, center_y)
             # Masking the bad pixels (?).
             self.arrangment_bad_places()
         # Displaying the image.
