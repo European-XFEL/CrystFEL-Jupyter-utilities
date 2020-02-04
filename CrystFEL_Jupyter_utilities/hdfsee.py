@@ -4,9 +4,6 @@ Creates image from a ndarray, arranges the panels,
 refreshes (updates) the image and adds widgets.
 """
 
-# Module for parsing command line arguments had to be moved here to
-# avoid displaying the same image all over again in jupyter notebook.
-import argparse
 import logging
 import re
 import sys
@@ -16,18 +13,10 @@ from cfelpyutils import crystfel_utils, geometry_utils
 import matplotlib.pyplot as plt
 import numpy as np
 
-import data
-from panel import Detector, bad_places
-from stream_read import search_peaks
-from widget import ContrastSlider, PeakButtons, Radio
+from .panel import Detector, bad_places
+from .stream_read import search_peaks
+from .widget import ContrastSlider, PeakButtons, Radio
 
-
-# remove all the handlers.
-for handler in logging.root.handlers[:]:
-    logging.root.removeHandler(handler)
-LOGGER = logging.getLogger(__name__)
-# create console handler with a higher log level
-ch = logging.StreamHandler()
 # create formatter and add it to the handlers
 formatter = logging.Formatter(
     '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
@@ -35,6 +24,8 @@ ch.setFormatter(formatter)
 # add the handlers to logger
 LOGGER.addHandler(ch)
 LOGGER.setLevel("INFO")
+
+__all__ = ['Image']
 
 
 class Image:
@@ -74,80 +65,30 @@ class Image:
 
         Containing BadRegion object from 'panel' module.
     """
-    @staticmethod
-    def argparsing():
-        """Creating arguments for parsing and parsing command line arguments.
-        """
-        # Creating arguments for parsing.
-        parser = argparse.ArgumentParser()
-        parser.add_argument('filename', nargs=1, metavar="name.H5",
-                            help='Display this image.')
-        parser.add_argument('-g', "--geomfile", nargs=1, metavar='name.GEOM',
-                            help='Use geometry from file' +
-                            ' to display arrangment panels')
-        parser.add_argument('-p', '--peaks', nargs=1, metavar='name.STREAM',
-                            help='use to display peaks' +
-                            ' from stream is used only witch geom')
-        parser.add_argument('-e', '--event', nargs=1, metavar='name.EVENT',
-                            help='Event to show from multi-event file.')
-        # Parsing command line arguments.
-        args = parser.parse_args()
-        # Variable for running mode.
-        Image.which_argument_is_used = {'display_only_file': False,
-                                        'display_arrangment_view': False,
-                                        'dispaly_with_peaks': False}
-        # Variable for filename.
-        Image.file_h5_name = args.filename[0]
-        if args.geomfile:
-            # Check if the geometry file was provided.
-            Image.file_geom_name = args.geomfile[0]
-            if args.peaks:
-                Image.file_stream_name = args.peaks[0]
-                Image.which_argument_is_used['dispaly_with_peaks'] = True
-                Image.which_argument_is_used['display_arrangment_view'] = False
-            else:
-                # Only the geometry file was provided.
-                Image.file_stream_name = None
-                Image.which_argument_is_used['display_arrangment_view'] = True
-            if args.event:
-                Image.event = args.event[0]
-            else:
-                Image.event = None
-        # Image file without geometry.
-        else:
-            if args.event:
-                LOGGER.warning(
-                    'Can not use without geometry reconstruction.')
-            if args.peaks:
-                LOGGER.warning(
-                    'Displaying panels without geometry reconstruction.')
-            Image.file_stream_name = None
-            Image.file_geom_name = None
-            Image.event = None
-            Image.which_argument_is_used['display_only_file'] = True
 
-        try:
-            Image.geom = crystfel_utils.load_crystfel_geometry(
-                Image.file_geom_name)
-            # Dictionary with information about the image: panels, bad places.
-        except FileNotFoundError:
-            LOGGER.critical("Error while opening geometry file.")
-            sys.exit(1)
-        except TypeError:
-            # No geometry file was provided.
-            Image.geom = None
 
-    def __init__(self):
+    def __init__(self, path, geomfile=None, streamfile=None):
         """Method for initializing image and checking options how to run code.
+
+        Parameters
+        ----------
+        path : Python unicode str (on py3).
+
+            Path to h5 file.
+       geomfile : Python unicode str (on py3)
+
+            Path to geomfile file.
+        streamfile : Python unicode str (on py3)
+
+            Path to stream file.
         """
-        # method for parsing command line arguments had to be moved here to.
-        # avoid displaying the same image all over again in jupyter notebook.
-        Image.argparsing()
-
+        self.path = path
+        self.geomfile = geomfile
+        self.streamfile = streamfile
         # Dictionary containing panels and peaks info from the h5 file.
-        self.dict_witch_data = data.get_diction_data(Image.file_h5_name, Image.event)
+        self.dict_witch_data = get_diction_data(self.path, self.event)
 
-        # Creating a figure of the right size. (why 10x10?)
+        # Creating a figure and suplot
         # used 10X10 because default size is to small in notebook
         self.fig, self.ax = self.__creat_figure(path=Image.file_h5_name,
                                                 figsize=(9.5, 9.5),
@@ -167,7 +108,7 @@ class Image:
 
         # For displaying the image in the right orientation (?).
         # dispaly without laying the panels
-        if Image.which_argument_is_used['display_only_file']:
+        if self.geomfile is None:
             # Just the image from file with no buttons or reconstruction.
             self.matrix = np.copy(self.dict_witch_data["Panels"])
             # Rotating to get the same image as CrystFEL hdfsee.
@@ -189,6 +130,12 @@ class Image:
                                cmap=self.cmap, image=self.image)
         # When the geometry file was provided:
         else:
+            try:
+                self.geom = crystfel_utils.load_crystfel_geometry(self.geomfile)
+                # Dictionary with information about the image: panels, bad places.
+            except FileNotFoundError:
+                LOGGER.critical("Error while opening geometry file.")
+                sys.exit(1)
             # Panels reconstruction:
             self.display_arrangment_view()
             # Slider position.
@@ -207,7 +154,7 @@ class Image:
             # Position has to be saved to be able to
             # determine what has been clicked.
             # For displaying peaks from stream file.
-            if Image.which_argument_is_used['dispaly_with_peaks']:
+            if self.streamfile is not None:
                 # Additional buttons for switching on/off
                 # peaks from stream file.
                 self.peak_buttons =\
@@ -381,15 +328,15 @@ class Image:
         """Creating the image filled with ones (?) and applies bad pixel mask (?).
         Then adds panels (?).
         """
-        columns, rows, center_x, center_y = self.find_image_size(Image.geom)
+        columns, rows, center_x, center_y = self.find_image_size(self.geom)
         # Creating an 'empty' matrix ready to be filled with pixel data.
         self.matrix = np.ones((rows, columns))
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
-        self.detectors = self.__panels_create(geom=Image.geom, event=Image.event,
+        self.detectors = self.__panels_create(geom=self.geom, event=self.event,
                                               image_size=(rows, columns))
         if Image.which_argument_is_used['dispaly_with_peaks']:
-            self.add_stream_peaks(self.detectors, Image.file_stream_name, Image.event)
+            self.add_stream_peaks(self.detectors, self.streamfile, Image.event)
         # Creating a peak list from the h5 file.
         self.peaks = self.cheetah_peaks_list(self.dict_witch_data["Peaks"],
                                              (columns, rows))

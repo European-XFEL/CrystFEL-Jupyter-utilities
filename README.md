@@ -31,9 +31,14 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 `numpy`  
 `Python >= 3.5`  
 `scipy`
+## Installing
+`git clone` <https://github.com/European-XFEL/CrystFEL-Jupyter-utilities.git>  
+`python setup.py install`
 
 ## Tests
-`python -m unittest discover -s tests/ -p 'unit_*' -v`
+`python -m unittest discover -s CrystFEL_Jupyter_utilities/tests/ -p 'unit_*' -v`  
+or  
+`python setup.py test`
 
 ## hdfsee.py usage
 The tool is designed to work with h5 files (hdf5). Tested only with LCLS specific data structure <http://www.cxidb.org/data/21/cxidb-21-run0130.tar>
@@ -46,7 +51,12 @@ Features buttons for changing contrast and colour space, displaying diffraction 
     `python hdfsee_run.py <filename> -g <geometry file>`  
 3. Displaying the image with geometry reconstruction and peaks written in the indexing.stream file produced by indexamajig:  
     `python hdfsee_run.py <filename> -g <geometry file> -p <stream file>`
-
+4. Run from code cell in jupyter-notebook:  
+   ```
+   from CrystFEL_Jupyter_utilities.hdfsee import Image
+   %matplotlib notebook
+   RUN = Image(path=<hdf5 file>, geomfile=<geometry file>, streamfile=<stream file>)
+   ```
 ## check-peak-detection.sh
 `./check-peak-detection.sh <stream file> <geometry file>`
 
@@ -66,7 +76,7 @@ and displays fitting parameters.
    `python cell_explorer_run.py <stream file>`
 2. Run from code cell in jupyter-notebook:  
    ```
-   from GUI_tools import CellExplorer
+   from CrystFEL_Jupyter_utilities.GUI_tools import CellExplorer
    %matplotlib notebook
    RUN = CellExplorer(<stream file>)
    ```

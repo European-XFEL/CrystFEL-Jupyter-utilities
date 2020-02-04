@@ -1,9 +1,11 @@
+#!/usr/bin/env python
+
 """Module to run the program from the console.
 Parse a command line.
 """
-# !/usr/bin/env python
+
 import argparse
-from GUI_tools import CellExplorer
+from CrystFEL_Jupyter_utilities.GUI_tools import CellExplorer
 
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser()

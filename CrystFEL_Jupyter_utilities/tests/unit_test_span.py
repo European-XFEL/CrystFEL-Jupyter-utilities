@@ -1,16 +1,12 @@
 import matplotlib.pyplot
-import os
-import sys
-
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0, os.getcwd())
-from widget import Span
+from CrystFEL_Jupyter_utilities.widget import Span
 
 
 class Test_Span(unittest.TestCase):
-    @patch('histogram.Histogram')
+    @patch('CrystFEL_Jupyter_utilities.histogram.Histogram')
     @patch('matplotlib.pyplot')
     def setUp(self, Mock_plt, Mock_hist):
         self.fig = Mock_plt.figure()
@@ -52,12 +48,12 @@ class Test_Span(unittest.TestCase):
         self.assertEqual(
             self.mock_hist.range_green_space, (None, None))
 
-    @patch('widget.crystlib')
-    def test_data_update(self, Mock_crystlib):
+    @patch('CrystFEL_Jupyter_utilities.widget.histograms_data')
+    def test_data_update(self, Mock_histograms_data):
         self.mock_hist.reset_mock()
         self.span.data_update()
-        assert Mock_crystlib.histograms_data.called
-        Mock_crystlib.histograms_data.assert_called_once_with(
+        assert Mock_histograms_data.called
+        Mock_histograms_data.assert_called_once_with(
             Span.get_crystals_included_list())
         self.assertEqual(self.mock_hist.update.call_count, 6)
 

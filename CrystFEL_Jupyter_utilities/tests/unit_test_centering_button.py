@@ -1,14 +1,11 @@
-import os
-import sys
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0, os.getcwd())
-from widget import CenteringButton
+from CrystFEL_Jupyter_utilities.widget import CenteringButton
 
 
 class Test_CenteringButton(unittest.TestCase):
-    @patch('histogram.Histogram')
+    @patch('CrystFEL_Jupyter_utilities.histogram.Histogram')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')
     def setUp(self, Mock_axs, Mock_plt, Mock_hist):
@@ -35,7 +32,7 @@ class Test_CenteringButton(unittest.TestCase):
         self.bttn.on_check(Mock_event)
         self.assertEqual("red", self.bttn.color)
 
-    @patch('widget.itertools')
+    @patch('CrystFEL_Jupyter_utilities.widget.itertools')
     def test_reset_color(self, Mock_itertools):
         self.bttn.reset_color()
         assert Mock_itertools.cycle.called

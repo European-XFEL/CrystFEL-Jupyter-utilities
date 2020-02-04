@@ -1,12 +1,8 @@
-
 import numpy
-import os
-import sys
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0,  os.getcwd())
-import panel
+import CrystFEL_Jupyter_utilities.panel as panel
 
 
 class TestPanel(unittest.TestCase):
@@ -38,14 +34,14 @@ class TestPanel(unittest.TestCase):
                      }
 
     def test_get_array(self):
-        numpy.testing.assert_array_equal(self.detector.get_array_rotated(),
+        numpy.testing.assert_array_equal(self.detector.get_array_rotated(0, 0),
                                          numpy.ones((194, 185), dtype='int32'))
-        self.assertTupleEqual(self.detector.get_array_rotated().shape,
+        self.assertTupleEqual(self.detector.get_array_rotated(0, 0).shape,
                               (185, 194))
 
     def test_rot_x(self):
         self.detector.array[:5, :5] = numpy.array([2, 3, 4, 5, 6])
-        self.detector.rot_x()
+        self.detector.rot_x(0, 0)
         test_array = numpy.ones((185, 194), dtype='int32')
         test_array[:5, :5] = numpy.array([2, 3, 4, 5, 6])
         test_array = test_array[::-1, :]
@@ -53,7 +49,7 @@ class TestPanel(unittest.TestCase):
 
     def test_rot_y(self):
         self.detector.array[:5, :5] = numpy.array([2, 3, 4, 5, 6])
-        self.detector.rot_y()
+        self.detector.rot_y(0, 0)
         test_array = numpy.ones((185, 194), dtype='int32')
         test_array[:5, :5] = numpy.array([2, 3, 4, 5, 6])
         test_array = test_array[:, ::-1]
@@ -61,7 +57,7 @@ class TestPanel(unittest.TestCase):
 
     def test_rot_y_x(self):
         self.detector.array[:5, :5] = numpy.array([2, 3, 4, 5, 6])
-        self.detector.rot_y_x()
+        self.detector.rot_y_x(0, 0)
         test_array = numpy.ones((185, 194), dtype='int32')
         test_array[:5, :5] = numpy.array([2, 3, 4, 5, 6])
         test_array = numpy.rot90(test_array)[:, ::-1]
@@ -69,7 +65,7 @@ class TestPanel(unittest.TestCase):
 
     def test_rot_y_2x(self):
         self.detector.array[:5, :5] = numpy.array([2, 3, 4, 5, 6])
-        self.detector.rot_y_2x()
+        self.detector.rot_y_2x(0, 0)
         test_array = numpy.ones((185, 194), dtype='int32')
         test_array[:5, :5] = numpy.array([2, 3, 4, 5, 6])
         test_array = numpy.transpose(test_array)
@@ -108,5 +104,6 @@ class TestPanel(unittest.TestCase):
                                      self.peaks_search, self.peaks_reflections)
         self.assertListEqual([1, 2, 3], panels['q0a0'].peaks_search)
         self.assertListEqual([3, 3, 3], panels['q1a1'].peaks_reflection)
+
 if __name__ == '__main__':
         unittest.main()
