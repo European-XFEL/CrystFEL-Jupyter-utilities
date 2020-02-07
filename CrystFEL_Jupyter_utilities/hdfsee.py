@@ -351,14 +351,14 @@ class Image:
             self.add_stream_peaks(self.detectors, self.streamfile, self.event)
         # Creating a peak list from the h5 file.
         self.peaks = self.cheetah_peaks_list(self.dict_witch_data["Peaks"],
-                                             (columns, rows))
+                                             (rows, columns))
 
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
         # Add mask
         if self.event is None:
             # Creating a bad pixel mask (?).
-            self.bad_places = bad_places((columns, rows), self.geom, center_x, center_y)
+            self.bad_places = bad_places((rows, columns), self.geom, center_x, center_y)
             # Masking the bad pixels (?).
             self.arrangment_bad_places()
         # Displaying the image.
