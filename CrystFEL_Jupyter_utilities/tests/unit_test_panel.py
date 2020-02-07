@@ -1,12 +1,8 @@
-
 import numpy
-import os
-import sys
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0,  os.getcwd())
-import panel
+import CrystFEL_Jupyter_utilities.panel as panel
 
 
 class TestPanel(unittest.TestCase):
@@ -108,5 +104,6 @@ class TestPanel(unittest.TestCase):
                                      self.peaks_search, self.peaks_reflections)
         self.assertListEqual([1, 2, 3], panels['q0a0'].peaks_search)
         self.assertListEqual([3, 3, 3], panels['q1a1'].peaks_reflection)
+
 if __name__ == '__main__':
         unittest.main()

@@ -1,9 +1,7 @@
 import unittest
 import numpy
-import os
-import sys
-sys.path.insert(0, os.getcwd())
-import peak_h5
+
+import CrystFEL_Jupyter_utilities.peak_h5 as peak_h5
 
 
 class TestPanel(unittest.TestCase):
@@ -23,5 +21,6 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(test_list[1].posy,
                          -18.792268753051758+self.size_obraz[0]/2.0)
         self.assertEqual(test_list[2].intensive, 659.25634765625)
+
 if __name__ == '__main__':
         unittest.main()
