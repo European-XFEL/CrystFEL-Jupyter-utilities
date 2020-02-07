@@ -1,21 +1,18 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy
-import os
-import sys
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0, os.getcwd())
-from widget import PeakButtons
+from CrystFEL_Jupyter_utilities.widget import PeakButtons
 
 
 class Test_PeakButtons(unittest.TestCase):
-    @patch('widget.Button')
-    @patch('peak_h5.Peak')
-    @patch('panel.Detector')
-    @patch('widget.ContrastSlider')
-    @patch('widget.Radio')
+    @patch('CrystFEL_Jupyter_utilities.widget.Button')
+    @patch('CrystFEL_Jupyter_utilities.peak_h5.Peak')
+    @patch('CrystFEL_Jupyter_utilities.panel.Detector')
+    @patch('CrystFEL_Jupyter_utilities.widget.ContrastSlider')
+    @patch('CrystFEL_Jupyter_utilities.widget.Radio')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.axes.Axes')
     @patch('matplotlib.pyplot.axes')
@@ -52,7 +49,7 @@ class Test_PeakButtons(unittest.TestCase):
             self.bttn.buttons, [self.Mock_button(), self.Mock_button(),
                                 self.Mock_button()])
 
-    @patch('widget.plt.Circle')
+    @patch('CrystFEL_Jupyter_utilities.widget.plt.Circle')
     def test_visual_peaks_reflection(self, mock_circle):
         self.Mock_detector.get_peaks_reflection.return_value = \
             [{'position': (1, 2)}, {'position': (3, 1)}, {'position': (2, 2)}]
@@ -65,7 +62,7 @@ class Test_PeakButtons(unittest.TestCase):
         self.assertEqual(self.Mock_ax.add_artist.call_count, 6)
         self.assertEqual(self.bttn.list_active_peak, [False, False, True])
 
-    @patch('widget.plt.Circle')
+    @patch('CrystFEL_Jupyter_utilities.widget.plt.Circle')
     def test_visual_peaks_search(self, mock_circle):
         self.Mock_detector.get_peaks_search.return_value = \
             [{'position': (3, 1)}, {'position': (8, 9)}]
@@ -77,7 +74,7 @@ class Test_PeakButtons(unittest.TestCase):
         self.assertEqual(self.Mock_ax.add_artist.call_count, 4)
         self.assertEqual(self.bttn.list_active_peak, [False, True, False])
 
-    @patch('widget.plt.Circle')
+    @patch('CrystFEL_Jupyter_utilities.widget.plt.Circle')
     def test_visual_peaks(self, mock_circle):
         self.Mock_peak.get_position.return_value = (1, 2)
 

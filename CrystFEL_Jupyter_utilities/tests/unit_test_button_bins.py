@@ -1,14 +1,11 @@
-import os
-import sys
 import unittest
 from unittest.mock import patch, Mock
 
-sys.path.insert(0, os.getcwd())
-from widget import ButtonBins
+from CrystFEL_Jupyter_utilities.widget import ButtonBins
 
 
 class Test_button_bins(unittest.TestCase):
-    @patch('histogram.Histogram')
+    @patch('CrystFEL_Jupyter_utilities.histogram.Histogram')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')
     def setUp(self, Mock_ax, Mock_plt, Mock_hist):
@@ -34,5 +31,6 @@ class Test_button_bins(unittest.TestCase):
         ButtonBins.set_bins(600)
         self.bttn.change_bins(Mock_event)
         self.assertEqual(self.hist.bins, 300)
+
 if __name__ == '__main__':
         unittest.main()

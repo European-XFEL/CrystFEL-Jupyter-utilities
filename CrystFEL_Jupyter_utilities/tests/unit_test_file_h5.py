@@ -1,20 +1,16 @@
 import h5py
 import numpy
-import os
-import sys
 import unittest
+import tempfile
 
-sys.path.insert(0, os.getcwd())
-import data
+import CrystFEL_Jupyter_utilities.data as data
 
 
 class TestH5(unittest.TestCase):
     def setUp(self):
-        if os.path.exists("tests/sample.h5"):
-            os.remove("tests/sample.h5")
-        else:
-            pass
-        self.h5file = h5py.File("tests/sample.h5", 'a')
+        self.temporaryfile = tempfile.NamedTemporaryFile(delete=True)
+
+        self.h5file = h5py.File(self.temporaryfile)
 
         dts_data = \
             self.h5file.create_dataset("/data/data", (10, 12), dtype='i')
@@ -56,10 +52,6 @@ class TestH5(unittest.TestCase):
 
     def tearDown(self):
         self.h5file.close()
-        if os.path.exists("tests/sample.h5"):
-            os.remove("tests/sample.h5")
-        else:
-            pass
 
     def test_catalog(self):
         diction = {x: self.h5file[x] for x in self.h5file}
@@ -94,7 +86,7 @@ class TestH5(unittest.TestCase):
 
     def test_get_diction_data(self):
         self.h5file.close()
-        data_test = data.get_diction_data('tests/sample.h5')
+        data_test = data.get_diction_data(self.temporaryfile.name)
         data1 = {"Panels": numpy.linspace(0, 120, 120, endpoint=False,
                                            dtype='int32').reshape(10, 12),
                  "Peaks": numpy.array([[401.771728515625, 138.53125,
@@ -106,5 +98,6 @@ class TestH5(unittest.TestCase):
         numpy.testing.assert_array_equal(data1["Panels"],
                                          data_test["Panels"])
         numpy.testing.assert_array_equal(data1["Peaks"], data_test["Peaks"])
+
 if __name__ == '__main__':
         unittest.main()

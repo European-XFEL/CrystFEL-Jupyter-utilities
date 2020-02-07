@@ -6,7 +6,7 @@ import itertools
 from matplotlib.widgets import Button, RadioButtons, SpanSelector, Slider
 import matplotlib.pyplot as plt
 
-import crystlib
+from .crystlib import histograms_data
 
 # remove all the handlers.
 for handler in logging.root.handlers[:]:
@@ -765,8 +765,7 @@ class Span:
         """Method for updating data in
         the histograms with regard to the selection.
         """
-        data_included =\
-            crystlib.histograms_data(Span.__crystals_included)
+        data_included = histograms_data(Span.__crystals_included)
 
         data_excluded = {'a': [], 'b': [], 'c': [],
                          'alfa': [], 'beta': [], 'gamma': []}
