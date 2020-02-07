@@ -74,7 +74,7 @@ class Image:
     """
 
 
-    def __init__(self, path, geomfile=None, streamfile=None, event=None):
+    def __init__(self, path, range=(0, 600), geomfile=None, streamfile=None, event=None):
         """Method for initializing image and checking options how to run code.
 
         Parameters
@@ -82,12 +82,18 @@ class Image:
         path : Python unicode str (on py3).
 
             Path to h5 file.
+        range : tuple
+
+            min, max value for contrast.
        geomfile : Python unicode str (on py3)
 
-            Path to geomfile file.
+            Path to geometry file.
         streamfile : Python unicode str (on py3)
 
             Path to stream file.
+        event : int
+
+            Event to show from multi-event file.
         """
         self.path = path
         self.geomfile = geomfile
@@ -103,8 +109,7 @@ class Image:
                                                 event=self.event)
 
         # Setting the contrast.
-        self.vmax = 600
-        self.vmin = 0
+        self.range = range
         # Setting the default colour map.
         self.cmap = 'inferno'
         # Following initialized depending on the execution arguments.
@@ -123,12 +128,12 @@ class Image:
             self.matrix = self.matrix[::-1, :]
             # Creating the image with imshow().
             self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
-                                        vmax=self.vmax, vmin=self.vmin)
+                                        vmax=self.range[1], vmin=self.range[0])
             # Slider position.
             axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                          ax=axes, label="Contrast",
-                                         vmin=self.vmin, vmax=self.vmax)
+                                         vmax=self.range[1], vmin=self.range[0])
             # Radio (?) position.
             # Position RadioButton
             axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
@@ -150,7 +155,7 @@ class Image:
             axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                          ax=axes, label="Contrast",
-                                         vmin=self.vmin, vmax=self.vmax)
+                                         vmax=self.range[1], vmin=self.range[0])
             # Radio position.
             axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
             # Radio button.
@@ -283,7 +288,6 @@ class Image:
             line_name = self.path.strip().split('/')[-1]
             peaks_search, peaks_reflection =\
                 search_peaks(streamfile, line_name, 'Image filename:')
-            print(len(peaks_search), len(peaks_reflection))
         else:
             peaks_search, peaks_reflection = \
                 search_peaks(streamfile, str(event), 'Event')
@@ -358,8 +362,8 @@ class Image:
             # Masking the bad pixels (?).
             self.arrangment_bad_places()
         # Displaying the image.
-        self.image = plt.imshow(self.matrix, cmap=self.cmap, vmax=self.vmax,
-                                vmin=self.vmin, animated=True)
+        self.image = plt.imshow(self.matrix, cmap=self.cmap,
+                                vmax=self.range[1], vmin=self.range[0])
 
     def arrangment_bad_places(self):
         """Iterates through each mask and
