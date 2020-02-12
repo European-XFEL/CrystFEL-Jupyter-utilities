@@ -9,7 +9,7 @@ import re
 import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
-from cfelpyutils import crystfel_utils, geometry_utils
+from cfelpyutils import crystfel_utils
 import matplotlib.pyplot as plt
 import numpy as np
 
