@@ -127,8 +127,8 @@ class Image:
             # Rotating to get the same image as CrystFEL hdfsee.
             self.matrix = self.matrix[::-1, :]
             # Creating the image with imshow().
-            self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
-                                        vmax=self.range[1], vmin=self.range[0])
+            self.image = self.ax.imshow(self.matrix, cmap=self.cmap, vmin=self.range[0],
+                                        vmax=(self.range[0]+self.range[1])/2)
             # Slider position.
             axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
@@ -362,9 +362,8 @@ class Image:
             # Masking the bad pixels (?).
             self.arrangment_bad_places()
         # Displaying the image.
-        self.image = plt.imshow(self.matrix, cmap=self.cmap,
-                                vmax=self.range[1], vmin=self.range[0])
-
+        self.image = self.ax.imshow(self.matrix, cmap=self.cmap, vmin=self.range[0],
+                                    vmax=(self.range[0]+self.range[1])/2)
     def arrangment_bad_places(self):
         """Iterates through each mask and
            sets them in the right place in the image.
