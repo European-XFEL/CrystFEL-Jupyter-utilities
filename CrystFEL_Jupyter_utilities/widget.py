@@ -191,12 +191,11 @@ class PeakButtons:
         # returned color map last used
         cmap = self.radio.get_cmap()
         # retuned contrast range last used
-        vmax = self.slider.get_vmax()
-        vmin = self.slider.get_vmin()
+        vmin, vmax = self.slider.get_clim()
         # created new image we have a new reference
-        image = self.ax.imshow(self.matrix, cmap=cmap, vmax=vmax,
-                               vmin=vmin, animated=True)
-        # when we clicked button 'cheetah peaks on/off'
+        image = self.ax.imshow(self.matrix, cmap=cmap, vmin=vmin,
+                                    vmax=vmax)
+    # when we clicked button 'cheetah peaks on/off'
         if event.inaxes == self.axis_list[0]:
             # 'cheetah peaks on/off' was enabled
             if self.list_active_peak[0]:
@@ -492,28 +491,18 @@ class ContrastSlider(Slider):
             Created by functions imshow().
         """
         self.image = image
-
-    def get_vmax(self):
-        """Returns last vmax.
-
-        Returns
-        -------
-        vmax : int
-
-            Max range that the colormap covers.
-        """
-        return self.vmax
-
-    def get_vmin(self):
-        """Returns  last vmin.
+    def get_clim(self):
+        """Returns the color limits of the current image.
 
         Returns
         -------
-        vmin : int
+        range : tuple
 
-            Min range that the colormap covers.
+            Range that the colormap covers.
         """
-        return self.vmin
+        print(type(self.image.get_clim()))
+        return self.image.get_clim()
+
 
 
 class CenteringButton(Button):
