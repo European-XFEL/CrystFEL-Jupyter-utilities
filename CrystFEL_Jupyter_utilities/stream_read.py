@@ -152,7 +152,7 @@ def search_crystals_parameters(file_name):
                     name = name.strip('\n')
                     name += event_name.strip('\n')
                     # After this line following lines contain cryst. info.
-                    if ((not flags["begin_crystal"]) and flags["name"]):
+                    if (not flags["begin_crystal"]) and flags["name"]:
                         flags["begin_crystal"] = True
                     else:
                         LOGGER.warning(
@@ -161,7 +161,7 @@ def search_crystals_parameters(file_name):
                     if "astar" in line:
                         # I found a line `astar`
                         flags["astar"] = True
-                        # creat list
+                        # create list
                         astar = [float(x) for x in line.split(' ')[2:-1]]
                     elif "bstar" in line:
                         # I found a line `bstar`
@@ -171,7 +171,7 @@ def search_crystals_parameters(file_name):
                     elif "cstar" in line:
                         # I found a line `bstar`
                         flags["cstar"] = True
-                        # creat list
+                        # create list
                         cstar = [float(x) for x in line.split(' ')[2:-1]]
                     elif "lattice_type" in line:
                         # I found a line `lattice_type`
@@ -297,13 +297,13 @@ def search_peaks(file_stream, file_h5):
                     fs_px = float(line2[0])  # Fast scan/pixel.
                     ss_px = float(line2[1])  # Slow scan/pixel.
                     recip = float(line2[2])  # Value `(1/d)/nm^-1`.
-                    intesity = float(line2[3])  # Intensity
+                    intensity = float(line2[3])  # Intensity
                     # The name of the panel to which the peak belongs.
                     panel_name = line2[4]
                     # dictionary representing peak data
                     # from the peak search in the stream file.
                     peak = {'fs_px': fs_px, 'ss_px': ss_px, 'recip': recip,
-                            'intesity': intesity, 'panel_name': panel_name,
+                            'intensity': intensity, 'panel_name': panel_name,
                             'position': None}
                     # Create an object with peak information.
                     if panel_name not in peaks_search.keys():
@@ -371,13 +371,13 @@ def search_peaks(file_stream, file_h5):
         LOGGER.warning('Error while opening stream file.')
         peaks_reflection = {}
         peaks_search = {}
-        return (peaks_search, peaks_reflection)
+        return peaks_search, peaks_reflection
     except TypeError:
         peaks_reflection = {}
         peaks_search = {}
-        return (peaks_search, peaks_reflection)
+        return peaks_search, peaks_reflection
     if not found_h5_in_stream:
         LOGGER.warning("No peaks for file in the stream file.")
 
-    return (peaks_search, peaks_reflection)
+    return peaks_search, peaks_reflection
     # In case of error the dictionary is returned empty.

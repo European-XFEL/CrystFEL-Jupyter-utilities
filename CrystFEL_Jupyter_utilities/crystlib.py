@@ -36,7 +36,7 @@ def histograms_data(crystal_list):
 
     Parameters
     ----------
-    crystals : list
+    crystal_list : list
 
         A list of crystal
 

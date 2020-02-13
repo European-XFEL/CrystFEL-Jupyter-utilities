@@ -1,10 +1,10 @@
 """Module can be executed in a notebook.
-Joins work of other moules together.
+Joins work of other modules together.
 """
 # !/usr/bin/env python
 
 import matplotlib.pyplot as plt
-# In there we have refereces on to 'home' button
+# In there we have references on to 'home' button
 from matplotlib.backend_bases import NavigationToolbar2
 import numpy as np
 from scipy import stats
@@ -51,7 +51,7 @@ class CellExplorer:
         # Dictionary with a, b, c, alpha, beta, gamma as keys,
         # ABCFHIR with list of data as values
         self.crystals_excluded = []
-        # Excluded cristals
+        # Excluded crystals
 
         # Colours for each centering type during initialization
         self.histogram_colors = {'P': 'gray', 'A': 'cyan', 'B': 'darkblue',
@@ -61,7 +61,7 @@ class CellExplorer:
         self.cryst_list = ['P', 'A', 'B', 'C', 'I', 'F', 'H', 'R']
         self.bins = 16
         # Starting with 2 after pressing +/- keys.
-        # Pressing + or - chages the binning by factor of 2.
+        # Pressing + or - changes the binning by factor of 2.
         # The histograms:
         self.histogram_list = []
         for hist_indx, hist_name in enumerate(self.histogram_order):
@@ -132,13 +132,13 @@ class CellExplorer:
         self.gauss_draw()
         plt.show()
 
-    def lattice_type(self, gauss_parametrs):
+    def lattice_type(self, gauss_parameters):
         """Returns lattice type and unique_axis
-        gauss_parametrs = [a, b, c, alfa, beta, gamma]
+        gauss_parameters = [a, b, c, alfa, beta, gamma]
 
         Parameters
         ----------
-        gauss_parametrs : list
+        gauss_parameters : list
 
             Gauss parameters for each type of histogram
 
@@ -155,67 +155,67 @@ class CellExplorer:
 
         def is_close(a, b): return abs(a-b) < 0.3
 
-        if(is_close(gauss_parametrs[3], 90) and
-           is_close(gauss_parametrs[4], 90) and
-           is_close(gauss_parametrs[5], 90)):
+        if(is_close(gauss_parameters[3], 90) and
+           is_close(gauss_parameters[4], 90) and
+           is_close(gauss_parameters[5], 90)):
             # I check if the parameters(alfa,beta,gamma) are close 90 deg
-            if(tolerance(gauss_parametrs[0], gauss_parametrs[1], 1.0) and
-               tolerance(gauss_parametrs[1], gauss_parametrs[2], 1.0)):
+            if(tolerance(gauss_parameters[0], gauss_parameters[1], 1.0) and
+               tolerance(gauss_parameters[1], gauss_parameters[2], 1.0)):
                 lt = "CUBIC"
                 ua = '*'
-            elif(tolerance(gauss_parametrs[0], gauss_parametrs[1], 1.0)):
+            elif tolerance(gauss_parameters[0], gauss_parameters[1], 1.0):
                 lt = 'TETRAGONAL'
                 ua = 'c'
-            elif(tolerance(gauss_parametrs[0], gauss_parametrs[2], 1.0)):
+            elif tolerance(gauss_parameters[0], gauss_parameters[2], 1.0):
                 lt = 'TETRAGONAL'
                 ua = 'b'
-            elif(tolerance(gauss_parametrs[1], gauss_parametrs[2], 1.0)):
+            elif tolerance(gauss_parameters[1], gauss_parameters[2], 1.0):
                 lt = 'TETRAGONAL'
                 ua = 'a'
             else:
                 lt = 'ORTHORHOMBIC'
                 ua = '*'
 
-        elif(is_close(gauss_parametrs[3], 90) and
-             is_close(gauss_parametrs[4], 90) and
-             is_close(gauss_parametrs[5], 120)):
+        elif(is_close(gauss_parameters[3], 90) and
+             is_close(gauss_parameters[4], 90) and
+             is_close(gauss_parameters[5], 120)):
             # I check if the parameters(alfa,beta) are close 90 deg
             # and gamma are close 120 deg
             lt = 'HEXAGONAL'
             ua = 'c'
-        elif(is_close(gauss_parametrs[3], 90) and
-             is_close(gauss_parametrs[4], 120) and
-             is_close(gauss_parametrs[5], 90)):
+        elif(is_close(gauss_parameters[3], 90) and
+             is_close(gauss_parameters[4], 120) and
+             is_close(gauss_parameters[5], 90)):
             # I check if the parameters(alfa,gamma) are close 90 deg
             # and beta are close 120 deg
             lt = 'HEXAGONAL'
             ua = 'b'
-        elif(is_close(gauss_parametrs[3], 120) and
-             is_close(gauss_parametrs[4], 90) and
-             is_close(gauss_parametrs[5], 90)):
+        elif(is_close(gauss_parameters[3], 120) and
+             is_close(gauss_parameters[4], 90) and
+             is_close(gauss_parameters[5], 90)):
             # I check if the parameters(gamma,beta) are close 90 deg
             # and alfa are close 120 deg
             lt = 'HEXAGONAL'
             ua = 'a'
-        elif(is_close(gauss_parametrs[3], 90) and
-             is_close(gauss_parametrs[4], 90)):
+        elif(is_close(gauss_parameters[3], 90) and
+             is_close(gauss_parameters[4], 90)):
             # I check if the parameters(alfa,beta) are close 90 deg
             lt = 'MONOCLINIC'
             ua = 'c'
-        elif(is_close(gauss_parametrs[3], 90) and
-             is_close(gauss_parametrs[5], 90)):
+        elif(is_close(gauss_parameters[3], 90) and
+             is_close(gauss_parameters[5], 90)):
             # I check if the parameters(alfa,gamma) are close 90 deg
             lt = 'MONOCLINIC'
             ua = 'b'
-        elif(is_close(gauss_parametrs[4], 90) and
-             is_close(gauss_parametrs[5], 90)):
+        elif(is_close(gauss_parameters[4], 90) and
+             is_close(gauss_parameters[5], 90)):
             # I check if the parameters(gamma,beta) are close 90 deg
             lt = 'MONOCLINIC'
             ua = 'a'
-        elif((is_close(gauss_parametrs[3], gauss_parametrs[4]) and
-             is_close(gauss_parametrs[4], gauss_parametrs[5])) and
-             (tolerance(gauss_parametrs[0], gauss_parametrs[1], 1.0) and
-             tolerance(gauss_parametrs[1], gauss_parametrs[2], 1.0))):
+        elif((is_close(gauss_parameters[3], gauss_parameters[4]) and
+              is_close(gauss_parameters[4], gauss_parameters[5])) and
+             (tolerance(gauss_parameters[0], gauss_parameters[1], 1.0) and
+              tolerance(gauss_parameters[1], gauss_parameters[2], 1.0))):
             lt = 'RHOMBOHEDRAL'
             ua = '*'
         else:
@@ -235,7 +235,7 @@ class CellExplorer:
         """
         include_crystal = Span.get_crystals_included_list()
         max_group = 0
-        # remmember maximum group
+        # remember maximum group
         centering = None
         # type of centering
         counter_group_centering = dict(zip(self.cryst_list,
@@ -250,7 +250,7 @@ class CellExplorer:
                 centering = crystal['centering']
         if max_group < len(include_crystal)*0.8:
             # does it constitute 80% of included crystals?
-            # why 80% I don't know that was in orginal soft
+            # why 80% I don't know that was in original soft
             return None
         return centering
 
@@ -269,7 +269,7 @@ class CellExplorer:
 
     def save_file(self, event):
         """Writes the crystallography parameters to the file
-        if are some problems return Warnig message.
+        if are some problems return Warning message.
 
         Parameters
         ----------
@@ -279,7 +279,7 @@ class CellExplorer:
         if not self.was_all_hist_selected():
             print("Fit all six parameters first.")
             return
-        gauss_parametrs = []
+        gauss_parameters = []
         # centering is most common
         centering = self.group_centering()
         if centering is None:
@@ -289,26 +289,26 @@ class CellExplorer:
         # determination of  Gauss parameters
         for hist in self.histogram_list:
             m, s = stats.norm.fit(hist.data_included)
-            gauss_parametrs.append(np.round(m, 2))
-        # start dialog winodw were we selected directory paths
+            gauss_parameters.append(np.round(m, 2))
+        # start dialog window were we selected directory paths
         # and file name
-        lattice_type, unique_axis = self.lattice_type(gauss_parametrs)
+        lattice_type, unique_axis = self.lattice_type(gauss_parameters)
         output = ("CrystFEL unit cell file version 1.0" +
                   "\nlattice_type = {}".format(lattice_type) +
                   "\nunique_axis = {}".format(unique_axis) +
                   "\ncentering = {}".format(centering) +
-                  "\na = {} A".format(gauss_parametrs[0]) +
-                  "\nb = {} A".format(gauss_parametrs[1]) +
-                  "\nc = {} A".format(gauss_parametrs[2]) +
-                  "\nal = {} deg".format(gauss_parametrs[3]) +
-                  "\nbe = {} deg".format(gauss_parametrs[4]) +
-                  "\nga = {} deg".format(gauss_parametrs[5]))
+                  "\na = {} A".format(gauss_parameters[0]) +
+                  "\nb = {} A".format(gauss_parameters[1]) +
+                  "\nc = {} A".format(gauss_parameters[2]) +
+                  "\nal = {} deg".format(gauss_parameters[3]) +
+                  "\nbe = {} deg".format(gauss_parameters[4]) +
+                  "\nga = {} deg".format(gauss_parameters[5]))
 
         filename = "CrystFEL_unit_cell_file"
         # the name of the file where the parameters will be saved
         with open(filename, 'w') as file:
             file.write(output)
-            # open file and save parametrs
+            # open file and save parameters
         return
 
     def home_reset(self, *kwargs, **kwkwargs):
@@ -397,9 +397,9 @@ class CellExplorer:
             # Computing mu and sigma
             lnspc = np.linspace(hist.current_xlim[0],
                                 hist.current_xlim[1], 80)
-            # Table 80 argumnets x by equal distances [0,1,2]
+            # Table 80 arguments x by equal distances [0,1,2]
             pdf_g = stats.norm.pdf(lnspc, m, s)
-            # Theoretical value for our argumnets
+            # Theoretical value for our arguments
             hist.axs.plot(lnspc, pdf_g)
             # Setting for relative 3/4 of the height;
             # each histogram has other y axis scale

@@ -268,7 +268,7 @@ class Detector:
             peak_reflection['position'] = (posx, posy)
 
     def rot_y(self, center_x, center_y):
-        """Rotation along y-axis, columns order is inversed,
+        """Rotation along y-axis, columns order is reversed,
         rows stay the same.
 
         Parameters
@@ -337,7 +337,7 @@ class Detector:
 
             Displacement of centre y-axis.
         """
-        # rotation y=x digonal
+        # rotation y=x diagonal
         self.array = np.rot90(self.array)[:, ::-1]
         # The position of the panel
         # position y
@@ -467,8 +467,10 @@ def get_detectors(raw_data_from_h5, image_size, geom,
         Dictionary with the geometry information loaded from the geomfile.
     peaks_search : dict
 
-        Dictionary with list of Peaskdetector name and value list.
+        Dictionary with list of Peaks detector name and value list.
+    peaks_reflections : dict
 
+        Dictionary with list of Peaks detector name and value list.
     Returns
     -------
     panels : dict
@@ -490,7 +492,7 @@ def get_detectors(raw_data_from_h5, image_size, geom,
               for panel_name in geom["panels"]}
 
     # complete all panels  with a list of peaks they have.
-    # peaks which `cheack peak detection` shows
+    # peaks which `check peak detection` shows
     # and peaks which  `near bragg` shows.
     for name in panels:
         try:
@@ -578,7 +580,7 @@ class BadRegion:
         self.array = np.zeros(self.shape)
 
     def get_array(self):
-        """Retunrs array data.
+        """Returns array data.
 
         Returns
         -------

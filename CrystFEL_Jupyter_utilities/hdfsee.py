@@ -113,7 +113,7 @@ class Image:
         self.bad_places = None
 
         # For displaying the image in the right orientation (?).
-        # dispaly without laying the panels
+        # display without laying the panels
         if self.geomfile is None:
             # Just the image from file with no buttons or reconstruction.
             self.matrix = np.copy(self.dict_witch_data["Panels"])
@@ -218,7 +218,7 @@ class Image:
 
         Parameters
         ----------
-        detector : The: class Detectror object
+        detector : The: class Detector object
 
             Detector which has been set in the image.
         center_x : int
@@ -350,7 +350,7 @@ class Image:
                 local_ymax = (panel['cny'] + panel['max_ss'] -
                               panel['min_ss'] + 1)
 
-        return (local_xmin, local_xmax, local_ymin, local_ymax)
+        return local_xmin, local_xmax, local_ymin, local_ymax
 
     def find_image_size(self, geom):
         """Finds a matrix size that allows you to hold all the panels.
@@ -363,12 +363,12 @@ class Image:
 
         Returns
         -------
-        (kolumns, rows,  center_x, center_y) : tuple
+        (columns, rows,  center_x, center_y) : tuple
 
-            kolumns, rows : Matrix size used in imshow.
+            columns, rows : Matrix size used in imshow.
             center_x, center_y : Displacement of centre.
         """
-        # current lenght and height.
+        # current length and height.
         x_min = x_max = y_min = y_max = 0
 
         # I am looking for the most remote panel points.
@@ -385,15 +385,15 @@ class Image:
                 y_min = local_ymin
 
         # The number of columns.
-        kolumns = x_max - x_min
+        columns = x_max - x_min
         # The number of rows.
         rows = y_max - y_min
 
         # Displacement of centre.
-        center_y = -int(x_max-kolumns/2)
-        center_x = int(y_max-rows/2)
+        center_y = -int(x_max - columns/2)
+        center_x = int(y_max - rows/2)
         # conversion to integer.
         rows = int(np.ceil(rows))
-        kolumns = int(np.ceil(kolumns))
+        columns = int(np.ceil(columns))
 
-        return(kolumns, rows, center_x, center_y)
+        return columns, rows, center_x, center_y

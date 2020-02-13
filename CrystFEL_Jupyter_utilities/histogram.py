@@ -56,7 +56,7 @@ class Histogram:
                 Histogram name used in title.
             xlabel : str
 
-                Distanse or angle unit.
+                Distance or angle unit.
             bins : int
 
                 Number of bins.
@@ -188,7 +188,7 @@ class Histogram:
     def was_clicked_before(self, true_false):
         """Set flag was_clicked_before.
 
-        Parametetrs
+        Parameters
         -----------
         true_false : boolean
 
@@ -223,7 +223,7 @@ class Histogram:
         -------
         list_colors : list
 
-            The list  with colors for each centerning
+            The list with colors for each centering
             in the histogram.
         """
         return self.__list_colors
@@ -267,7 +267,7 @@ class Histogram:
             Default is None when we only refresh histogram.
         """
         # update new data to the histogram when selecting the range.
-        if (data_to_histogram is not None and data_excluded is not None):
+        if data_to_histogram is not None and data_excluded is not None:
             try:
                 self.data_excluded = data_excluded
             except KeyError:
@@ -304,7 +304,7 @@ class Histogram:
 
         Returns
         -------
-        xlim : touple
+        xlim : tuple
 
             The x-axis limits of the histogram.
         """

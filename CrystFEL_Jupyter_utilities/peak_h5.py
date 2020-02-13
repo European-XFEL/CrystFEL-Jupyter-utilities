@@ -66,7 +66,7 @@ class Peak:
 
             Peak position.
         """
-        return (self.posx, self.posy)
+        return self.posx, self.posy
 
 
 def get_list_peaks(matrix, image_size):

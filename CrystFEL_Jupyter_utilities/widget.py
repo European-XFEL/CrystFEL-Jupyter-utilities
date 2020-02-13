@@ -91,7 +91,7 @@ class PeakButtons:
             Title image.
         radio : object form widget/Radio
 
-        slider : objet form widget/My_slider
+        slider : object form widget/My_slider
         """
         self.fig = fig
         self.ax = ax
@@ -115,7 +115,7 @@ class PeakButtons:
         if number_peaks_button != 1:
             self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08],
                                           facecolor='yellow'))
-            # Creat button object.
+            # Create button object.
             button = Button(ax=self.axis_list[1],
                             label='peaks_search on/off')
             # On click reaction.
@@ -150,7 +150,7 @@ class PeakButtons:
         """Draw peaks from `peaks search` from stream file.
         Like check_peak_detection script.
         """
-        # set flag peaks_list are enabledd
+        # set flag peaks_list are enabled
         self.list_active_peak[1] = True
         # loop through all panels
         for name in self.panels:
@@ -188,7 +188,7 @@ class PeakButtons:
         self.ax.cla()
         # returned color map last used
         cmap = self.radio.get_cmap()
-        # retuned contrast range last used
+        # returned contrast range last used
         vmax = self.slider.get_vmax()
         vmin = self.slider.get_vmin()
         # created new image we have a new reference
@@ -206,7 +206,7 @@ class PeakButtons:
                 self.list_active_peak[0] = True
                 self.visual_peaks()
 
-            # other was enabled and draw or diasbled and don't draw
+            # other was enabled and draw or disabled and don't draw
             if self.list_active_peak[1]:
                 # 'CrystFEL_peak on/off' was enabled
                 # and draw we don't change flags
@@ -617,10 +617,10 @@ class Span:
         Contains objects the class:`histogram.Histogram`.
     index : int
 
-        Index number in the histgram_list.
+        Index number in the histogram_list.
     name : str
 
-        Name of the histrgam.
+        Name of the histogram.
     """
     # list of flags for showing what was selected last, where.
     __which_was_used_last = [False, False, False, False, False, False]
@@ -646,10 +646,10 @@ class Span:
             Contains objects the class:`histogram.Histogram`.
         name : str
 
-            Name of the histrgam.
+            Name of the histogram.
         index : int
 
-            Index number in the histgram_list.
+            Index number in the histogram_list.
         """
         self.fig = fig
         # Excluded crystals.
@@ -688,7 +688,7 @@ class Span:
         Span.__which_was_used_last[self.index] = True
 
         # Always search every crystal whose parameter
-        # is in the region of interes and exclude the rest.
+        # is in the region of interest and exclude the rest.
         # We clear list and search again
         Span.__crystals_included.clear()
         self.crystals_excluded.clear()
