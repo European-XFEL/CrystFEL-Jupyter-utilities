@@ -130,7 +130,7 @@ class Detector:
         self.corner_x = corner_x
         self.corner_y = corner_y
         self.array = np.copy(data[self.min_ss: self.max_ss + 1,
-                             self.min_fs: self.max_fs + 1])
+                                  self.min_fs: self.max_fs + 1])
         # my position in matrix
         self.position = (0, 0)
         self.peaks_search = []
@@ -195,13 +195,13 @@ class Detector:
             Displacement of centre y-axis.
         """
         if (np.abs(self.xfs) < np.abs(self.xss) and
-           np.abs(self.yfs) > np.abs(self.yss)):
+                np.abs(self.yfs) > np.abs(self.yss)):
             if self.xss > 0 and self.yfs < 0:
                 self.rot_y_x(center_x, center_y)
             elif self.xss < 0 and self.yfs > 0:
                 self.rot_y_2x(center_x, center_y)
         elif (np.abs(self.xfs) > np.abs(self.xss) and
-              np.abs(self.yfs) < np.abs(self.yss)):
+                np.abs(self.yfs) < np.abs(self.yss)):
             if self.xfs < 0 and self.yss < 0:
                 self.rot_y(center_x, center_y)
             elif self.xfs > 0 and self.yss > 0:
@@ -227,7 +227,7 @@ class Detector:
         # The position of the panel
         # position x
         pos_x = int(np.round(self.image_size[0]/2.0 - self.corner_y -
-                    self.array.shape[0], 0))
+                             self.array.shape[0], 0))
         # position y
         pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
         # position + displacement.
@@ -342,11 +342,11 @@ class Detector:
         # The position of the panel
         # position y
         pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x -
-                    self.array.shape[1], 0))
+                             self.array.shape[1], 0))
 
         # position x
         pos_x = int(np.round(self.image_size[0]/2.0 - self.corner_y -
-                    self.array.shape[0], 0))
+                             self.array.shape[0], 0))
         # position + displacement.
         self.position = (pos_x + center_x, pos_y + center_y)
 
@@ -533,6 +533,7 @@ class BadRegion:
 
         Range y_max  bad region.
     """
+
     def __init__(self, image_size, name, min_x, max_x, min_y, max_y):
         """
         Parameters

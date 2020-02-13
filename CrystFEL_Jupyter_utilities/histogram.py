@@ -43,6 +43,7 @@ class Histogram:
 
         Individual patches used to create the histogram.
     """
+
     def __init__(self, axs, name, xlabel, data_to_histogram, colors, bins):
         """
             Attributes
@@ -143,10 +144,10 @@ class Histogram:
         Boolean value.
         """
         if (self.__range_green_space[0] is None or
-           self.__range_green_space[1] is None):
+                self.__range_green_space[1] is None):
             return False
         elif (data < self.__range_green_space[0] or
-              data > self.__range_green_space[1]):
+                data > self.__range_green_space[1]):
             return True
 
         return False
@@ -172,7 +173,7 @@ class Histogram:
         """Draw the range of ​​interest ('green')
         """
         if (self.__range_green_space[0] is not None or
-           self.__range_green_space[1] is not None):
+                self.__range_green_space[1] is not None):
             self.axs.axvspan(self.__range_green_space[0],
                              self.__range_green_space[1],
                              facecolor='#2ca02c', alpha=0.5)

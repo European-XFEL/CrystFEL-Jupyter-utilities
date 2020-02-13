@@ -63,6 +63,7 @@ class PeakButtons:
         2- Only two buttons for peaks from stream.
         3- three buttons for all peaks.
     """
+
     def __init__(self, fig, ax, matrix, peaks, number_peaks_button, panels,
                  title, radio, slider):
         """
@@ -357,6 +358,7 @@ class Radio(RadioButtons):
 
         Used to change color map in image.
     """
+
     def __init__(self, fig, ax, labels, cmap, image):
         """
         Parameters
@@ -429,6 +431,7 @@ class ContrastSlider(Slider):
 
         Define the data range that the colormap covers.
     """
+
     def __init__(self, image, fig, ax, label, vmin, vmax):
         """
         Parameters
@@ -455,8 +458,8 @@ class ContrastSlider(Slider):
         self.vmax = vmax
         self.vmin = vmin
         # Initialize parent constructor.
-        super(ContrastSlider, self).__init__(
-            ax, label, self.vmin, self.vmax, valinit=(self.vmin + self.vmax)/2)
+        super(ContrastSlider, self).__init__(ax, label, self.vmin, self.vmax,
+                                             valinit=(self.vmin + self.vmax)/2)
         # On click reaction.
         super(ContrastSlider, self).on_changed(self.on_check)
 
@@ -531,6 +534,7 @@ class CenteringButton(Button):
 
         key - type centering, value - list with colors.
     """
+
     def __init__(self, fig, axs, label, list_color,
                  histogram_list, histogram_colors):
         """

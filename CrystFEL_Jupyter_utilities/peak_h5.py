@@ -33,6 +33,7 @@ class Peak:
 
         The peak position according to the origin system in the center of Oy.
     """
+
     def __init__(self, posx, posy, intensive, offset):
         """
         Parameters
@@ -81,9 +82,9 @@ def get_list_peaks(matrix, image_size):
     """
     try:
         # array[:,] next rows
-        peaks = [Peak(posx=(row[0] + image_size[1]/2.0), posy=(-row[1] +
-                 image_size[0]/2.0),
-                 intensive=row[2], offset=row[3]) for row in matrix[:, ]]
+        peaks = [Peak(posx=(row[0] + image_size[1]/2.0),
+                      posy=(-row[1] + image_size[0]/2.0),
+                      intensive=row[2], offset=row[3]) for row in matrix[:, ]]
 
         return peaks
     except IndexError:

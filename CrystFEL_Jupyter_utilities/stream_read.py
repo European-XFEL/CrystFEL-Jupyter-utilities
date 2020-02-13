@@ -280,8 +280,8 @@ def search_peaks(file_stream, file_h5):
                     # Parsing to have Image and filename.
                     line3 = line2[2].split('/')
                     # Parsing to leave only the filename.
-                    nazwa_h5_z_stream = line3[-1]
-                    if nazwa_h5_z_stream in file_h5:
+                    name_h5_stream = line3[-1]
+                    if name_h5_stream in file_h5:
                         name_h5_flag = True  # If it is a name witha filename.
                         found_h5_in_stream = True
                     else:

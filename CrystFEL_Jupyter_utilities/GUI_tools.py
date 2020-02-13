@@ -69,10 +69,10 @@ class CellExplorer:
             if hist_indx > 2:
                 temp_label = 'deg'
             self.histogram_list.append(Histogram(
-                    axs=self.axs_list[hist_indx], name=hist_name,
-                    xlabel=temp_label, bins=self.bins,
-                    data_to_histogram=self.histograms_data[hist_name],
-                    colors=self.histogram_colors))
+                axs=self.axs_list[hist_indx], name=hist_name,
+                xlabel=temp_label, bins=self.bins,
+                data_to_histogram=self.histograms_data[hist_name],
+                colors=self.histogram_colors))
 
         plt.subplots_adjust(hspace=0.5)
         plt.subplots_adjust(wspace=0.1)
@@ -105,10 +105,10 @@ class CellExplorer:
         self.span_list = []
         for hist_indx, hist_name in enumerate(self.histogram_order):
             self.span_list.append(Span(
-                    crystals_excluded=self.crystals_excluded,
-                    fig=self.fig, index=hist_indx, name=hist_name,
-                    all_crystals_list=self.all_crystals_list,
-                    histogram_list=self.histogram_list))
+                crystals_excluded=self.crystals_excluded,
+                fig=self.fig, index=hist_indx, name=hist_name,
+                all_crystals_list=self.all_crystals_list,
+                histogram_list=self.histogram_list))
 
         # self.span_list = (span1, span2, span3, span4, span5, span6)
         self.fig.canvas.mpl_connect('key_press_event', self.press)
