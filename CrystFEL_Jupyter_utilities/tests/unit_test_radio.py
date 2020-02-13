@@ -30,5 +30,6 @@ class Test_Radio(unittest.TestCase):
         self.radio.set_image(image)
         self.assertEqual(image, self.radio.image)
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

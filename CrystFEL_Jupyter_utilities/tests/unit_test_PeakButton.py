@@ -34,20 +34,20 @@ class Test_PeakButtons(unittest.TestCase):
         self.mock_peaks = [self.Mock_peak, self.Mock_peak,
                            self.Mock_peak]
         self.matrix = numpy.ones((2, 3))
-        self.bttn = PeakButtons(
-            fig=self.mock_fig, ax=self.Mock_ax, matrix=self.matrix,
-            peaks=self.mock_peaks, panels=self.mock_detectors,
-            number_peaks_button=3, title=self.title,
-            radio=self.Mock_radio, slider=self.Mock_slider)
+        self.bttn = PeakButtons(fig=self.mock_fig, ax=self.Mock_ax,
+                                matrix=self.matrix, peaks=self.mock_peaks,
+                                panels=self.mock_detectors,
+                                number_peaks_button=3, title=self.title,
+                                radio=self.Mock_radio, slider=self.Mock_slider)
 
     def test_init(self):
         self.assertEqual(self.Mock_axes.call_count, 3)
         self.assertEqual(self.Mock_button.call_count, 3)
-        self.Mock_button.assert_called_with(
-            ax=self.Mock_axes(), label='peaks_reflections on/off')
-        self.assertListEqual(
-            self.bttn.buttons, [self.Mock_button(), self.Mock_button(),
-                                self.Mock_button()])
+        self.Mock_button.assert_called_with(ax=self.Mock_axes(),
+                                            label='peaks_reflections on/off')
+        self.assertListEqual(self.bttn.buttons, [self.Mock_button(),
+                                                 self.Mock_button(),
+                                                 self.Mock_button()])
 
     @patch('CrystFEL_Jupyter_utilities.widget.plt.Circle')
     def test_visual_peaks_reflection(self, mock_circle):
@@ -64,8 +64,8 @@ class Test_PeakButtons(unittest.TestCase):
 
     @patch('CrystFEL_Jupyter_utilities.widget.plt.Circle')
     def test_visual_peaks_search(self, mock_circle):
-        self.Mock_detector.get_peaks_search.return_value = \
-            [{'position': (3, 1)}, {'position': (8, 9)}]
+        self.Mock_detector.get_peaks_search.return_value = [{'position': (3, 1)},
+                                                            {'position': (8, 9)}]
 
         self.bttn.visual_peaks_search()
         self.assertEqual(self.Mock_detector.get_peaks_search.call_count, 2)
@@ -108,5 +108,6 @@ class Test_PeakButtons(unittest.TestCase):
         assert self.Mock_radio.set_image.called
         assert self.Mock_slider.set_image.called
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

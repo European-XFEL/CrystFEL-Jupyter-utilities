@@ -73,5 +73,6 @@ class Test_Span(unittest.TestCase):
         self.mock_hist.bool_crystal_exluded_green_space.return_value = True
         self.assertEqual(self.span.is_exluded(crystal), True)
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

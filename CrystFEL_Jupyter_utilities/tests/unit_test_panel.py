@@ -30,8 +30,7 @@ class TestPanel(unittest.TestCase):
                                          "yfs": -0.999993, "yss": -0.005902}
                                 },
                      "bad": {"thing": {"min_x": -390, "max_x": -270,
-                                       "min_y": 820, "max_y": 890}}
-                     }
+                                       "min_y": 820, "max_y": 890}}}
 
     def test_get_array(self):
         numpy.testing.assert_array_equal(self.detector.get_array_rotated(0, 0),
@@ -105,5 +104,6 @@ class TestPanel(unittest.TestCase):
         self.assertListEqual([1, 2, 3], panels['q0a0'].peaks_search)
         self.assertListEqual([3, 3, 3], panels['q1a1'].peaks_reflection)
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

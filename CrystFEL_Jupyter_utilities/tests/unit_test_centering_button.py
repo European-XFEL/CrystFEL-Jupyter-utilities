@@ -25,8 +25,7 @@ class Test_CenteringButton(unittest.TestCase):
     @patch('matplotlib.backend_bases.Event')
     def test_on_check(self, Mock_event):
         self.bttn.on_check(Mock_event)
-        self.assertEqual(
-            self.mock_hist.update_colors.call_count, 3)
+        self.assertEqual(self.mock_hist.update_colors.call_count, 3)
         assert self.fig.canvas.draw.called
         self.assertEqual("green", self.bttn.color)
         self.bttn.on_check(Mock_event)
@@ -37,8 +36,8 @@ class Test_CenteringButton(unittest.TestCase):
         self.bttn.reset_color()
         assert Mock_itertools.cycle.called
         Mock_itertools.cycle.assert_called_once_with(self.list_color)
-        self.assertEqual(
-            self.mock_hist.update_colors.call_count, 3)
+        self.assertEqual(self.mock_hist.update_colors.call_count, 3)
+
 
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

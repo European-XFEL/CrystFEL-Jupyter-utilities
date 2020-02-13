@@ -11,10 +11,9 @@ class Test_Stream_read(unittest.TestCase):
         self.astar = [+0.1628118, -0.0234613, +0.0047666]
         self.bstar = [+0.0115679, +0.0777724, -0.0235210]
         self.cstar = [+0.0019407, +0.0171354, +0.0576783]
-        array = \
-            np.transpose(np.array([[+0.1628118, -0.0234613, +0.0047666],
-                                   [+0.0115679, +0.0777724, -0.0235210],
-                                   [+0.0019407, +0.0171354, +0.0576783]]))
+        array = np.transpose(np.array([[+0.1628118, -0.0234613, +0.0047666],
+                                       [+0.0115679, +0.0777724, -0.0235210],
+                                       [+0.0019407, +0.0171354, +0.0576783]]))
         array = np.linalg.inv(array)
         self.a = np.linalg.norm(array[0, :])*10
         self.b = np.linalg.norm(array[1, :])*10
@@ -29,7 +28,7 @@ class Test_Stream_read(unittest.TestCase):
         self.beta = np.rad2deg(np.arccos(cosine2))
         self.gamma = np.rad2deg(np.arccos(cosine3))
         self.file_name = "test_name"
-        self.file_content = \
+        self.file_cont = \
             '\n'.join(["Image filename: db.h5",
                        "Peaks from peak search",
                        "  fs/px   ss/px (1/d)/nm^-1   Intensity  Panel",
@@ -86,25 +85,25 @@ class Test_Stream_read(unittest.TestCase):
         self.assertEqual(gamma, self.gamma)
 
     def test_search_crystals_parameters(self):
-        with patch('builtins.open', mock_open(read_data=self.file_content),
+        with patch('builtins.open', mock_open(read_data=self.file_cont),
                    create=True) as m:
-            m.return_value.__iter__.return_value = \
-                self.file_content.splitlines()
+            m.return_value.__iter__.return_value = self.file_cont.splitlines()
             s = stream_read.search_crystals_parameters(self.file_name)
             assert m.called
             m.assert_called_once_with(self.file_name)
             self.assertEqual(s, self.image)
 
     def test_search_peaks(self):
-        with patch('builtins.open', mock_open(read_data=self.file_content),
+        with patch('builtins.open', mock_open(read_data=self.file_cont),
                    create=True) as m:
-            m.return_value.__iter__.return_value = \
-                self.file_content.splitlines()
+            m.return_value.__iter__.return_value = self.file_cont.splitlines()
             s = stream_read.search_peaks(self.file_name, "db.h5")
             assert m.called
             m.assert_called_once_with(self.file_name)
             self.assertEqual(list(s[0].keys()).sort(), self.peak_list.sort())
-            self.assertEqual(list(s[1].keys()).sort(), self.peak_reflections_list.sort())
+            self.assertEqual(list(s[1].keys()).sort(),
+                             self.peak_reflections_list.sort())
+
 
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

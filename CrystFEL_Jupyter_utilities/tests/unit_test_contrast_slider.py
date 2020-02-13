@@ -40,5 +40,6 @@ class Test_ContrastSlider(unittest.TestCase):
         self.assertEqual(self.slider.get_vmax(), self.vmax)
         self.assertEqual(self.slider.get_vmin(), self.vmin)
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

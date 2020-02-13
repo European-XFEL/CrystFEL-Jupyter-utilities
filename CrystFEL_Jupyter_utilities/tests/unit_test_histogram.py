@@ -104,8 +104,8 @@ class TestHistogram(unittest.TestCase):
         self.assertListEqual(self.hist.data_excluded, [1, 1, 2, 3, 2])
         assert self.mock_ax.clear.called
         assert self.mock_ax.set_title.called
-        self.mock_ax.set_title.assert_called_with(
-            "Histogram of " + self.hist.name)
+        self.mock_ax.set_title.assert_called_with("Histogram of " +
+                                                  self.hist.name)
 
         assert self.mock_ax.set_xlabel.called
         self.mock_ax.set_xlabel.assert_called_with(self.xlabel)
@@ -126,5 +126,6 @@ class TestHistogram(unittest.TestCase):
         self.hist.update_current_xlim()
         assert self.mock_ax.get_xlim.called
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

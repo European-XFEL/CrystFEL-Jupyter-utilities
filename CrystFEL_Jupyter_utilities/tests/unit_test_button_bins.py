@@ -15,9 +15,9 @@ class Test_button_bins(unittest.TestCase):
         self.hist = Mock_hist
         self.label = "+"
         self.histogram_list = [self.hist, self.hist]
-        self.bttn = ButtonBins(
-            fig=self.fig, histogram_list=self.histogram_list,
-            ax=self.ax, label=self.label)
+        self.bttn = ButtonBins(fig=self.fig, ax=self.ax,
+                               histogram_list=self.histogram_list,
+                               label=self.label)
 
     @patch('matplotlib.backend_bases.Event')
     def test_change_bins(self, Mock_event):
@@ -32,5 +32,6 @@ class Test_button_bins(unittest.TestCase):
         self.bttn.change_bins(Mock_event)
         self.assertEqual(self.hist.bins, 300)
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

@@ -19,7 +19,8 @@ class Test_CellExplorer(unittest.TestCase):
     @patch('CrystFEL_Jupyter_utilities.GUI_tools.plt')
     def setUp(self, mock_plt, mock_ax, mock_histograms_data, mock_histogram,
               mock_numpy, mock_span, mock_button_bins, mock_buton,
-              mock_centering_button, mock_stats, mock_search_crystals_parameters):
+              mock_centering_button, mock_stats,
+              mock_search_crystals_parameters):
         self.mock_plt = mock_plt
         self.mock_histograms_data = mock_histograms_data
         self.mock_histogram = mock_histogram
@@ -46,8 +47,7 @@ class Test_CellExplorer(unittest.TestCase):
         assert self.mock_plt.show.called
         assert self.mock_histograms_data.called
         assert self.mock_search_crystals_parameters.called
-        self.mock_search_crystals_parameters.called_with(
-            "test_file")
+        self.mock_search_crystals_parameters.called_with("test_file")
         self.assertEqual(self.mock_histogram.call_count, 6)
         self.assertEqual(self.mock_span.call_count, 6)
         self.assertEqual(self.mock_centering_button.call_count, 8)
@@ -72,8 +72,8 @@ class Test_CellExplorer(unittest.TestCase):
         mock_event.inaxes = self.mock_histogram().axs
         self.cell.rememmber_pos_panel(mock_event)
         assert self.mock_histogram().update_current_xlim.called
-        self.assertEqual(
-            self.mock_histogram().update_current_xlim.call_count, 6)
+        self.assertEqual(self.mock_histogram().update_current_xlim.call_count,
+                         6)
 
     @patch('CrystFEL_Jupyter_utilities.GUI_tools.ButtonBins')
     def test_home_reset(self, mock_ButtonBins):
@@ -83,8 +83,8 @@ class Test_CellExplorer(unittest.TestCase):
         self.assertEqual(self.mock_histogram().reset.call_count, 6)
         self.assertEqual(mock_ButtonBins.set_bins.call_count, 6)
         mock_ButtonBins.set_bins.assert_called_with(16)
-        self.assertEqual(
-            self.mock_centering_button().reset_color.call_count, 8)
+        self.assertEqual(self.mock_centering_button().reset_color.call_count,
+                         8)
         self.assertEqual(self.mock_histogram().update.call_count, 6)
         assert self.figure.canvas.draw.called
 
@@ -100,9 +100,9 @@ class Test_CellExplorer(unittest.TestCase):
         self.mock_histogram.reset_mock()
         self.mock_histogram().was_clicked_before = True
         self.cell.save_file(mock_event)
-        self.assertEqual(
-            self.cell.was_all_hist_selected(), True)
+        self.assertEqual(self.cell.was_all_hist_selected(), True)
         self.assertEqual(self.mock_stats.norm.fit.call_count, 6)
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()
