@@ -141,8 +141,8 @@ class PeakButtons:
         for name in self.panels:
             # loop through all peaks near_bragg
             for peak in self.panels[name].get_peaks_reflection():
-                circle = plt.Circle(peak['position'], radius=5, color='r',
-                                    fill=False)
+                circle = plt.Circle(peak['position'], radius=5,
+                                    color='r', fill=False)
                 # draw red circle
                 self.ax.add_artist(circle)
 
@@ -156,8 +156,8 @@ class PeakButtons:
         for name in self.panels:
             # loop through all peaks list
             for peak in self.panels[name].get_peaks_search():
-                circle = plt.Circle(peak['position'], radius=5, color='g',
-                                    fill=False)
+                circle = plt.Circle(peak['position'], radius=5,
+                                    color='g', fill=False)
                 # draw red circle
                 self.ax.add_artist(circle)
 
@@ -704,8 +704,8 @@ class Span:
             # set flags this histogram was clicked
             self.histogram_list[self.index].was_clicked_before = True
             # set range green space
-            self.histogram_list[self.index].range_green_space =\
-                left_posx, right_posx
+            self.histogram_list[self.index].range_green_space = (left_posx,
+                                                                 right_posx)
         for crystal in self.all_crystals_list:
             # Loop for each histogram checking if it belongs to the selection.
             if not self.is_exluded(crystal):

@@ -97,8 +97,8 @@ class Histogram:
 
         self.color_exclude = 'lightgray'
 
-        self.__list_colors = \
-            [colors[centering] for centering in self.cryst_list]
+        self.__list_colors = [
+            colors[centering] for centering in self.cryst_list]
         self.__list_colors.append(self.color_exclude)
 
         self.axs.set_title("Histogram of " + self.name)
@@ -142,11 +142,11 @@ class Histogram:
 
         Boolean value.
         """
-        if self.__range_green_space[0] is None or\
-           self.__range_green_space[1] is None:
+        if (self.__range_green_space[0] is None or
+           self.__range_green_space[1] is None):
             return False
-        elif data < self.__range_green_space[0] or\
-                data > self.__range_green_space[1]:
+        elif (data < self.__range_green_space[0] or
+              data > self.__range_green_space[1]):
             return True
 
         return False
@@ -171,8 +171,8 @@ class Histogram:
     def draw_green_space(self):
         """Draw the range of ​​interest ('green')
         """
-        if self.__range_green_space[0] is not None or\
-           self.__range_green_space[1] is not None:
+        if (self.__range_green_space[0] is not None or
+           self.__range_green_space[1] is not None):
             self.axs.axvspan(self.__range_green_space[0],
                              self.__range_green_space[1],
                              facecolor='#2ca02c', alpha=0.5)
@@ -239,8 +239,8 @@ class Histogram:
 
             Colors of changing the bars in the histogram.
         """
-        self.__list_colors = \
-            [colors[centering] for centering in self.cryst_list]
+        self.__list_colors = [
+            colors[centering] for centering in self.cryst_list]
         self.__list_colors.append(self.color_exclude)
 
     def update_colors(self):

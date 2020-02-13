@@ -42,8 +42,9 @@ def list_datasets(dictionary, list_dataset):
 
 
 def catalog(dictionary):
-    """Create a nested dictionary with either datagroups or datasets names as keys.
-    For datagroups the value is a dictionary with elements of this datagroup.
+    """Create a nested dictionary with either datagroups
+    or datasets names as keys. For datagroups the value is
+    a dictionary with elements of this datagroup.
     For datasets the value is a reference to this dataset.
 
     Example result:

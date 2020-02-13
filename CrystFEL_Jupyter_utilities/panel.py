@@ -194,14 +194,14 @@ class Detector:
 
             Displacement of centre y-axis.
         """
-        if np.abs(self.xfs) < np.abs(self.xss) and \
-                np.abs(self.yfs) > np.abs(self.yss):
+        if (np.abs(self.xfs) < np.abs(self.xss) and
+           np.abs(self.yfs) > np.abs(self.yss)):
             if self.xss > 0 and self.yfs < 0:
                 self.rot_y_x(center_x, center_y)
             elif self.xss < 0 and self.yfs > 0:
                 self.rot_y_2x(center_x, center_y)
-        elif np.abs(self.xfs) > np.abs(self.xss) and \
-                np.abs(self.yfs) < np.abs(self.yss):
+        elif (np.abs(self.xfs) > np.abs(self.xss) and
+              np.abs(self.yfs) < np.abs(self.yss)):
             if self.xfs < 0 and self.yss < 0:
                 self.rot_y(center_x, center_y)
             elif self.xfs > 0 and self.yss > 0:
@@ -244,8 +244,8 @@ class Detector:
             peak_search['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            peak_search['ss_px'] = \
-                self.array.shape[0] - 1 - peak_search['ss_px']
+            peak_search['ss_px'] = (self.array.shape[0] -
+                                    1 - peak_search['ss_px'])
             posx = peak_search['fs_px'] + self.position[1]
             posy = peak_search['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
@@ -260,15 +260,16 @@ class Detector:
             peak_reflection['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            peak_reflection['ss_px'] = \
-                self.array.shape[0] - 1 - peak_reflection['ss_px']
+            peak_reflection['ss_px'] = (self.array.shape[0] - 1
+                                        - peak_reflection['ss_px'])
             posx = peak_reflection['fs_px'] + self.position[1]
             posy = peak_reflection['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
             peak_reflection['position'] = (posx, posy)
 
     def rot_y(self, center_x, center_y):
-        """Rotation along y-axis, columns order is inversed, rows stay the same.
+        """Rotation along y-axis, columns order is inversed,
+        rows stay the same.
 
         Parameters
         ----------
@@ -283,8 +284,8 @@ class Detector:
         self.array = self.array[:, ::-1]
         # The position of the panel
         # position y
-        pos_y = int(self.image_size[1]/2) + int(self.corner_x) - \
-            int(self.array.shape[1])
+        pos_y = (int(self.image_size[1]/2) + int(self.corner_x) -
+                 int(self.array.shape[1]))
         # position x
         pos_x = int(self.image_size[0]/2) - int(self.corner_y)
         # position + displacement.
@@ -301,8 +302,8 @@ class Detector:
             peak_search['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            peak_search['fs_px'] =\
-                self.array.shape[1] - 1 - peak_search['fs_px']
+            peak_search['fs_px'] = (self.array.shape[1] -
+                                    1 - peak_search['fs_px'])
             posx = peak_search['fs_px'] + self.position[1]
             posy = peak_search['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
@@ -317,8 +318,8 @@ class Detector:
             peak_reflection['fs_px'] -= self.min_fs
 
             # setting position after rotation
-            peak_reflection['fs_px'] = \
-                self.array.shape[1] - 1 - peak_reflection['fs_px']
+            peak_reflection['fs_px'] = (self.array.shape[1] -
+                                        1 - peak_reflection['fs_px'])
             posx = peak_reflection['fs_px'] + self.position[1]
             posy = peak_reflection['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
@@ -449,8 +450,8 @@ class Detector:
 
 def get_detectors(raw_data_from_h5, image_size, geom,
                   peaks_search, peaks_reflections):
-    """Creates a dictionary with detector class objects as items and panel names
-    as in the geometry file as keys. Function reads 'raw' data
+    """Creates a dictionary with detector class objects as items and
+    panel names as in the geometry file as keys. Function reads 'raw' data
     for each panel from the h5 file.
 
     Parameters
@@ -494,19 +495,19 @@ def get_detectors(raw_data_from_h5, image_size, geom,
     for name in panels:
         try:
             panels[name].peaks_search = peaks_search[name]
-        except:
+        except Exception:
             pass
         try:
             panels[name].peaks_reflection = peaks_reflections[name]
-        except:
+        except Exception:
             pass
 
     return panels
 
 
 class BadRegion:
-    """Class for mapping bad pixel regions on the image. Regions are read from the
-    geometry file.
+    """Class for mapping bad pixel regions on the image.
+    Regions are read from the geometry file.
 
     Attributes
     ----------

@@ -187,14 +187,14 @@ def search_crystals_parameters(file_name):
                         unique_axis = line.strip().split(' ')[2]
 
                 if "--- End crystal" in line:
-                        # the end line of cryst. info.
+                    # the end line of cryst. info.
                     # We need `astar`, `bstar` and `cstar`
                     # to calculate unit cell parameters
                     if not(flags["astar"] or flags["bstar"] or flags["cstar"]):
                         LOGGER.warning("Image {} has bad cell".format(name))
                     else:
-                        a, b, c, alfa, beta, gamma =\
-                            cell_parameters(astar, bstar, cstar)
+                        a, b, c, alfa, beta, gamma = cell_parameters(
+                            astar, bstar, cstar)
                         if not (flags["lattice_type"] and
                                 flags["centering"] and flags["unique_axis"]):
 
@@ -227,8 +227,8 @@ def search_crystals_parameters(file_name):
     except FileNotFoundError:
         LOGGER.critical("File not found or not a indexing stream file.")
         sys.exit(1)
-    LOGGER.info("Loaded {} cells from {} chunks".format(len(crystals),
-                                                        chunks_counter))
+    LOGGER.info(
+        "Loaded {} cells from {} chunks".format(len(crystals), chunks_counter))
     return crystals
 
 
@@ -332,10 +332,10 @@ def search_peaks(file_stream, file_h5):
                     k = int(line2[1])
                     # The parameter 'l'
                     # of the reflection measured after indexing.
-                    l = int(line2[2])
+                    l_ = int(line2[2])
                     # The parameter 'I'
                     # of the reflection measured after indexing.
-                    I = float(line2[3])
+                    I_ = float(line2[3])
                     # The parameter 'sigma(I)'
                     # of the reflection measured after indexing.
                     sigmaI = float(line2[4])
@@ -351,7 +351,7 @@ def search_peaks(file_stream, file_h5):
                     panel_name = line2[9]
                     # dictionary representing peak data from the reflections
                     # measured after indexing in the stream file.
-                    peak = {'h': h, 'k': k, 'l': l, 'I': I, 'sigmaI': sigmaI,
+                    peak = {'h': h, 'k': k, 'l': l_, 'I': I_, 'sigmaI': sigmaI,
                             'peak': peak, 'background': background,
                             'fs_px': fs_px, 'ss_px': ss_px,
                             'panel_name': panel_name, 'position': None}

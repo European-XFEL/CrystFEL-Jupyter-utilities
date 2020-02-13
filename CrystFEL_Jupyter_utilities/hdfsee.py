@@ -8,7 +8,7 @@ import logging
 import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
-from cfelpyutils import crystfel_utils, geometry_utils
+from cfelpyutils.crystfel_utils import load_crystfel_geometry
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -74,7 +74,6 @@ class Image:
         Containing BadRegion object from 'panel' module.
     """
 
-
     def __init__(self, path, geomfile=None, streamfile=None):
         """Method for initializing image and checking options how to run code.
 
@@ -138,8 +137,8 @@ class Image:
         # When the geometry file was provided:
         else:
             try:
-                self.geom = crystfel_utils.load_crystfel_geometry(self.geomfile)
-                # Dictionary with information about the image: panels, bad places.
+                self.geom = load_crystfel_geometry(self.geomfile)
+            # Dictionary with information about the image: panels, bad places.
             except FileNotFoundError:
                 LOGGER.critical("Error while opening geometry file.")
                 sys.exit(1)
@@ -164,41 +163,45 @@ class Image:
             if self.streamfile is not None:
                 # Additional buttons for switching on/off
                 # peaks from stream file.
-                self.peak_buttons =\
-                    PeakButtons(fig=self.fig, peaks=self.peaks,
-                                number_peaks_button=3,
-                                matrix=self.matrix, title=self.ax.get_title(),
-                                radio=self.radio, slider=self.slider,
-                                ax=self.ax, panels=self.detectors)
+                self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
+                                                number_peaks_button=3,
+                                                matrix=self.matrix,
+                                                title=self.ax.get_title(),
+                                                radio=self.radio,
+                                                slider=self.slider,
+                                                ax=self.ax,
+                                                panels=self.detectors)
             else:
                 # Only one button for showing peaks from h5 file.
-                self.peak_buttons =\
-                    PeakButtons(fig=self.fig, peaks=self.peaks,
-                                number_peaks_button=1,
-                                matrix=self.matrix, title=self.ax.get_title(),
-                                radio=self.radio, slider=self.slider,
-                                ax=self.ax, panels=self.detectors)
+                self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
+                                                number_peaks_button=1,
+                                                matrix=self.matrix,
+                                                title=self.ax.get_title(),
+                                                radio=self.radio,
+                                                slider=self.slider,
+                                                ax=self.ax,
+                                                panels=self.detectors)
 
         # Display the image:
         plt.show()
 
     def display_arrangment_view(self):
-        """Creating the image filled with ones (?) and applies bad pixel mask (?).
-        Then adds panels (?).
+        """Creating the image filled with ones (?)
+        and applies bad pixel mask (?). Then adds panels (?).
         """
         columns, rows, center_x, center_y = self.find_image_size(self.geom)
         # Creating an 'empty' matrix ready to be filled with pixel data.
         self.matrix = np.ones((columns, rows))
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
-        peaks_search, peaks_reflections =\
-            search_peaks(self.streamfile, self.path)
-        self.detectors =\
-            get_detectors(self.dict_witch_data["Panels"],
-                          (columns, rows), self.geom, peaks_search,
-                          peaks_reflections)
+        peaks_search, peaks_reflections = search_peaks(self.streamfile,
+                                                       self.path)
+        self.detectors = get_detectors(self.dict_witch_data["Panels"],
+                                       (columns, rows), self.geom,
+                                       peaks_search, peaks_reflections)
         # Creating a peak list from the h5 file.
-        self.peaks = get_list_peaks(self.dict_witch_data["Peaks"], (columns, rows))
+        self.peaks = get_list_peaks(self.dict_witch_data["Peaks"],
+                                    (columns, rows))
         # Creating a bad pixel mask (?).
         self.bad_places = bad_places((columns, rows), self.geom)
         # Arranging the panels.
@@ -234,8 +237,8 @@ class Image:
             self.matrix[detector.position[0]: detector.position[0] +
                         detector.array.shape[0],
                         detector.position[1]: detector.position[1] +
-                        detector.array.shape[1]] = \
-                            detector.get_array_rotated(center_x, center_y)
+                        detector.array.shape[1]] = detector.get_array_rotated(
+                            center_x, center_y)
         except ValueError:
             text = " ".join(["Wrong panel position",
                              "{}, Position: {}".format(detector.name,
@@ -311,41 +314,41 @@ class Image:
                 # After rotation along y=x
                 local_xmax = panel['cnx']
                 local_ymin = panel['cny']
-                local_xmin = \
-                    panel['cnx'] - panel['max_ss'] + panel['min_ss'] - 1
-                local_ymax = \
-                    panel['cny'] + panel['max_fs'] - panel['min_fs'] + 1
+                local_xmin = (panel['cnx'] - panel['max_ss'] +
+                              panel['min_ss'] - 1)
+                local_ymax = (panel['cny'] + panel['max_fs'] -
+                              panel['min_fs'] + 1)
 
             elif panel['xss'] < 0 and panel['yfs'] > 0:
 
                 # After rotation along y=-x
                 local_xmin = panel['cnx']
                 local_ymax = panel['cny']
-                local_xmax = \
-                    panel['cnx'] + panel['max_ss'] - panel['min_ss'] + 1
-                local_ymin = \
-                    panel['cny'] - panel['max_fs'] + panel['min_fs'] - 1
-        elif np.abs(panel['xfs']) > np.abs(panel['xss']) and \
-                np.abs(panel['yfs']) < np.abs(panel['yss']):
+                local_xmax = (panel['cnx'] + panel['max_ss'] -
+                              panel['min_ss'] + 1)
+                local_ymin = (panel['cny'] - panel['max_fs'] +
+                              panel['min_fs'] - 1)
+        elif (np.abs(panel['xfs']) > np.abs(panel['xss']) and
+              np.abs(panel['yfs']) < np.abs(panel['yss'])):
             if panel['xfs'] < 0 and panel['yss'] < 0:
 
                 # After rotation along y-axis
                 local_xmax = panel['cnx']
                 local_ymax = panel['cny']
-                local_xmin = \
-                    panel['cnx'] - panel['max_fs'] + panel['min_fs'] - 1
-                local_ymin = \
-                    panel['cny'] - panel['max_ss'] + panel['min_ss'] - 1
+                local_xmin = (panel['cnx'] - panel['max_fs'] +
+                              panel['min_fs'] - 1)
+                local_ymin = (panel['cny'] - panel['max_ss'] +
+                              panel['min_ss'] - 1)
 
             elif panel['xfs'] > 0 and panel['yss'] > 0:
 
                 # After rotation along x-axis
                 local_xmin = panel['cnx']
                 local_ymin = panel['cny']
-                local_xmax = \
-                    panel['cnx'] + panel['max_fs'] - panel['min_fs'] + 1
-                local_ymax = \
-                    panel['cny'] + panel['max_ss'] - panel['min_ss'] + 1
+                local_xmax = (panel['cnx'] + panel['max_fs'] -
+                              panel['min_fs'] + 1)
+                local_ymax = (panel['cny'] + panel['max_ss'] -
+                              panel['min_ss'] + 1)
 
         return (local_xmin, local_xmax, local_ymin, local_ymax)
 
@@ -370,8 +373,8 @@ class Image:
 
         # I am looking for the most remote panel points.
         for name in geom["panels"]:
-            local_xmin, local_xmax, local_ymin, local_ymax = \
-                self.local_range(geom["panels"][name])
+            local_xmin, local_xmax, local_ymin, local_ymax = self.local_range(
+                geom["panels"][name])
             if local_xmax > x_max:
                 x_max = local_xmax
             elif local_xmin < x_min:

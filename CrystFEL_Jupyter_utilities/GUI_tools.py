@@ -69,10 +69,10 @@ class CellExplorer:
             if hist_indx > 2:
                 temp_label = 'deg'
             self.histogram_list.append(Histogram(
-                axs=self.axs_list[hist_indx], name=hist_name,
-                xlabel=temp_label, bins=self.bins,
-                data_to_histogram=self.histograms_data[hist_name],
-                colors=self.histogram_colors))
+                    axs=self.axs_list[hist_indx], name=hist_name,
+                    xlabel=temp_label, bins=self.bins,
+                    data_to_histogram=self.histograms_data[hist_name],
+                    colors=self.histogram_colors))
 
         plt.subplots_adjust(hspace=0.5)
         plt.subplots_adjust(wspace=0.1)
@@ -92,20 +92,23 @@ class CellExplorer:
         button_x_pos = [0.95, 0.935, 0.92, 0.905, 0.89, 0.875, 0.86, 0.845]
         self.buttons_list = []
         for cryst_indx, cryst_symb in enumerate(self.cryst_list):
-            self.buttons_list.append(CenteringButton(
-                axs=plt.axes([button_x_pos[-1-cryst_indx], 0.95, 0.015, 0.045]),
-                fig=self.fig, label=cryst_symb,
-                list_color=[self.histogram_colors[cryst_symb], 'gray', 'lightgrey'],
-                histogram_list=self.histogram_list,
-                histogram_colors=self.histogram_colors))
+            self.buttons_list.append(
+                CenteringButton(
+                    axs=plt.axes([button_x_pos[-1-cryst_indx],
+                                  0.95, 0.015, 0.045]),
+                    fig=self.fig, label=cryst_symb,
+                    list_color=[self.histogram_colors[cryst_symb],
+                                'gray', 'lightgrey'],
+                    histogram_list=self.histogram_list,
+                    histogram_colors=self.histogram_colors))
 
         self.span_list = []
         for hist_indx, hist_name in enumerate(self.histogram_order):
             self.span_list.append(Span(
-                crystals_excluded=self.crystals_excluded,
-                fig=self.fig, index=hist_indx,
-                name=hist_name, all_crystals_list=self.all_crystals_list,
-                histogram_list=self.histogram_list))
+                    crystals_excluded=self.crystals_excluded,
+                    fig=self.fig, index=hist_indx, name=hist_name,
+                    all_crystals_list=self.all_crystals_list,
+                    histogram_list=self.histogram_list))
 
         # self.span_list = (span1, span2, span3, span4, span5, span6)
         self.fig.canvas.mpl_connect('key_press_event', self.press)
@@ -118,10 +121,10 @@ class CellExplorer:
         ButtonBins.set_bins(self.bins)
         self.btt_p = ButtonBins(fig=self.fig, label='+',
                                 histogram_list=self.histogram_list,
-                                ax=plt.axes([0.91, 0.90, 0.025, 0.025]),)
+                                ax=plt.axes([0.91, 0.90, 0.025, 0.025]))
         self.btt_m = ButtonBins(fig=self.fig, label='-',
                                 histogram_list=self.histogram_list,
-                                ax=plt.axes([0.935, 0.90, 0.025, 0.025]),)
+                                ax=plt.axes([0.935, 0.90, 0.025, 0.025]))
         self.bttn_save = Button(ax=plt.axes([0.91, 0.875, 0.050, 0.025]),
                                 label="Save")
         self.bttn_save.on_clicked(self.save_file)
@@ -178,52 +181,46 @@ class CellExplorer:
              is_close(gauss_parametrs[5], 120)):
             # I check if the parameters(alfa,beta) are close 90 deg
             # and gamma are close 120 deg
-                lt = 'HEXAGONAL'
-                ua = 'c'
+            lt = 'HEXAGONAL'
+            ua = 'c'
         elif(is_close(gauss_parametrs[3], 90) and
              is_close(gauss_parametrs[4], 120) and
              is_close(gauss_parametrs[5], 90)):
             # I check if the parameters(alfa,gamma) are close 90 deg
             # and beta are close 120 deg
-                lt = 'HEXAGONAL'
-                ua = 'b'
-
+            lt = 'HEXAGONAL'
+            ua = 'b'
         elif(is_close(gauss_parametrs[3], 120) and
              is_close(gauss_parametrs[4], 90) and
              is_close(gauss_parametrs[5], 90)):
             # I check if the parameters(gamma,beta) are close 90 deg
             # and alfa are close 120 deg
-                lt = 'HEXAGONAL'
-                ua = 'a'
+            lt = 'HEXAGONAL'
+            ua = 'a'
         elif(is_close(gauss_parametrs[3], 90) and
              is_close(gauss_parametrs[4], 90)):
             # I check if the parameters(alfa,beta) are close 90 deg
-
-                lt = 'MONOCLINIC'
-                ua = 'c'
+            lt = 'MONOCLINIC'
+            ua = 'c'
         elif(is_close(gauss_parametrs[3], 90) and
              is_close(gauss_parametrs[5], 90)):
             # I check if the parameters(alfa,gamma) are close 90 deg
-
-                lt = 'MONOCLINIC'
-                ua = 'b'
-
+            lt = 'MONOCLINIC'
+            ua = 'b'
         elif(is_close(gauss_parametrs[4], 90) and
              is_close(gauss_parametrs[5], 90)):
             # I check if the parameters(gamma,beta) are close 90 deg
-
-                lt = 'MONOCLINIC'
-                ua = 'a'
+            lt = 'MONOCLINIC'
+            ua = 'a'
         elif((is_close(gauss_parametrs[3], gauss_parametrs[4]) and
              is_close(gauss_parametrs[4], gauss_parametrs[5])) and
              (tolerance(gauss_parametrs[0], gauss_parametrs[1], 1.0) and
              tolerance(gauss_parametrs[1], gauss_parametrs[2], 1.0))):
-
-                lt = 'RHOMBOHEDRAL'
-                ua = '*'
+            lt = 'RHOMBOHEDRAL'
+            ua = '*'
         else:
-                lt = "TRICLINIC"
-                ua = '*'
+            lt = "TRICLINIC"
+            ua = '*'
         return (lt, ua)
 
     def group_centering(self):
@@ -241,8 +238,8 @@ class CellExplorer:
         # remmember maximum group
         centering = None
         # type of centering
-        counter_group_centering = \
-            dict(zip(self.cryst_list, [0]*(len(self.cryst_list))))
+        counter_group_centering = dict(zip(self.cryst_list,
+                                           [0]*(len(self.cryst_list))))
         # counter for each centering
         for crystal in include_crystal:
             # search maximum group and this centring
@@ -296,16 +293,17 @@ class CellExplorer:
         # start dialog winodw were we selected directory paths
         # and file name
         lattice_type, unique_axis = self.lattice_type(gauss_parametrs)
-        output = "CrystFEL unit cell file version 1.0" + \
-            "\nlattice_type = {}".format(lattice_type) + \
-            "\nunique_axis = {}".format(unique_axis) + \
-            "\ncentering = {}".format(centering) + \
-            "\na = {} A".format(gauss_parametrs[0]) + \
-            "\nb = {} A".format(gauss_parametrs[1]) + \
-            "\nc = {} A".format(gauss_parametrs[2]) + \
-            "\nal = {} deg".format(gauss_parametrs[3]) + \
-            "\nbe = {} deg".format(gauss_parametrs[4]) + \
-            "\nga = {} deg".format(gauss_parametrs[5])
+        output = ("CrystFEL unit cell file version 1.0" +
+                  "\nlattice_type = {}".format(lattice_type) +
+                  "\nunique_axis = {}".format(unique_axis) +
+                  "\ncentering = {}".format(centering) +
+                  "\na = {} A".format(gauss_parametrs[0]) +
+                  "\nb = {} A".format(gauss_parametrs[1]) +
+                  "\nc = {} A".format(gauss_parametrs[2]) +
+                  "\nal = {} deg".format(gauss_parametrs[3]) +
+                  "\nbe = {} deg".format(gauss_parametrs[4]) +
+                  "\nga = {} deg".format(gauss_parametrs[5]))
+
         filename = "CrystFEL_unit_cell_file"
         # the name of the file where the parameters will be saved
         with open(filename, 'w') as file:
@@ -342,7 +340,7 @@ class CellExplorer:
         for hist_indx, hist_name in enumerate(self.histogram_order):
             try:
                 self.span_list[hist_indx].onselect(*self.kwargs[hist_name])
-            except:
+            except Exception:
                 pass
 
     def rememmber_pos_panel(self, event):
@@ -409,12 +407,13 @@ class CellExplorer:
             position_y_text = 0.75*hist.axs.get_ylim()[1]
             # Each text will begin with each histogram:
             position_x_text = hist.current_xlim[0]
+            hist.axs.text(x=position_x_text, y=position_y_text, fontsize=10,
+                          s=r"$\mu = {}\ \sigma = {}$".format(np.round(m, 2),
+                                                              np.round(s, 2)))
 
-            hist.axs.text(position_x_text, position_y_text,
-                          r"$\mu = {}\ \sigma = {}$".format(np.round(m, 2),
-                                                            np.round(s, 2)),
-                          fontsize=10)
             hist.axs.grid(True)
+
+
 if __name__ == "__main__":
     streamfile = '/home/tsachanowski/Dokumenty/Process.stream'
     RUN = CellExplorer(streamfile)

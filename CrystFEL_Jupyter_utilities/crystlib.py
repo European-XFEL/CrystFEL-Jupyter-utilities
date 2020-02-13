@@ -25,8 +25,8 @@ def crystal_search(crystals, histogram_type):
     """
     crystal_dict = {}
     for crystal in crystals:
-        crystal_dict.setdefault(crystal['centering'],
-                                []).append(crystal[histogram_type])
+        crystal_dict.setdefault(crystal['centering'], []).append(
+            crystal[histogram_type])
     return crystal_dict
 
 
