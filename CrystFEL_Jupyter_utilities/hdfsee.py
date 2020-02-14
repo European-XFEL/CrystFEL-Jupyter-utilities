@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from .data import get_diction_data
-from .panel import Detector, bad_places
+from .panel import bad_places
 from .stream_read import search_peaks
 from .widget import ContrastSlider, PeakButtons, Radio
 
@@ -73,8 +73,8 @@ class Image:
         Containing BadRegion object from 'panel' module.
     """
 
-
-    def __init__(self, path, range=(0, 600), geomfile=None, streamfile=None, event=None):
+    def __init__(self, path, range=(0, 600), geomfile=None,
+                 streamfile=None, event=None):
         """Method for initializing image and checking options how to run code.
 
         Parameters
@@ -100,7 +100,6 @@ class Image:
         self.streamfile = streamfile
         self.event = event
         # Dictionary containing panels and peaks info from the h5 file.
-        self.dict_witch_data = get_diction_data(self.path, self.event)
 
         # Creating a figure and suplot
         # used 10X10 because default size is to small in notebook
@@ -123,17 +122,20 @@ class Image:
         # dispaly without laying the panels
         if self.geomfile is None:
             # Just the image from file with no buttons or reconstruction.
-            self.matrix = np.copy(self.dict_witch_data["Panels"])
+            data = get_diction_data(self.path)
+            self.matrix = np.copy(data)
             # Rotating to get the same image as CrystFEL hdfsee.
             self.matrix = self.matrix[::-1, :]
             # Creating the image with imshow().
-            self.image = self.ax.imshow(self.matrix, cmap=self.cmap, vmin=self.range[0],
+            self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
+                                        vmin=self.range[0],
                                         vmax=(self.range[0]+self.range[1])/2)
             # Slider position.
             axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                          ax=axes, label="Contrast",
-                                         vmax=self.range[1], vmin=self.range[0])
+                                         vmax=self.range[1],
+                                         vmin=self.range[0])
             # Radio (?) position.
             # Position RadioButton
             axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
@@ -345,13 +347,13 @@ class Image:
         self.matrix = np.ones((rows, columns))
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
-        self.detectors = self.__panels_create(geom=self.geom, event=self.event,
-                                              image_size=(rows, columns))
+        self.detectors, peaks_data = get_diction_data(
+            file=self.path, geom=self.geom, event=self.event,
+            image_size=(rows, columns))
         if self.streamfile is not None:
             self.add_stream_peaks(self.detectors, self.streamfile, self.event)
         # Creating a peak list from the h5 file.
-        self.peaks = self.cheetah_peaks_list(self.dict_witch_data["Peaks"],
-                                             (rows, columns))
+        self.peaks = self.cheetah_peaks_list(peaks_data, (rows, columns))
 
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)

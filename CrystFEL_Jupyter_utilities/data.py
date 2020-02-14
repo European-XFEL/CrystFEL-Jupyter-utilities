@@ -70,7 +70,7 @@ def get_dataset(list_dataset, dataset_name, event=None, idx=0):
         # if event is None:
         #     # panels data in LCLS file
         if dataset.name == dataset_name:
-            if dataset.shape == 4:
+            if dataset.ndim == 4:
                 if event is None:
                     event = 0
                 return dataset[int(event)][idx]
@@ -79,10 +79,10 @@ def get_dataset(list_dataset, dataset_name, event=None, idx=0):
     for dataset in list_dataset:
         # we return the first data with shape = 2 or 3(cxi)
         if event is None:
-            if len(dataset.shape) == 2:
+            if len(dataset.ndim) == 2:
                 return dataset[...]
         else:
-            if len(dataset.shape) == 4:
+            if len(dataset.ndim) == 4:
                 return dataset[int(event)][idx]
     raise Exception("There is no data representing panels in the h5 file")
 
@@ -107,20 +107,20 @@ def creat_panels(list_dataset, geom, image_size, event=None):
         Panels data.
     """
     panels = {}
+    dataset_name = "/data/data"
 
     for name in geom['panels']:
         dim_structure = geom['panels'][name]['dim_structure']
-        dataset_name = geom['panels'][name]['data']
+        panel_dataset_name = geom['panels'][name]['data']
 
         if ((len(dim_structure) == 4 and type(dim_structure[1]) is not int)
                 or dim_structure[-2:] != ['ss', 'fs']):
             raise Exception("Unknown dimension structure")
 
-        if dataset_name is None:
-            dataset_name = "/data/data"
-
-        panel_data = get_dataset(list_dataset, dataset_name,
-                                 event, dim_structure[1])
+        if dataset_name != panel_dataset_name:
+            dataset_name = panel_dataset_name
+            panel_data = get_dataset(list_dataset, dataset_name,
+                                     event, dim_structure[1])
 
         panel = Detector(name=name, image_size=image_size,
                          corner_x=geom["panels"][name]["cnx"],
@@ -172,7 +172,7 @@ def get_diction_data(file, event=None, geom=None, image_size=None):
             else:
                 panels = creat_panels(list_dataset, geom, image_size, event)
                 peaks = get_peaks_data(list_dataset)
-                return {"Panels": panels, "Peaks": peaks}
+                return panels, peaks
     except OSError:
         LOGGER.critical("Error opening the file H5")
         sys.exit(1)
