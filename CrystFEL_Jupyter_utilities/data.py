@@ -5,6 +5,8 @@ import sys
 
 import h5py
 
+from .panel import Detector
+
 # remove all the handlers.
 for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
@@ -63,7 +65,29 @@ def get_peaks_data(list_dataset):
         containing peaki cheetah")
 
 
-def get_panels_data(list_dataset, event=None):
+def get_dataset(list_dataset, dataset_name, event=None, idx=0):
+    for dataset in list_dataset:
+        # if event is None:
+        #     # panels data in LCLS file
+        if dataset.name == dataset_name:
+            if dataset.shape == 4:
+                if event is None:
+                    event = 0
+                return dataset[int(event)][idx]
+            else:
+                return dataset[...]
+    for dataset in list_dataset:
+        # we return the first data with shape = 2 or 3(cxi)
+        if event is None:
+            if len(dataset.shape) == 2:
+                return dataset[...]
+        else:
+            if len(dataset.shape) == 4:
+                return dataset[int(event)][idx]
+    raise Exception("There is no data representing panels in the h5 file")
+
+
+def creat_panels(list_dataset, geom, image_size, event=None):
     """Look for a raw data from h5 with a specific name '/data/data'
     for LCLS file or '/entry_1/data_1/data' for cxi file.
     if we don't find it we return the first datata with shape = 2 or 3 (cxi).
@@ -82,27 +106,41 @@ def get_panels_data(list_dataset, event=None):
 
         Panels data.
     """
-    for dataset in list_dataset:
-        if event is None:
-            # panels data in LCLS file
-            if dataset.name == "/data/data":
-                return dataset[...]
-        else:
-            # panels data in cxi file.
-            if dataset.name == "/entry_1/data_1/data":
-                return dataset[int(event)]
-    for dataset in list_dataset:
-        # we return the first data with shape = 2 or 3(cxi)
-        if event is None:
-            if len(dataset.shape) == 2:
-                return dataset[...]
-        else:
-            if len(dataset.shape) == 3:
-                return dataset[...]
-    raise Exception("There is no data representing panels in the h5 file")
+    panels = {}
+
+    for name in geom['panels']:
+        dim_structure = geom['panels'][name]['dim_structure']
+        dataset_name = geom['panels'][name]['data']
+
+        if ((len(dim_structure) == 4 and type(dim_structure[1]) is not int)
+                or dim_structure[-2:] != ['ss', 'fs']):
+            raise Exception("Unknown dimension structure")
+
+        if dataset_name is None:
+            dataset_name = "/data/data"
+
+        panel_data = get_dataset(list_dataset, dataset_name,
+                                 event, dim_structure[1])
+
+        panel = Detector(name=name, image_size=image_size,
+                         corner_x=geom["panels"][name]["cnx"],
+                         corner_y=geom["panels"][name]["cny"],
+                         min_fs=geom["panels"][name]["min_fs"],
+                         min_ss=geom["panels"][name]["min_ss"],
+                         max_fs=geom["panels"][name]["max_fs"],
+                         max_ss=geom["panels"][name]["max_ss"],
+                         xfs=geom["panels"][name]["xfs"],
+                         yfs=geom["panels"][name]["yfs"],
+                         xss=geom["panels"][name]["xss"],
+                         yss=geom["panels"][name]["yss"],
+                         data=panel_data)
+
+        panels[name] = panel
+
+    return panels
 
 
-def get_diction_data(file, event=None):
+def get_diction_data(file, event=None, geom=None, image_size=None):
     """Opens the H5 file and creates a dictionary
     with two entries: "Panels" with panels data and
     "Peaks" with peaks data.
@@ -127,18 +165,14 @@ def get_diction_data(file, event=None):
         with h5py.File(file, "r") as fileh5:
             # create a list of all datasets
             list_datasets(fileh5, list_dataset)
-            # copies the necessary matrices data
-            # data in LCLS file.
-            if event is None:
-                data = get_panels_data(list_dataset)
-                peaks = get_peaks_data(list_dataset)
-            # data in cxi file.
+            if geom is None:
+                # get_dataset(list_dataset, "/data/data")
+                data = get_dataset(list_dataset, "/data/data")
+                return data
             else:
-                data = get_panels_data(list_dataset, event)
-                peaks = None
-            # create a dictionary with all data.
-            all_data = {"Panels": data, "Peaks": peaks}
-            return all_data
+                panels = creat_panels(list_dataset, geom, image_size, event)
+                peaks = get_peaks_data(list_dataset)
+                return {"Panels": panels, "Peaks": peaks}
     except OSError:
         LOGGER.critical("Error opening the file H5")
         sys.exit(1)
