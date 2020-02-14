@@ -143,7 +143,7 @@ class Image:
                 LOGGER.critical("Error while opening geometry file.")
                 sys.exit(1)
             # Panels reconstruction:
-            self.display_arrangment_view()
+            self.display_arrangement_view()
             # Slider position.
             axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
@@ -185,7 +185,7 @@ class Image:
         # Display the image:
         plt.show()
 
-    def display_arrangment_view(self):
+    def display_arrangement_view(self):
         """Creating the image filled with ones (?)
         and applies bad pixel mask (?). Then adds panels (?).
         """
@@ -207,7 +207,7 @@ class Image:
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
         # Masking the bad pixels (?).
-        self.arrangment_bad_places()
+        self.arrangement_bad_places()
         # Displaying the image.
         self.image = plt.imshow(self.matrix, cmap=self.cmap, vmax=self.vmax,
                                 vmin=self.vmin, animated=True)
@@ -268,7 +268,7 @@ class Image:
             LOGGER.critical("Wrong mask position: {}".format(bad_place.name))
             sys.exit(1)
 
-    def arrangment_bad_places(self):
+    def arrangement_bad_places(self):
         """Iterates through each bad pixel (?) region and positions it to the
         correct place on the image.
         """

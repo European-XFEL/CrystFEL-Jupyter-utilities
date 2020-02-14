@@ -68,9 +68,9 @@ class Test_CellExplorer(unittest.TestCase):
         self.mock_numpy.round.assert_called_with(2, 2)
 
     @patch('matplotlib.backend_bases.MouseEvent')
-    def test_rememmber_pos_panel(self, mock_event):
+    def test_remember_pos_panel(self, mock_event):
         mock_event.inaxes = self.mock_histogram().axs
-        self.cell.rememmber_pos_panel(mock_event)
+        self.cell.remember_pos_panel(mock_event)
         assert self.mock_histogram().update_current_xlim.called
         self.assertEqual(self.mock_histogram().update_current_xlim.call_count,
                          6)

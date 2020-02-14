@@ -113,7 +113,7 @@ class CellExplorer:
         # self.span_list = (span1, span2, span3, span4, span5, span6)
         self.fig.canvas.mpl_connect('key_press_event', self.press)
         self.fig.canvas.mpl_connect('button_release_event',
-                                    self.rememmber_pos_panel)
+                                    self.remember_pos_panel)
         # Listening for key events.
 
         self.fig.pan_zoom = ZoomOnWheel(self.fig, scale_factor=2.0)
@@ -128,7 +128,7 @@ class CellExplorer:
         self.bttn_save = Button(ax=plt.axes([0.91, 0.875, 0.050, 0.025]),
                                 label="Save")
         self.bttn_save.on_clicked(self.save_file)
-        self.parametres_used()
+        self.parameters_used()
         self.gauss_draw()
         plt.show()
 
@@ -330,11 +330,11 @@ class CellExplorer:
                     self.histograms_data[hist_name],
                     self.crystals_excluded)
         else:
-            self.parametres_used()
+            self.parameters_used()
 
         self.fig.canvas.draw()
 
-    def parametres_used(self):
+    def parameters_used(self):
         """The method sets the ranges for given types of histograms.
         """
         for hist_indx, hist_name in enumerate(self.histogram_order):
@@ -343,7 +343,7 @@ class CellExplorer:
             except Exception:
                 pass
 
-    def rememmber_pos_panel(self, event):
+    def remember_pos_panel(self, event):
         """Updates the xlim of the given histogram
         if it is moved on the graph by 'Pan'
 
