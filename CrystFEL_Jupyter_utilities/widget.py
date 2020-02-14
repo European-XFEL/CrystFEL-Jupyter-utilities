@@ -92,7 +92,7 @@ class PeakButtons:
             Title image.
         radio : object form widget/Radio
 
-        slider : object form widget/My_slider
+        slider : object form widget/ContrastSlider
         """
         self.fig = fig
         self.ax = ax

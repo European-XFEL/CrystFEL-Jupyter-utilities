@@ -132,7 +132,7 @@ def get_data_image(list_dataset):
         if dataset.name == "/data/data":
             return dataset
     for dataset in list_dataset:
-        # we return the first datata with shape = 2
+        # we return the first data with shape = 2
         if len(dataset.shape) == 2:
             return dataset
     raise Exception("There is no data representing panels in the h5 file")
@@ -166,7 +166,7 @@ def get_diction_data(file):
             # copies the necessary matrices data
             data = np.copy(get_data_image(list_dataset))
             peaks = np.copy(get_data_peaks(list_dataset))
-            # create a word with dnaymi
+            # create a data dictionary
             dictionary = {"Panels": data, "Peaks": peaks}
             return dictionary
     except OSError:

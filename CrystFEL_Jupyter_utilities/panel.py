@@ -616,7 +616,6 @@ def bad_places(image_size, geom):
                                       geom['bad'][bad_name]['max_x'],
                                       geom['bad'][bad_name]['min_y'],
                                       geom['bad'][bad_name]['max_y'])
-
                   for bad_name in geom['bad']}
 
     return bad_places

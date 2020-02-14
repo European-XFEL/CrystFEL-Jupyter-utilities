@@ -79,13 +79,13 @@ class CellExplorer:
         # Histograms list
         # Buttons below; string list is the colour to which the button
         # and hist. changes after clicking.
-        # Using intertool for looping to change color
+        # Using itertools for looping to change color
         # list_color is our cyclic list
 
-        # Buttols list:
+        # Buttons list:
         # All Spans include reference for crystals list which were refused
         # or not included (?) changes in 1 Span is visible by others.
-        # all_crystals_list has all crystals that are finded
+        # all_crystals_list has all crystals that were found.
         # crystals_excluded has all crystal that has not set they are gray
         # index is used to locate which histogram applies
 
