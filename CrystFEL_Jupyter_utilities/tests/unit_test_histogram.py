@@ -12,11 +12,11 @@ class TestHistogram(unittest.TestCase):
     @patch('matplotlib.cbook.silent_list')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.axes.Axes')
-    def setUp(self, Mock_ax, Mock_plt, Mock_patch):
-        self.fig = Mock_plt.figure()
+    def setUp(self, mock_ax, mock_plt, mock_patch):
+        self.fig = mock_plt.figure()
         self.fig.add_subplot(1, 1, 1)
-        self.mock_ax = Mock_ax()
-        self.patch = Mock_patch()
+        self.mock_ax = mock_ax()
+        self.patch = mock_patch()
         self.mock_ax.get_xlim.return_value = "current_xlim"
         self.mock_ax.hist.return_value = [None, None, self.patch]
         self.data = {'P': [1, 2, 3, 4, 5, 10], 'B': [2, 2, 3, 4, 4, 4],

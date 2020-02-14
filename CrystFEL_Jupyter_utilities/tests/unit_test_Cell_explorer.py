@@ -18,7 +18,7 @@ class TestCellExplorer(unittest.TestCase):
     @patch('matplotlib.axes.Axes')
     @patch('CrystFEL_Jupyter_utilities.GUI_tools.plt')
     def setUp(self, mock_plt, mock_ax, mock_histograms_data, mock_histogram,
-              mock_numpy, mock_span, mock_button_bins, mock_buton,
+              mock_numpy, mock_span, mock_button_bins, mock_button,
               mock_centering_button, mock_stats,
               mock_search_crystals_parameters):
         self.mock_plt = mock_plt
@@ -27,7 +27,7 @@ class TestCellExplorer(unittest.TestCase):
         self.mock_numpy = mock_numpy
         self.mock_span = mock_span
         self.mock_button_bins = mock_button_bins
-        self.mock_buton = mock_buton
+        self.mock_button = mock_button
         self.mock_centering_button = mock_centering_button
         self.mock_stats = mock_stats
         self.mock_search_crystals_parameters = mock_search_crystals_parameters
@@ -76,13 +76,13 @@ class TestCellExplorer(unittest.TestCase):
                          6)
 
     @patch('CrystFEL_Jupyter_utilities.GUI_tools.ButtonBins')
-    def test_home_reset(self, mock_ButtonBins):
+    def test_home_reset(self, mock_button_bins):
         self.mock_histogram.reset_mock()
         self.cell.home_reset()
         assert self.mock_histogram().reset.called
         self.assertEqual(self.mock_histogram().reset.call_count, 6)
-        self.assertEqual(mock_ButtonBins.set_bins.call_count, 6)
-        mock_ButtonBins.set_bins.assert_called_with(16)
+        self.assertEqual(mock_button_bins.set_bins.call_count, 6)
+        mock_button_bins.set_bins.assert_called_with(16)
         self.assertEqual(self.mock_centering_button().reset_color.call_count,
                          8)
         self.assertEqual(self.mock_histogram().update.call_count, 6)
