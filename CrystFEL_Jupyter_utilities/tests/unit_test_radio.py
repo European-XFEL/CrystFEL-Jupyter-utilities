@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock
 from CrystFEL_Jupyter_utilities.widget import Radio
 
 
-class Test_Radio(unittest.TestCase):
+class TestRadio(unittest.TestCase):
     @patch('matplotlib.image')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')

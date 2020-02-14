@@ -5,7 +5,7 @@ from unittest.mock import patch, Mock
 from CrystFEL_Jupyter_utilities.GUI_tools import CellExplorer
 
 
-class Test_CellExplorer(unittest.TestCase):
+class TestCellExplorer(unittest.TestCase):
     @patch('CrystFEL_Jupyter_utilities.GUI_tools.search_crystals_parameters')
     @patch('CrystFEL_Jupyter_utilities.GUI_tools.stats')
     @patch('CrystFEL_Jupyter_utilities.GUI_tools.CenteringButton')

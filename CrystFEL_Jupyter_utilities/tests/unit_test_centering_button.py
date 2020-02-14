@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock
 from CrystFEL_Jupyter_utilities.widget import CenteringButton
 
 
-class Test_CenteringButton(unittest.TestCase):
+class TestCenteringButton(unittest.TestCase):
     @patch('CrystFEL_Jupyter_utilities.histogram.Histogram')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')

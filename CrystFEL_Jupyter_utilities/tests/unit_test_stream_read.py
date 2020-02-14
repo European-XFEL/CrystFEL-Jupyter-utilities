@@ -5,7 +5,7 @@ from unittest.mock import mock_open, patch
 import CrystFEL_Jupyter_utilities.stream_read as stream_read
 
 
-class Test_Stream_read(unittest.TestCase):
+class TestStreamRead(unittest.TestCase):
 
     def setUp(self):
         self.astar = [+0.1628118, -0.0234613, +0.0047666]

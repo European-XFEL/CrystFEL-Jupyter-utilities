@@ -4,7 +4,7 @@ import numpy
 import CrystFEL_Jupyter_utilities.peak_h5 as peak_h5
 
 
-class TestPanel(unittest.TestCase):
+class TestPeak(unittest.TestCase):
     def setUp(self):
 
         self.size_obraz = (1736, 1742)

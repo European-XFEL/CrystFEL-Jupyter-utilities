@@ -5,7 +5,7 @@ from unittest.mock import patch, Mock
 from CrystFEL_Jupyter_utilities.widget import Span
 
 
-class Test_Span(unittest.TestCase):
+class TestSpan(unittest.TestCase):
     @patch('CrystFEL_Jupyter_utilities.histogram.Histogram')
     @patch('matplotlib.pyplot')
     def setUp(self, Mock_plt, Mock_hist):

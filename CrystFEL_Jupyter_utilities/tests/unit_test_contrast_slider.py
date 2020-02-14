@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock
 from CrystFEL_Jupyter_utilities.widget import ContrastSlider
 
 
-class Test_ContrastSlider(unittest.TestCase):
+class TestContrastSlider(unittest.TestCase):
     @patch('matplotlib.image')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')

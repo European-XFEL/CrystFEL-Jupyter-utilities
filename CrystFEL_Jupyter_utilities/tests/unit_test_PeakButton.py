@@ -7,7 +7,7 @@ from unittest.mock import patch, Mock
 from CrystFEL_Jupyter_utilities.widget import PeakButtons
 
 
-class Test_PeakButtons(unittest.TestCase):
+class TestPeakButtons(unittest.TestCase):
     @patch('CrystFEL_Jupyter_utilities.widget.Button')
     @patch('CrystFEL_Jupyter_utilities.peak_h5.Peak')
     @patch('CrystFEL_Jupyter_utilities.panel.Detector')
