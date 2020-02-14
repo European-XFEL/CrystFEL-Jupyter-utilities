@@ -98,7 +98,7 @@ class Image:
 
         # Creating a figure and suplot
         # used 10X10 because default size is to small in notebook
-        self.fig, self.ax = plt.subplots(figsize=(10, 10))
+        self.fig, self.ax = plt.subplots(figsize=(9.5, 9.5))
         # Setting the title to filename path.
         self.ax.set_title(self.path)
         # Setting the contrast.
@@ -124,7 +124,7 @@ class Image:
             self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
                                         vmax=self.vmax, vmin=self.vmin)
             # Slider position.
-            axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
+            axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                          ax=axes, label="Contrast",
                                          vmin=self.vmin, vmax=self.vmax)
@@ -146,7 +146,7 @@ class Image:
             # Panels reconstruction:
             self.display_arrangment_view()
             # Slider position.
-            axes = plt.axes([.90, 0.75, 0.09, 0.075], facecolor='lightyellow')
+            axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                          ax=axes, label="Contrast",
                                          vmin=self.vmin, vmax=self.vmax)
