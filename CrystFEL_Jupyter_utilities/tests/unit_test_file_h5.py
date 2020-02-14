@@ -26,7 +26,7 @@ class TestH5(unittest.TestCase):
                                               dtype='d')
         dts_data = self.h5file.create_dataset("/LCLS/evt41", (1,), dtype='d')
         dts_data = self.h5file.create_dataset(
-                "/processing/cheetah/peakinfo-assembled", (3, 4), dtype='d')
+            "/processing/cheetah/peakinfo-assembled", (3, 4), dtype='d')
         self.dict_test = {'LCLS': {
             'ebeamCharge': self.h5file["LCLS"]["ebeamCharge"],
             'evt41': self.h5file["LCLS"]["evt41"]},
