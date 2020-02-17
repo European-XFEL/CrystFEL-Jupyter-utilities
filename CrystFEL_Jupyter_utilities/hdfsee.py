@@ -223,54 +223,6 @@ class Image:
 
         return fig, ax
 
-    def __panels_create(self, geom, image_size, event=None):
-        """Creates a dictionary of panels with panels objects as items
-    and panel names as in the geometry file as keys.
-
-        Parameters
-        ----------
-        geom : dict
-
-            Dictionary with the geometry information loaded from the geomfile.
-        image_size : touple
-
-            numpy.array shape storing the minimum array size used in image.
-        event : Python unicode str (on py3)
-
-            Event to show from multi-event file.
-
-        Returns
-        -------
-        panels : Dict
-
-        Dictionary with panels object.
-        """
-        panels = {}
-
-        for name in geom['panels']:
-            if event is None:
-                panel_data = self.dict_witch_data["Panels"]
-            else:
-                idx = int(re.findall('\d+', name)[0])
-                panel_data = self.dict_witch_data["Panels"][idx]
-
-            panel = Detector(name=name, image_size=image_size,
-                             corner_x=geom["panels"][name]["cnx"],
-                             corner_y=geom["panels"][name]["cny"],
-                             min_fs=geom["panels"][name]["min_fs"],
-                             min_ss=geom["panels"][name]["min_ss"],
-                             max_fs=geom["panels"][name]["max_fs"],
-                             max_ss=geom["panels"][name]["max_ss"],
-                             xfs=geom["panels"][name]["xfs"],
-                             yfs=geom["panels"][name]["yfs"],
-                             xss=geom["panels"][name]["xss"],
-                             yss=geom["panels"][name]["yss"],
-                             data=panel_data)
-
-            panels[name] = panel
-
-        return panels
-
     def add_stream_peaks(self, panels, streamfile, event=None):
         """Search for peaks `peak search` and `peak reflection` from streamfile.
 
