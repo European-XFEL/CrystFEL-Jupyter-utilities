@@ -90,7 +90,7 @@ def get_panel_dataset(list_dataset, dataset_name, event=None, idx=0):
         Peaks data.
     """
     for dataset in list_dataset:
-        # when I find corect dataset
+        # when I find correct dataset.
         if dataset.name == dataset_name:
             # if dataset has an array[event,idx,fs,ss]
             if dataset.ndim == 4:
@@ -99,9 +99,9 @@ def get_panel_dataset(list_dataset, dataset_name, event=None, idx=0):
                 return dataset[int(event)][idx]
             else:
                 return dataset[...]
-    # when we need to find the first set of data with appropriate dimensions
+    # when we need to find the first dataset with appropriate dimensions
     for dataset in list_dataset:
-        # we return the first data with shape = 2 or 3(cxi)
+        # we return the first data with shape = 2 or 4(cxi)
         if event is None:
             if dataset.ndim == 2:
                 return dataset[...]
@@ -171,6 +171,7 @@ def creat_panels(list_dataset, geom, image_size, event=None):
         panels[name] = panel
 
     return panels
+
 
 def cheetah_peaks_list(list_dataset, image_size):
     """Return a list of cheetah peaks form H5
