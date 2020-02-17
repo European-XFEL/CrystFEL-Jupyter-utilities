@@ -306,38 +306,6 @@ class Image:
             except:
                 pass
 
-    def cheetah_peaks_list(self, peaks_data, image_size):
-        """Return a list of cheetah peaks form H5
-        gets a peaks_data with data for all peaks given
-        file h5.
-
-        Parameters
-        ----------
-        peaks_data : numpy.array
-
-            Data for cheetah peaks from h5 file.
-        image_size : touple
-
-            numpy.array shape storing the minimum array size used in image.
-        Returns
-        -------
-        peaks : list
-
-            List of class Peak object.
-        """
-        peaks = []
-        try:
-            # peaks_data[:,] next rows
-            for row in peaks_data[:, ]:
-                posx = row[0] + image_size[1]/2.0
-                posy = -row[1] + image_size[0]/2.0
-                peak = {"posx": posx, "posy": posy, "position": (posx, posy)}
-                peaks.append(peak)
-        except Exception:
-            LOGGER.warning("Problem with peaks from the h5 file.")
-        finally:
-            return peaks
-
     def display_arrangment_view(self):
         """Creating the image filled with ones (?) and applies bad pixel mask (?).
         Then adds panels (?).
