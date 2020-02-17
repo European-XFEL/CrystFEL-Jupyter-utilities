@@ -65,7 +65,7 @@ def get_peaks_data(list_dataset):
         containing peaki cheetah")
 
 
-def get_dataset(list_dataset, dataset_name, event=None, idx=0):
+def get_panel_dataset(list_dataset, dataset_name, event=None, idx=0):
     for dataset in list_dataset:
         # if event is None:
         #     # panels data in LCLS file
@@ -119,11 +119,11 @@ def creat_panels(list_dataset, geom, image_size, event=None):
 
         if dataset_name != panel_dataset_name:
             dataset_name = panel_dataset_name
-            panel_data = get_dataset(list_dataset, dataset_name,
-                                     event, dim_structure[1])
+            panel_data = get_panel_dataset(list_dataset, dataset_name,
+                                           event, dim_structure[1])
         elif len(dim_structure) == 4 and type(dim_structure[1]) is int:
-            panel_data = get_dataset(list_dataset, dataset_name,
-                                     event, dim_structure[1])
+            panel_data = get_panel_dataset(list_dataset, dataset_name,
+                                           event, dim_structure[1])
 
         panel = Detector(name=name, image_size=image_size,
                          corner_x=geom["panels"][name]["cnx"],
@@ -142,7 +142,7 @@ def creat_panels(list_dataset, geom, image_size, event=None):
 
     return panels
 
-    def cheetah_peaks_list(peaks_data, image_size):
+    def cheetah_peaks_list(list_dataset, image_size):
         """Return a list of cheetah peaks form H5
         gets a peaks_data with data for all peaks given
         file h5.
@@ -162,6 +162,7 @@ def creat_panels(list_dataset, geom, image_size, event=None):
             List of class Peak object.
         """
         peaks = []
+        peaks_data = get_peaks_data(list_dataset)
         try:
             # peaks_data[:,] next rows
             for row in peaks_data[:, ]:
@@ -175,7 +176,7 @@ def creat_panels(list_dataset, geom, image_size, event=None):
             return peaks
 
 
-def get_diction_data(file, event=None, geom=None, image_size=None):
+def get_file_data(file, event=None, geom=None, image_size=None):
     """Opens the H5 file and creates a dictionary
     with two entries: "Panels" with panels data and
     "Peaks" with peaks data.
@@ -201,12 +202,12 @@ def get_diction_data(file, event=None, geom=None, image_size=None):
             # create a list of all datasets
             list_datasets(fileh5, list_dataset)
             if geom is None:
-                # get_dataset(list_dataset, "/data/data")
-                data = get_dataset(list_dataset, "/data/data")
+                # get_panel_dataset(list_dataset, "/data/data")
+                data = get_panel_dataset(list_dataset, "/data/data")
                 return data
             else:
                 panels = creat_panels(list_dataset, geom, image_size, event)
-                peaks = get_peaks_data(list_dataset)
+                peaks = cheetah_peaks_list(list_dataset, image_size)
                 return panels, peaks
     except OSError:
         LOGGER.critical("Error opening the file H5")

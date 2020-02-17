@@ -13,7 +13,7 @@ from cfelpyutils import crystfel_utils
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .data import get_diction_data
+from .data import get_file_data
 from .panel import bad_places
 from .stream_read import search_peaks
 from .widget import ContrastSlider, PeakButtons, Radio
@@ -122,7 +122,7 @@ class Image:
         # dispaly without laying the panels
         if self.geomfile is None:
             # Just the image from file with no buttons or reconstruction.
-            data = get_diction_data(self.path)
+            data = get_file_data(self.path)
             self.matrix = np.copy(data)
             # Rotating to get the same image as CrystFEL hdfsee.
             self.matrix = self.matrix[::-1, :]
@@ -315,7 +315,7 @@ class Image:
         self.matrix = np.ones((rows, columns))
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
-        self.detectors, peaks_data = get_diction_data(
+        self.detectors, peaks_data = get_file_data(
             file=self.path, geom=self.geom, event=self.event,
             image_size=(rows, columns))
         if self.streamfile is not None:
