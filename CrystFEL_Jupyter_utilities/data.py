@@ -42,7 +42,8 @@ def list_datasets(fileh5, list_dataset):
 
 
 def get_peaks_data(list_dataset):
-    """Returned numpy.ndarray with peaks data from 'hitfinder/peakinfo'.
+    """Returned numpy.ndarray with
+    peaks data from '/processing/hitfinder/peakinfo-assembled'
 
     Parameters
     ----------
@@ -66,16 +67,39 @@ def get_peaks_data(list_dataset):
 
 
 def get_panel_dataset(list_dataset, dataset_name, event=None, idx=0):
+    """Returned numpy.ndarray with panel data.
+
+    Parameters
+    ----------
+    list_dataset : list
+
+        List of all datasets from h5py.
+    dataset_name : Python unicode str (on py3)
+
+        Dataset name.
+    event : int
+
+        Event to show from multi-event file.
+    idx : int
+
+        Index ndarray.
+    Returns
+    -------
+    dataset[...] : The class 'numpy.ndarray'
+
+        Peaks data.
+    """
     for dataset in list_dataset:
-        # if event is None:
-        #     # panels data in LCLS file
+        # when I find corect dataset
         if dataset.name == dataset_name:
+            # if dataset has an array[event,idx,fs,ss]
             if dataset.ndim == 4:
                 if event is None:
                     event = 0
                 return dataset[int(event)][idx]
             else:
                 return dataset[...]
+    # when we need to find the first set of data with appropriate dimensions
     for dataset in list_dataset:
         # we return the first data with shape = 2 or 3(cxi)
         if event is None:
@@ -88,23 +112,29 @@ def get_panel_dataset(list_dataset, dataset_name, event=None, idx=0):
 
 
 def creat_panels(list_dataset, geom, image_size, event=None):
-    """Look for a raw data from h5 with a specific name '/data/data'
-    for LCLS file or '/entry_1/data_1/data' for cxi file.
-    if we don't find it we return the first datata with shape = 2 or 3 (cxi).
+    """Create panels from raw data from the h5 file.
+    The dataset name should be in the geometry file.
+    Default is specific name '/data/data'.
 
     Parameters
     ----------
     list_dataset : list
 
        List of all datasets from h5py.
+    geom : dict
+
+        Dictionary with the geometry information loaded from the geomfile.
+    image_size : touple
+
+        numpy.array shape storing the minimum array size used in image.
     event : int
 
         Event to show from multi-event file.
     Returns
     -------
-    dataset[...] : The class 'numpy.ndarray'
+    panels : Dict
 
-        Panels data.
+        Dictionary with panels object.
     """
     panels = {}
     dataset_name = "/data/data"
@@ -177,9 +207,8 @@ def creat_panels(list_dataset, geom, image_size, event=None):
 
 
 def get_file_data(file, event=None, geom=None, image_size=None):
-    """Opens the H5 file and creates a dictionary
-    with two entries: "Panels" with panels data and
-    "Peaks" with peaks data.
+    """Opens the H5 file and creates a tuple
+    with two entries: panels and peaks.
 
     Parameters
     ----------
@@ -189,6 +218,12 @@ def get_file_data(file, event=None, geom=None, image_size=None):
     event : int
 
         Event to show from multi-event file.
+    geom : dict
+
+        Dictionary with the geometry information loaded from the geomfile.
+    image_size : touple
+
+        numpy.array shape storing the minimum array size used in image.
     Returns
     -------
     all_data : dict
@@ -202,7 +237,6 @@ def get_file_data(file, event=None, geom=None, image_size=None):
             # create a list of all datasets
             list_datasets(fileh5, list_dataset)
             if geom is None:
-                # get_panel_dataset(list_dataset, "/data/data")
                 data = get_panel_dataset(list_dataset, "/data/data")
                 return data
             else:
