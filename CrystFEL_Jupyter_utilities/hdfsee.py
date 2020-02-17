@@ -315,13 +315,11 @@ class Image:
         self.matrix = np.ones((rows, columns))
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
-        self.detectors, peaks_data = get_file_data(
+        self.detectors, self.peaks = get_file_data(
             file=self.path, geom=self.geom, event=self.event,
             image_size=(rows, columns))
         if self.streamfile is not None:
             self.add_stream_peaks(self.detectors, self.streamfile, self.event)
-        # Creating a peak list from the h5 file.
-        self.peaks = self.cheetah_peaks_list(peaks_data, (rows, columns))
 
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
@@ -334,6 +332,7 @@ class Image:
         # Displaying the image.
         self.image = self.ax.imshow(self.matrix, cmap=self.cmap, vmin=self.range[0],
                                     vmax=(self.range[0]+self.range[1])/2)
+
     def arrangment_bad_places(self):
         """Iterates through each mask and
            sets them in the right place in the image.
