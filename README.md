@@ -58,7 +58,7 @@ Features buttons for changing contrast and colour space, displaying diffraction 
    Image_run = Image(path=<hdf5 file>, geomfile=<geometry file>, streamfile=<stream file>)
    ```
 ## check-peak-detection.sh
-`./check-peak-detection.sh <stream file> <geometry file>`
+`check-peak-detection.sh <stream file> <geometry file>`
 
 **Instructions for running on maxwell cluster**  
 #####TODO#####
