@@ -9,7 +9,7 @@ import re
 import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
-from cfelpyutils import crystfel_utils
+from cfelpyutils.crystfel_utils import load_crystfel_geometry
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -100,13 +100,11 @@ class Image:
         self.streamfile = streamfile
         self.event = event
         # Dictionary containing panels and peaks info from the h5 file.
-
         # Creating a figure and suplot
         # used 10X10 because default size is to small in notebook
         self.fig, self.ax = self.__creat_figure(path=self.path,
                                                 figsize=(9.5, 9.5),
                                                 event=self.event)
-
         # Setting the contrast.
         self.range = range
         # Setting the default colour map.
@@ -117,9 +115,8 @@ class Image:
         self.peaks = None
         self.detectors = None
         self.bad_places = None
-
         # For displaying the image in the right orientation (?).
-        # dispaly without laying the panels
+        # display without laying the panels
         if self.geomfile is None:
             # Just the image from file with no buttons or reconstruction.
             data = get_file_data(self.path)
@@ -146,18 +143,19 @@ class Image:
         # When the geometry file was provided:
         else:
             try:
-                self.geom = crystfel_utils.load_crystfel_geometry(self.geomfile)
-                # Dictionary with information about the image: panels, bad places.
+                self.geom = load_crystfel_geometry(self.geomfile)
+            # Dictionary with information about the image: panels, bad places.
             except FileNotFoundError:
                 LOGGER.critical("Error while opening geometry file.")
                 sys.exit(1)
             # Panels reconstruction:
-            self.display_arrangment_view()
+            self.display_arrangement_view()
             # Slider position.
             axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
             self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                          ax=axes, label="Contrast",
-                                         vmax=self.range[1], vmin=self.range[0])
+                                         vmax=self.range[1],
+                                         vmin=self.range[0])
             # Radio position.
             axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
             # Radio button.
@@ -172,21 +170,24 @@ class Image:
             if self.streamfile is not None:
                 # Additional buttons for switching on/off
                 # peaks from stream file.
-                self.peak_buttons =\
-                    PeakButtons(fig=self.fig, peaks=self.peaks,
-                                number_peaks_button=3,
-                                matrix=self.matrix, title=self.ax.get_title(),
-                                radio=self.radio, slider=self.slider,
-                                ax=self.ax, panels=self.detectors)
+                self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
+                                                number_peaks_button=3,
+                                                matrix=self.matrix,
+                                                title=self.ax.get_title(),
+                                                radio=self.radio,
+                                                slider=self.slider,
+                                                ax=self.ax,
+                                                panels=self.detectors)
             else:
                 # Only one button for showing peaks from h5 file.
-                self.peak_buttons =\
-                    PeakButtons(fig=self.fig, peaks=self.peaks,
-                                number_peaks_button=1,
-                                matrix=self.matrix, title=self.ax.get_title(),
-                                radio=self.radio, slider=self.slider,
-                                ax=self.ax, panels=self.detectors)
-
+                self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
+                                                number_peaks_button=1,
+                                                matrix=self.matrix,
+                                                title=self.ax.get_title(),
+                                                radio=self.radio,
+                                                slider=self.slider,
+                                                ax=self.ax,
+                                                panels=self.detectors)
         # Display the image:
         plt.show()
 
@@ -220,11 +221,11 @@ class Image:
             event_name = ""
         # Setting the title to filename path.
         ax.set_title(path + event_name)
-
         return fig, ax
 
     def add_stream_peaks(self, panels, streamfile, event=None):
-        """Search for peaks `peak search` and `peak reflection` from streamfile.
+        """Search for peaks `peak search` and
+        `peak reflection` from streamfile.
 
        Parameters
         ----------
@@ -250,17 +251,17 @@ class Image:
             # peaks_search doesn't have the key panel.name
             try:
                 panels[name].peaks_search = peaks_search[name]
-            except:
+            except KeyError:
                 pass
             # peaks_reflection doesn't have the key panel.name
             try:
                 panels[name].peaks_reflection = peaks_reflection[name]
-            except:
+            except KeyError:
                 pass
 
-    def display_arrangment_view(self):
-        """Creating the image filled with ones (?) and applies bad pixel mask (?).
-        Then adds panels (?).
+    def display_arrangement_view(self):
+        """Creating the image filled with ones (?) and
+        applies bad pixel mask (?). Then adds panels (?).
         """
         columns, rows, center_x, center_y = self.find_image_size(self.geom)
         # Creating an 'empty' matrix ready to be filled with pixel data.
@@ -272,20 +273,21 @@ class Image:
             image_size=(rows, columns))
         if self.streamfile is not None:
             self.add_stream_peaks(self.detectors, self.streamfile, self.event)
-
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
         # Add mask
         if self.event is None:
             # Creating a bad pixel mask (?).
-            self.bad_places = bad_places((rows, columns), self.geom, center_x, center_y)
+            self.bad_places = bad_places((rows, columns), self.geom,
+                                         center_x, center_y)
             # Masking the bad pixels (?).
-            self.arrangment_bad_places()
+            self.arrangement_bad_places()
         # Displaying the image.
-        self.image = self.ax.imshow(self.matrix, cmap=self.cmap, vmin=self.range[0],
+        self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
+                                    vmin=self.range[0],
                                     vmax=(self.range[0]+self.range[1])/2)
 
-    def arrangment_bad_places(self):
+    def arrangement_bad_places(self):
         """Iterates through each mask and
            sets them in the right place in the image.
 
@@ -297,11 +299,13 @@ class Image:
         for name_bad_place in self.bad_places:
             bad_place = self.bad_places[name_bad_place]
             try:
-                self.matrix[bad_place.max_y: bad_place.max_y + bad_place.shape[0],
+                self.matrix[bad_place.max_y: bad_place.max_y +
+                            bad_place.shape[0],
                             bad_place.min_x: bad_place.min_x +
                             bad_place.array.shape[1]] = bad_place.get_array()
             except ValueError:
-                LOGGER.critical("Wrong mask position: {}".format(bad_place.name))
+                LOGGER.critical(
+                    "Wrong mask position: {}".format(bad_place.name))
                 sys.exit(1)
 
     def arrangement_panels(self, center_x, center_y):
@@ -350,47 +354,40 @@ class Image:
         if (np.abs(panel['xfs']) < np.abs(panel['xss']) and
                 np.abs(panel['yfs']) > np.abs(panel['yss'])):
             if panel['xss'] > 0 and panel['yfs'] < 0:
-
                 # After rotation along y=x
                 local_xmax = panel['cnx']
                 local_ymin = panel['cny']
-                local_xmin = \
-                    panel['cnx'] - panel['max_ss'] + panel['min_ss'] - 1
-                local_ymax = \
-                    panel['cny'] + panel['max_fs'] - panel['min_fs'] + 1
-
+                local_xmin = (panel['cnx'] - panel['max_ss'] +
+                              panel['min_ss'] - 1)
+                local_ymax = (panel['cny'] + panel['max_fs'] -
+                              panel['min_fs'] + 1)
             elif panel['xss'] < 0 and panel['yfs'] > 0:
-
                 # After rotation along y=-x
                 local_xmin = panel['cnx']
                 local_ymax = panel['cny']
-                local_xmax = \
-                    panel['cnx'] + panel['max_ss'] - panel['min_ss'] + 1
-                local_ymin = \
-                    panel['cny'] - panel['max_fs'] + panel['min_fs'] - 1
-        elif np.abs(panel['xfs']) > np.abs(panel['xss']) and \
-                np.abs(panel['yfs']) < np.abs(panel['yss']):
+                local_xmax = (panel['cnx'] + panel['max_ss'] -
+                              panel['min_ss'] + 1)
+                local_ymin = (panel['cny'] - panel['max_fs'] +
+                              panel['min_fs'] - 1)
+        elif (np.abs(panel['xfs']) > np.abs(panel['xss']) and
+              np.abs(panel['yfs']) < np.abs(panel['yss'])):
             if panel['xfs'] < 0 and panel['yss'] < 0:
-
                 # After rotation along y-axis
                 local_xmax = panel['cnx']
                 local_ymax = panel['cny']
-                local_xmin = \
-                    panel['cnx'] - panel['max_fs'] + panel['min_fs'] - 1
-                local_ymin = \
-                    panel['cny'] - panel['max_ss'] + panel['min_ss'] - 1
-
+                local_xmin = (panel['cnx'] - panel['max_fs'] +
+                              panel['min_fs'] - 1)
+                local_ymin = (panel['cny'] - panel['max_ss'] +
+                              panel['min_ss'] - 1)
             elif panel['xfs'] > 0 and panel['yss'] > 0:
-
                 # After rotation along x-axis
                 local_xmin = panel['cnx']
                 local_ymin = panel['cny']
-                local_xmax = \
-                    panel['cnx'] + panel['max_fs'] - panel['min_fs'] + 1
-                local_ymax = \
-                    panel['cny'] + panel['max_ss'] - panel['min_ss'] + 1
-
-        return (local_xmin, local_xmax, local_ymin, local_ymax)
+                local_xmax = (panel['cnx'] + panel['max_fs'] -
+                              panel['min_fs'] + 1)
+                local_ymax = (panel['cny'] + panel['max_ss'] -
+                              panel['min_ss'] + 1)
+        return local_xmin, local_xmax, local_ymin, local_ymax
 
     def find_image_size(self, geom):
         """Finds a matrix size that allows you to hold all the panels.
@@ -403,18 +400,17 @@ class Image:
 
         Returns
         -------
-        (kolumns, rows,  center_x, center_y) : tuple
+        (columns, rows,  center_x, center_y) : tuple
 
-            kolumns, rows : Matrix size used in imshow.
+            columns, rows : Matrix size used in imshow.
             center_x, center_y : Displacement of centre.
         """
-        # current lenght and height.
+        # current length and height.
         x_min = x_max = y_min = y_max = 0
-
         # I am looking for the most remote panel points.
         for name in geom["panels"]:
-            local_xmin, local_xmax, local_ymin, local_ymax = \
-                self.local_range(geom["panels"][name])
+            local_xmin, local_xmax, local_ymin, local_ymax = self.local_range(
+                geom["panels"][name])
             if local_xmax > x_max:
                 x_max = local_xmax
             elif local_xmin < x_min:
@@ -423,17 +419,14 @@ class Image:
                 y_max = local_ymax
             elif local_ymin < y_min:
                 y_min = local_ymin
-
         # The number of columns.
-        kolumns = x_max - x_min
+        columns = x_max - x_min
         # The number of rows.
         rows = y_max - y_min
-
         # Displacement of centre.
-        center_y = -int(x_max-kolumns/2)
-        center_x = int(y_max-rows/2)
+        center_y = -int(x_max - columns/2)
+        center_x = int(y_max - rows/2)
         # conversion to integer.
         rows = int(np.ceil(rows))
-        kolumns = int(np.ceil(kolumns))
-
-        return(kolumns, rows, center_x, center_y)
+        columns = int(np.ceil(columns))
+        return columns, rows, center_x, center_y

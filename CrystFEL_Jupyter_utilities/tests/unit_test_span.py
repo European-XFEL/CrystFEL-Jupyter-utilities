@@ -5,11 +5,11 @@ from unittest.mock import patch, Mock
 from CrystFEL_Jupyter_utilities.widget import Span
 
 
-class Test_Span(unittest.TestCase):
+class TestSpan(unittest.TestCase):
     @patch('CrystFEL_Jupyter_utilities.histogram.Histogram')
     @patch('matplotlib.pyplot')
-    def setUp(self, Mock_plt, Mock_hist):
-        self.fig = Mock_plt.figure()
+    def setUp(self, mock_plt, mock_hist):
+        self.fig = mock_plt.figure()
         self.all_crystals_list = [{'name': 'Image filename: db.h5',
                                    'a': 1, 'b': 1,
                                    'c': 1, 'alfa': 90,
@@ -25,35 +25,31 @@ class Test_Span(unittest.TestCase):
         self.crystals_excluded = []
         self.index = 1
         self.name = "test_name"
-        self.mock_hist = Mock_hist
+        self.mock_hist = mock_hist
         self.mock_hist.name = 'a'
         self.histogram_list = [self.mock_hist, self.mock_hist, self.mock_hist,
                                self.mock_hist, self.mock_hist, self.mock_hist]
         self.span = Span(fig=self.fig, histogram_list=self.histogram_list,
                          index=self.index, name=self.name,
                          all_crystals_list=self.all_crystals_list,
-                         crystals_excluded=self.crystals_excluded,
-                         )
+                         crystals_excluded=self.crystals_excluded)
 
     def test_onselect(self):
         self.span.onselect(20, 100)
         self.assertEqual(
             self.mock_hist.was_clicked_before, True)
-        self.assertEqual(
-            self.mock_hist.range_green_space, (20, 100))
+        self.assertEqual(self.mock_hist.range_green_space, (20, 100))
         self.assertEqual(len(self.crystals_excluded), 2)
         self.span.onselect(20, 20)
-        self.assertEqual(
-            self.mock_hist.was_clicked_before, False)
-        self.assertEqual(
-            self.mock_hist.range_green_space, (None, None))
+        self.assertEqual(self.mock_hist.was_clicked_before, False)
+        self.assertEqual(self.mock_hist.range_green_space, (None, None))
 
     @patch('CrystFEL_Jupyter_utilities.widget.histograms_data')
-    def test_data_update(self, Mock_histograms_data):
+    def test_data_update(self, mock_histograms_data):
         self.mock_hist.reset_mock()
         self.span.data_update()
-        assert Mock_histograms_data.called
-        Mock_histograms_data.assert_called_once_with(
+        assert mock_histograms_data.called
+        mock_histograms_data.assert_called_once_with(
             Span.get_crystals_included_list())
         self.assertEqual(self.mock_hist.update.call_count, 6)
 
@@ -69,9 +65,9 @@ class Test_Span(unittest.TestCase):
         self.span.is_exluded(crystal)
         self.assertEqual(
             self.mock_hist.bool_crystal_exluded_green_space.call_count, 6)
-
         self.mock_hist.bool_crystal_exluded_green_space.return_value = True
         self.assertEqual(self.span.is_exluded(crystal), True)
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

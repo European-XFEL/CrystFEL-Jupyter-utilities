@@ -12,11 +12,11 @@ class TestHistogram(unittest.TestCase):
     @patch('matplotlib.cbook.silent_list')
     @patch('matplotlib.pyplot')
     @patch('matplotlib.axes.Axes')
-    def setUp(self, Mock_ax, Mock_plt, Mock_patch):
-        self.fig = Mock_plt.figure()
+    def setUp(self, mock_ax, mock_plt, mock_patch):
+        self.fig = mock_plt.figure()
         self.fig.add_subplot(1, 1, 1)
-        self.mock_ax = Mock_ax()
-        self.patch = Mock_patch()
+        self.mock_ax = mock_ax()
+        self.patch = mock_patch()
         self.mock_ax.get_xlim.return_value = "current_xlim"
         self.mock_ax.hist.return_value = [None, None, self.patch]
         self.data = {'P': [1, 2, 3, 4, 5, 10], 'B': [2, 2, 3, 4, 4, 4],
@@ -94,7 +94,6 @@ class TestHistogram(unittest.TestCase):
 
     def test_update(self):
         self.mock_ax.reset_mock()
-
         self.data = {'P': [2, 3, 4, 5], 'A': [3, 4, 5, 6, 6]}
         self.data_excluded = [1, 1, 2, 3, 2]
         self.hist.update(self.data, self.data_excluded)
@@ -104,9 +103,8 @@ class TestHistogram(unittest.TestCase):
         self.assertListEqual(self.hist.data_excluded, [1, 1, 2, 3, 2])
         assert self.mock_ax.clear.called
         assert self.mock_ax.set_title.called
-        self.mock_ax.set_title.assert_called_with(
-            "Histogram of " + self.hist.name)
-
+        self.mock_ax.set_title.assert_called_with("Histogram of " +
+                                                  self.hist.name)
         assert self.mock_ax.set_xlabel.called
         self.mock_ax.set_xlabel.assert_called_with(self.xlabel)
         assert self.mock_ax.hist.called
@@ -126,5 +124,6 @@ class TestHistogram(unittest.TestCase):
         self.hist.update_current_xlim()
         assert self.mock_ax.get_xlim.called
 
+
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()

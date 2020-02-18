@@ -63,6 +63,7 @@ class PeakButtons:
         2- Only two buttons for peaks from stream.
         3- three buttons for all peaks.
     """
+
     def __init__(self, fig, ax, matrix, peaks, number_peaks_button, panels,
                  title, radio, slider):
         """
@@ -91,7 +92,7 @@ class PeakButtons:
             title image.
         radio : object form widget/Radio
 
-        slider : objet form widget/My_slider
+        slider : object form widget/ContrastSlider
         """
         self.fig = fig
         self.ax = ax
@@ -115,7 +116,7 @@ class PeakButtons:
         if number_peaks_button != 1:
             self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08],
                                           facecolor='yellow'))
-            # Creat button object.
+            # Create button object.
             button = Button(ax=self.axis_list[1],
                             label='peaks_search   on/off')
             # On click reaction.
@@ -130,7 +131,6 @@ class PeakButtons:
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
             self.buttons.append(button)
-
         for button in self.buttons:
             button.label.set_fontsize(8)
             button.label.set_wrap(True)
@@ -147,8 +147,8 @@ class PeakButtons:
         for name in self.panels:
             # loop through all peaks near_bragg
             for peak in self.panels[name].get_peaks_reflection():
-                circle = plt.Circle(peak['position'], radius=5, color='r',
-                                    fill=False)
+                circle = plt.Circle(peak['position'], radius=5,
+                                    color='r', fill=False)
                 # draw red circle
                 self.ax.add_artist(circle)
 
@@ -156,14 +156,14 @@ class PeakButtons:
         """Draw peaks from `peaks search` from stream file.
         Like check_peak_detection script.
         """
-        # set flag peaks_list are enabledd
+        # set flag peaks_list are enabled
         self.list_active_peak[1] = True
         # loop through all panels
         for name in self.panels:
             # loop through all peaks list
             for peak in self.panels[name].get_peaks_search():
-                circle = plt.Circle(peak['position'], radius=5, color='g',
-                                    fill=False)
+                circle = plt.Circle(peak['position'], radius=5,
+                                    color='g', fill=False)
                 # draw red circle
                 self.ax.add_artist(circle)
 
@@ -194,7 +194,7 @@ class PeakButtons:
         vmin, vmax = self.slider.get_clim()
         # created new image we have a new reference
         image = self.ax.imshow(self.matrix, cmap=cmap, vmin=vmin,
-                                    vmax=vmax)
+                               vmax=vmax)
     # when we clicked button 'cheetah peaks on/off'
         if event.inaxes == self.axis_list[0]:
             # 'cheetah peaks on/off' was enabled
@@ -206,8 +206,7 @@ class PeakButtons:
                 # We change flags and draw
                 self.list_active_peak[0] = True
                 self.visual_peaks()
-
-            # other was enabled and draw or diasbled and don't draw
+            # other was enabled and draw or disabled and don't draw
             if self.list_active_peak[1]:
                 # 'CrystFEL_peak on/off' was enabled
                 # and draw we don't change flags
@@ -216,7 +215,6 @@ class PeakButtons:
                 # 'CrystFEL_near_bragg_peak on/off' was enabled
                 # and draw we don't change flags
                 self.visual_peaks_reflection()
-
         # when we clicked button 'CrystFEL_peak on/off'
         if event.inaxes == self.axis_list[1]:
             if self.list_active_peak[0]:
@@ -236,7 +234,6 @@ class PeakButtons:
                 # we draw
                 self.list_active_peak[1] = True
                 self.visual_peaks_search()
-
         # when we clicked button 'CrystFEL_near_bragg_peak on/off'
         if event.inaxes == self.axis_list[2]:
             if self.list_active_peak[0]:
@@ -358,6 +355,7 @@ class Radio(RadioButtons):
 
         Used to change color map in image.
     """
+
     def __init__(self, fig, ax, labels, cmap, image):
         """
         Parameters
@@ -430,6 +428,7 @@ class ContrastSlider(Slider):
 
         Define the data range that the colormap covers.
     """
+
     def __init__(self, image, fig, ax, label, vmin, vmax):
         """
         Parameters
@@ -456,8 +455,8 @@ class ContrastSlider(Slider):
         self.vmax = vmax
         self.vmin = vmin
         # Initialize parent constructor.
-        super(ContrastSlider, self).__init__(
-            ax, label, self.vmin, self.vmax, valinit=(self.vmin + self.vmax)/2)
+        super(ContrastSlider, self).__init__(ax, label, self.vmin, self.vmax,
+                                             valinit=(self.vmin + self.vmax)/2)
         # On click reaction.
         super(ContrastSlider, self).on_changed(self.on_check)
         # Set position `Contrast` label
@@ -491,6 +490,7 @@ class ContrastSlider(Slider):
             Created by functions imshow().
         """
         self.image = image
+
     def get_clim(self):
         """Returns the color limits of the current image.
 
@@ -502,7 +502,6 @@ class ContrastSlider(Slider):
         """
         print(type(self.image.get_clim()))
         return self.image.get_clim()
-
 
 
 class CenteringButton(Button):
@@ -530,6 +529,7 @@ class CenteringButton(Button):
 
         key - type centering, value - list with colors.
     """
+
     def __init__(self, fig, axs, label, list_color,
                  histogram_list, histogram_colors):
         """
@@ -616,10 +616,10 @@ class Span:
         Contains objects the class:`histogram.Histogram`.
     index : int
 
-        Index number in the histgram_list.
+        Index number in the histogram_list.
     name : str
 
-        Name of the histrgam.
+        Name of the histogram.
     """
     # list of flags for showing what was selected last, where.
     __which_was_used_last = [False, False, False, False, False, False]
@@ -645,17 +645,16 @@ class Span:
             Contains objects the class:`histogram.Histogram`.
         name : str
 
-            Name of the histrgam.
+            Name of the histogram.
         index : int
 
-            Index number in the histgram_list.
+            Index number in the histogram_list.
         """
         self.fig = fig
         # Excluded crystals.
         self.crystals_excluded = crystals_excluded
         # all crystals found in stream file
         self.all_crystals_list = all_crystals_list
-
         self.index = index  # Which histogram is used.
         self.name = name  # Histogram name.
         self.histogram_list = histogram_list  # List with all histograms. Works
@@ -687,30 +686,27 @@ class Span:
         Span.__which_was_used_last[self.index] = True
 
         # Always search every crystal whose parameter
-        # is in the region of interes and exclude the rest.
+        # is in the region of interest and exclude the rest.
         # We clear list and search again
         Span.__crystals_included.clear()
         self.crystals_excluded.clear()
         left_posx = min(xmin, xmax)  # Left selection point.
         right_posx = max(xmin, xmax)  # Right selection point.
-
         if left_posx == right_posx:  # Clicking resets the selection.
             # set flags
             self.histogram_list[self.index].was_clicked_before = False
             self.histogram_list[self.index].range_green_space = None, None
-
         else:
             # set flags this histogram was clicked
             self.histogram_list[self.index].was_clicked_before = True
             # set range green space
-            self.histogram_list[self.index].range_green_space =\
-                left_posx, right_posx
+            self.histogram_list[self.index].range_green_space = (left_posx,
+                                                                 right_posx)
         for crystal in self.all_crystals_list:
             # Loop for each histogram checking if it belongs to the selection.
             if not self.is_exluded(crystal):
                 # If the crystal meets all conditions it is added.
                 Span.__crystals_included.append(crystal)
-
         LOGGER.info(
             "Selected {} of {} cells".format(len(Span.__crystals_included),
                                              len(self.all_crystals_list)))
@@ -750,14 +746,11 @@ class Span:
         the histograms with regard to the selection.
         """
         data_included = histograms_data(Span.__crystals_included)
-
         data_excluded = {'a': [], 'b': [], 'c': [],
                          'alfa': [], 'beta': [], 'gamma': []}
-
         for crystal in self.crystals_excluded:
             for hist in self.histogram_list:
                 data_excluded[hist.name].append(crystal[hist.name])
-
         # set data and refresh hist
         for hist in self.histogram_list:
             hist.update(data_excluded=data_excluded[hist.name],

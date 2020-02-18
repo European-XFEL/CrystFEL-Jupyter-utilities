@@ -138,15 +138,12 @@ def creat_panels(list_dataset, geom, image_size, event=None):
     """
     panels = {}
     dataset_name = "/data/data"
-
     for name in geom['panels']:
         dim_structure = geom['panels'][name]['dim_structure']
         panel_dataset_name = geom['panels'][name]['data']
-
         if ((len(dim_structure) == 4 and type(dim_structure[1]) is not int)
                 or dim_structure[-2:] != ['ss', 'fs']):
             raise Exception("Unknown dimension structure")
-
         if dataset_name != panel_dataset_name:
             dataset_name = panel_dataset_name
             panel_data = get_panel_dataset(list_dataset, dataset_name,
@@ -154,7 +151,6 @@ def creat_panels(list_dataset, geom, image_size, event=None):
         elif len(dim_structure) == 4 and type(dim_structure[1]) is int:
             panel_data = get_panel_dataset(list_dataset, dataset_name,
                                            event, dim_structure[1])
-
         panel = Detector(name=name, image_size=image_size,
                          corner_x=geom["panels"][name]["cnx"],
                          corner_y=geom["panels"][name]["cny"],
@@ -167,9 +163,7 @@ def creat_panels(list_dataset, geom, image_size, event=None):
                          xss=geom["panels"][name]["xss"],
                          yss=geom["panels"][name]["yss"],
                          data=panel_data)
-
         panels[name] = panel
-
     return panels
 
 
