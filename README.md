@@ -46,16 +46,16 @@ Features buttons for changing contrast and colour space, displaying diffraction 
 
 ### Example usage
 1. Basic displaynig of the data as it is:  
-   `python hdfsee_run.py <filename>`
+   `hdfsee_run.py <filename>`
 2. Displaying the image with geometry reconstruction:  
-    `python hdfsee_run.py <filename> -g <geometry file>`  
+    `hdfsee_run.py <filename> -g <geometry file>`  
 3. Displaying the image with geometry reconstruction and peaks written in the indexing.stream file produced by indexamajig:  
-    `python hdfsee_run.py <filename> -g <geometry file> -p <stream file>`
+    `hdfsee_run.py <filename> -g <geometry file> -p <stream file>`
 4. Run from code cell in jupyter-notebook:  
    ```
    from CrystFEL_Jupyter_utilities.hdfsee import Image
    %matplotlib notebook
-   RUN = Image(path=<hdf5 file>, geomfile=<geometry file>, streamfile=<stream file>)
+   Image_run = Image(path=<hdf5 file>, geomfile=<geometry file>, streamfile=<stream file>)
    ```
 ## check-peak-detection.sh
 `./check-peak-detection.sh <stream file> <geometry file>`
@@ -73,7 +73,7 @@ and displays fitting parameters.
 
 ### Example
 1. Run from the command line:  
-   `python cell_explorer_run.py <stream file>`
+   `cell_explorer_run.py <stream file>`
 2. Run from code cell in jupyter-notebook:  
    ```
    from CrystFEL_Jupyter_utilities.GUI_tools import CellExplorer
