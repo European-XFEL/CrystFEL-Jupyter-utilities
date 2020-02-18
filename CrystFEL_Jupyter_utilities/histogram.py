@@ -85,26 +85,19 @@ class Histogram:
             except KeyError:
                 self.list_data.append([])
             self.data_included += self.list_data[k]
-
         try:
             self.data_excluded = []
         except KeyError:
             self.data_excluded = []
-
         self.list_data.append(self.data_excluded)
-
         self.max = max(self.data_included + self.data_excluded)
         self.min = min(self.data_included + self.data_excluded)
-
         self.color_exclude = 'lightgray'
-
         self.__list_colors = [
             colors[centering] for centering in self.cryst_list]
         self.__list_colors.append(self.color_exclude)
-
         self.axs.set_title("Histogram of " + self.name)
         self.axs.set_xlabel(self.xlabel)
-
         _, _, self.patches = self.axs.hist(x=self.list_data, bins=self.bins,
                                            density=1, stacked=True, alpha=0.9,
                                            range=(self.min, self.max),
@@ -149,7 +142,6 @@ class Histogram:
         elif (data < self.__range_green_space[0] or
                 data > self.__range_green_space[1]):
             return True
-
         return False
 
     @property
@@ -273,7 +265,6 @@ class Histogram:
                 self.data_excluded = data_excluded
             except KeyError:
                 self.data_excluded = []
-
             self.list_data = []
             self.data_included = []
             for k, a_cryst in enumerate(self.cryst_list):

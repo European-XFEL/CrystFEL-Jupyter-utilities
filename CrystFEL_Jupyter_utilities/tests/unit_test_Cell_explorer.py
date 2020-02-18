@@ -41,7 +41,6 @@ class TestCellExplorer(unittest.TestCase):
         self.cell = CellExplorer("test_file")
 
     def test_init(self):
-
         assert self.mock_plt.subplots.called
         assert self.mock_ax.ravel.called
         assert self.mock_plt.show.called
@@ -54,7 +53,6 @@ class TestCellExplorer(unittest.TestCase):
         self.figure.canvas.mpl_connect.called
 
     def test_gauss_draw(self):
-
         self.assertEqual(self.mock_histogram().update.call_count, 6)
         self.assertEqual(self.mock_stats.norm.fit.call_count, 6)
         self.mock_stats.norm.pdf.assert_called_with([0, 1, 2, 3, 4, 5, 6, 7],

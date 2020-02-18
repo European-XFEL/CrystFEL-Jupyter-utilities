@@ -36,7 +36,6 @@ def list_datasets(dictionary, list_dataset):
     for name in dictionary:
         if isinstance(dictionary[name], dict):
             list_datasets(dictionary[name], list_dataset)
-
         else:
             list_dataset.append(dictionary[name])
 

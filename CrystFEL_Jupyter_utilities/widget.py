@@ -131,7 +131,6 @@ class PeakButtons:
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
             self.buttons.append(button)
-
         for button in self.buttons:
             button.label.set_fontsize(8)
             button.label.set_wrap(True)
@@ -212,7 +211,6 @@ class PeakButtons:
                 # We change flags and draw
                 self.list_active_peak[0] = True
                 self.visual_peaks()
-
             # other was enabled and draw or disabled and don't draw
             if self.list_active_peak[1]:
                 # 'CrystFEL_peak on/off' was enabled
@@ -222,7 +220,6 @@ class PeakButtons:
                 # 'CrystFEL_near_bragg_peak on/off' was enabled
                 # and draw we don't change flags
                 self.visual_peaks_reflection()
-
         # when we clicked button 'CrystFEL_peak on/off'
         if event.inaxes == self.axis_list[1]:
             if self.list_active_peak[0]:
@@ -242,7 +239,6 @@ class PeakButtons:
                 # we draw
                 self.list_active_peak[1] = True
                 self.visual_peaks_search()
-
         # when we clicked button 'CrystFEL_near_bragg_peak on/off'
         if event.inaxes == self.axis_list[2]:
             if self.list_active_peak[0]:
@@ -675,7 +671,6 @@ class Span:
         self.crystals_excluded = crystals_excluded
         # all crystals found in stream file
         self.all_crystals_list = all_crystals_list
-
         self.index = index  # Which histogram is used.
         self.name = name  # Histogram name.
         self.histogram_list = histogram_list  # List with all histograms. Works
@@ -713,12 +708,10 @@ class Span:
         self.crystals_excluded.clear()
         left_posx = min(xmin, xmax)  # Left selection point.
         right_posx = max(xmin, xmax)  # Right selection point.
-
         if left_posx == right_posx:  # Clicking resets the selection.
             # set flags
             self.histogram_list[self.index].was_clicked_before = False
             self.histogram_list[self.index].range_green_space = None, None
-
         else:
             # set flags this histogram was clicked
             self.histogram_list[self.index].was_clicked_before = True
@@ -730,7 +723,6 @@ class Span:
             if not self.is_exluded(crystal):
                 # If the crystal meets all conditions it is added.
                 Span.__crystals_included.append(crystal)
-
         LOGGER.info(
             "Selected {} of {} cells".format(len(Span.__crystals_included),
                                              len(self.all_crystals_list)))
@@ -770,14 +762,11 @@ class Span:
         the histograms with regard to the selection.
         """
         data_included = histograms_data(Span.__crystals_included)
-
         data_excluded = {'a': [], 'b': [], 'c': [],
                          'alfa': [], 'beta': [], 'gamma': []}
-
         for crystal in self.crystals_excluded:
             for hist in self.histogram_list:
                 data_excluded[hist.name].append(crystal[hist.name])
-
         # set data and refresh hist
         for hist in self.histogram_list:
             hist.update(data_excluded=data_excluded[hist.name],

@@ -9,7 +9,6 @@ class TestButtonBins(unittest.TestCase):
     @patch('matplotlib.pyplot')
     @patch('matplotlib.pyplot.axes')
     def setUp(self, mock_ax, mock_plt, mock_hist):
-
         self.fig = mock_plt.figure()
         self.ax = mock_ax
         self.hist = mock_hist

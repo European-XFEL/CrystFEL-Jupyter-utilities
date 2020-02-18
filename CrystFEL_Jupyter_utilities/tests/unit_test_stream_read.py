@@ -6,7 +6,6 @@ import CrystFEL_Jupyter_utilities.stream_read as stream_read
 
 
 class TestStreamRead(unittest.TestCase):
-
     def setUp(self):
         self.astar = [+0.1628118, -0.0234613, +0.0047666]
         self.bstar = [+0.0115679, +0.0777724, -0.0235210]
@@ -75,10 +74,8 @@ class TestStreamRead(unittest.TestCase):
         self.peak_reflections_list = ['q2a6', 'q2a4', 'q1a13']
 
     def test_cell_parameters(self):
-
         a, b, c, alfa, beta, gamma =\
             stream_read.cell_parameters(self.astar, self.bstar, self.cstar)
-
         self.assertEqual(a, self.a)
         self.assertEqual(b, self.b)
         self.assertEqual(c, self.c)

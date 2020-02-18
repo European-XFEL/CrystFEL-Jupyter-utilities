@@ -10,7 +10,6 @@ class TestH5(unittest.TestCase):
     def setUp(self):
         self.temporaryfile = tempfile.NamedTemporaryFile(delete=True)
         self.h5file = h5py.File(self.temporaryfile)
-
         dts_data = self.h5file.create_dataset("/data/data",
                                               (10, 12), dtype='i')
         dts_data = self.h5file["/data/data"]
@@ -35,7 +34,6 @@ class TestH5(unittest.TestCase):
                 'peakinfo-assembled': self.h5file["processing"]["cheetah"]['peakinfo-assembled']},
             'hitfinder': {
                 'peakinfo-assembled': self.h5file["processing"]["hitfinder"]['peakinfo-assembled']}}}
-
         self.test_list = \
             [self.h5file["LCLS"]["ebeamCharge"], self.h5file["LCLS"]["evt41"],
              self.h5file["data"]["data"],

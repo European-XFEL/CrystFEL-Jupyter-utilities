@@ -236,13 +236,11 @@ class Detector:
         # two loop for:
         for peak_search in self.peaks_search:
             # for check peak detection
-
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
             peak_search['ss_px'] -= self.min_ss
             peak_search['fs_px'] -= self.min_fs
-
             # setting position after rotation
             peak_search['ss_px'] = (self.array.shape[0] -
                                     1 - peak_search['ss_px'])
@@ -252,13 +250,11 @@ class Detector:
             peak_search['position'] = (posx, posy)
         for peak_reflection in self.peaks_reflection:
             # for script near bragg
-
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
             peak_reflection['ss_px'] -= self.min_ss
             peak_reflection['fs_px'] -= self.min_fs
-
             # setting position after rotation
             peak_reflection['ss_px'] = (self.array.shape[0] - 1
                                         - peak_reflection['ss_px'])
@@ -290,17 +286,14 @@ class Detector:
         pos_x = int(self.image_size[0]/2) - int(self.corner_y)
         # position + displacement.
         self.position = (pos_x + center_x, pos_y + center_y)
-
         # two loop for:
         for peak_search in self.peaks_search:
             # for check peak detection
-
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
             peak_search['ss_px'] -= self.min_ss
             peak_search['fs_px'] -= self.min_fs
-
             # setting position after rotation
             peak_search['fs_px'] = (self.array.shape[1] -
                                     1 - peak_search['fs_px'])
@@ -310,13 +303,11 @@ class Detector:
             peak_search['position'] = (posx, posy)
         for peak_reflection in self.peaks_reflection:
             # for script near bragg
-
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
             peak_reflection['ss_px'] -= self.min_ss
             peak_reflection['fs_px'] -= self.min_fs
-
             # setting position after rotation
             peak_reflection['fs_px'] = (self.array.shape[1] -
                                         1 - peak_reflection['fs_px'])
@@ -343,23 +334,19 @@ class Detector:
         # position y
         pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x -
                              self.array.shape[1], 0))
-
         # position x
         pos_x = int(np.round(self.image_size[0]/2.0 - self.corner_y -
                              self.array.shape[0], 0))
         # position + displacement.
         self.position = (pos_x + center_x, pos_y + center_y)
-
         # two loop for:
         for peak_search in self.peaks_search:
             # for check peak detection
-
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
             peak_search['ss_px'] -= self.min_ss
             peak_search['fs_px'] -= self.min_fs
-
             # setting position after rotation
             old_fs_px = peak_search['fs_px']
             old_ss_px = peak_search['ss_px']
@@ -369,16 +356,13 @@ class Detector:
             posy = peak_search['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
             peak_search['position'] = (posx, posy)
-
         for peak_reflection in self.peaks_reflection:
             # for script near bragg
-
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
             peak_reflection['ss_px'] -= self.min_ss
             peak_reflection['fs_px'] -= self.min_fs
-
             # setting position after rotation
             old_fs_px = peak_reflection['fs_px']
             old_ss_px = peak_reflection['ss_px']
@@ -410,17 +394,14 @@ class Detector:
         pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
         # position + displacement.
         self.position = (pos_x + center_x, pos_y + center_y)
-
         # two loop for
         for peak_search in self.peaks_search:
             # for check peak detection
-
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
             peak_search['ss_px'] -= self.min_ss
             peak_search['fs_px'] -= self.min_fs
-
             old_ss_px = peak_search['ss_px']
             peak_search['ss_px'] = peak_search['fs_px']
             peak_search['fs_px'] = old_ss_px
@@ -428,16 +409,13 @@ class Detector:
             posy = peak_search['ss_px'] + self.position[0]
             # new position of the peak in the panel after rotation
             peak_search['position'] = (posx, posy)
-
         for peak_reflection in self.peaks_reflection:
             # for script near bragg
-
             # setting the peak relative
             # to the upper left corner of the panel
             # default: upper left corner of the matrix data
             peak_reflection['ss_px'] -= self.min_ss
             peak_reflection['fs_px'] -= self.min_fs
-
             # setting position after rotation
             old_ss_px = peak_reflection['ss_px']
             peak_reflection['ss_px'] = peak_reflection['fs_px']
@@ -490,7 +468,6 @@ def get_detectors(raw_data_from_h5, image_size, geom,
                                    yss=geom["panels"][panel_name]["yss"],
                                    data=raw_data_from_h5)
               for panel_name in geom["panels"]}
-
     # complete all panels  with a list of peaks they have.
     # peaks which `check peak detection` shows
     # and peaks which  `near bragg` shows.
@@ -503,7 +480,6 @@ def get_detectors(raw_data_from_h5, image_size, geom,
             panels[name].peaks_reflection = peaks_reflections[name]
         except Exception:
             pass
-
     return panels
 
 
@@ -560,12 +536,10 @@ class BadRegion:
         """
         self.name = name
         self.image_size = image_size
-
         self.min_x = int(np.round(min_x + self.image_size[1]/2, 0))
         self.max_x = int(np.round(max_x + self.image_size[1]/2, 0))
         self.min_y = int(np.round(-min_y + self.image_size[0]/2, 0))
         self.max_y = int(np.round(-max_y + self.image_size[0]/2, 0))
-
         # check if the bad region range are not outside my image size
         if self.min_x < 0:
             self.min_x = 0
@@ -575,7 +549,6 @@ class BadRegion:
             self.min_y = self.image_size[1] - 1
         if self.max_y < 0:
             self.max_y = 0
-
         self.shape = (self.min_y - self.max_y, self.max_x - self.min_x)
         # bad region as numpy.array zeros
         self.array = np.zeros(self.shape)
@@ -617,5 +590,4 @@ def bad_places(image_size, geom):
                                       geom['bad'][bad_name]['min_y'],
                                       geom['bad'][bad_name]['max_y'])
                   for bad_name in geom['bad']}
-
     return bad_places

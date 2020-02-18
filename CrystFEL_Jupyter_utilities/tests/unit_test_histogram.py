@@ -94,7 +94,6 @@ class TestHistogram(unittest.TestCase):
 
     def test_update(self):
         self.mock_ax.reset_mock()
-
         self.data = {'P': [2, 3, 4, 5], 'A': [3, 4, 5, 6, 6]}
         self.data_excluded = [1, 1, 2, 3, 2]
         self.hist.update(self.data, self.data_excluded)
@@ -106,7 +105,6 @@ class TestHistogram(unittest.TestCase):
         assert self.mock_ax.set_title.called
         self.mock_ax.set_title.assert_called_with("Histogram of " +
                                                   self.hist.name)
-
         assert self.mock_ax.set_xlabel.called
         self.mock_ax.set_xlabel.assert_called_with(self.xlabel)
         assert self.mock_ax.hist.called

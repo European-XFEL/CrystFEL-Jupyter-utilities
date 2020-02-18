@@ -94,7 +94,6 @@ class TestPanel(unittest.TestCase):
         max_x = int(numpy.round(max_x + self.size_image[1]/2, 0))
         min_y = 820
         min_y = int(numpy.round(-min_y + self.size_image[0]/2, 0))
-
         self.assertEqual(bad['thing'].max_x, max_x)
         self.assertEqual(bad['thing'].min_y, min_y)
 

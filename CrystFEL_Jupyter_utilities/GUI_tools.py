@@ -73,7 +73,6 @@ class CellExplorer:
                 xlabel=temp_label, bins=self.bins,
                 data_to_histogram=self.histograms_data[hist_name],
                 colors=self.histogram_colors))
-
         plt.subplots_adjust(hspace=0.5)
         plt.subplots_adjust(wspace=0.1)
         # Histograms list
@@ -81,14 +80,12 @@ class CellExplorer:
         # and hist. changes after clicking.
         # Using itertools for looping to change color
         # list_color is our cyclic list
-
         # Buttons list:
         # All Spans include reference for crystals list which were refused
         # or not included (?) changes in 1 Span is visible by others.
         # all_crystals_list has all crystals that were found.
         # crystals_excluded has all crystal that has not set they are gray
         # index is used to locate which histogram applies
-
         button_x_pos = [0.95, 0.935, 0.92, 0.905, 0.89, 0.875, 0.86, 0.845]
         self.buttons_list = []
         for cryst_indx, cryst_symb in enumerate(self.cryst_list):
@@ -101,7 +98,6 @@ class CellExplorer:
                                 'gray', 'lightgrey'],
                     histogram_list=self.histogram_list,
                     histogram_colors=self.histogram_colors))
-
         self.span_list = []
         for hist_indx, hist_name in enumerate(self.histogram_order):
             self.span_list.append(Span(
@@ -109,13 +105,11 @@ class CellExplorer:
                 fig=self.fig, index=hist_indx, name=hist_name,
                 all_crystals_list=self.all_crystals_list,
                 histogram_list=self.histogram_list))
-
         # self.span_list = (span1, span2, span3, span4, span5, span6)
         self.fig.canvas.mpl_connect('key_press_event', self.press)
         self.fig.canvas.mpl_connect('button_release_event',
                                     self.remember_pos_panel)
         # Listening for key events.
-
         self.fig.pan_zoom = ZoomOnWheel(self.fig, scale_factor=2.0)
         # For zooming in using mouse wheel
         ButtonBins.set_bins(self.bins)
@@ -175,7 +169,6 @@ class CellExplorer:
             else:
                 lt = 'ORTHORHOMBIC'
                 ua = '*'
-
         elif(is_close(gauss_parameters[3], 90) and
              is_close(gauss_parameters[4], 90) and
              is_close(gauss_parameters[5], 120)):
@@ -303,7 +296,6 @@ class CellExplorer:
                   "\nal = {} deg".format(gauss_parameters[3]) +
                   "\nbe = {} deg".format(gauss_parameters[4]) +
                   "\nga = {} deg".format(gauss_parameters[5]))
-
         filename = "CrystFEL_unit_cell_file"
         # the name of the file where the parameters will be saved
         with open(filename, 'w') as file:
@@ -322,7 +314,6 @@ class CellExplorer:
             ButtonBins.set_bins(self.bins)
         for bttn in self.buttons_list:
             bttn.reset_color()
-
         if len(self.kwargs) == 0:
             self.crystals_excluded.clear()
             for hist_indx, hist_name in enumerate(self.histogram_order):
@@ -331,7 +322,6 @@ class CellExplorer:
                     self.crystals_excluded)
         else:
             self.parameters_used()
-
         self.fig.canvas.draw()
 
     def parameters_used(self):
@@ -381,7 +371,6 @@ class CellExplorer:
                         self.histogram_list[index].bins = bins
                         self.histogram_list[index].update()
                         self.histogram_list[index].draw_green_space()
-
         # Fitting selected range:
         if event.key == 'g':
             self.gauss_draw()
@@ -409,7 +398,6 @@ class CellExplorer:
             hist.axs.text(x=position_x_text, y=position_y_text, fontsize=10,
                           s=r"$\mu = {}\ \sigma = {}$".format(np.round(m, 2),
                                                               np.round(s, 2)))
-
             hist.axs.grid(True)
 
 

@@ -94,7 +94,6 @@ class Image:
         self.streamfile = streamfile
         # Dictionary containing panels and peaks info from the h5 file.
         self.dict_witch_data = get_diction_data(self.path)
-
         # Creating a figure and suplot
         # used 10X10 because default size is to small in notebook
         self.fig, self.ax = plt.subplots(figsize=(9.5, 9.5))
@@ -111,7 +110,6 @@ class Image:
         self.peaks = None
         self.detectors = None
         self.bad_places = None
-
         # For displaying the image in the right orientation (?).
         # display without laying the panels
         if self.geomfile is None:
@@ -181,7 +179,6 @@ class Image:
                                                 slider=self.slider,
                                                 ax=self.ax,
                                                 panels=self.detectors)
-
         # Display the image:
         plt.show()
 
@@ -310,7 +307,6 @@ class Image:
         if (np.abs(panel['xfs']) < np.abs(panel['xss']) and
                 np.abs(panel['yfs']) > np.abs(panel['yss'])):
             if panel['xss'] > 0 and panel['yfs'] < 0:
-
                 # After rotation along y=x
                 local_xmax = panel['cnx']
                 local_ymin = panel['cny']
@@ -318,9 +314,7 @@ class Image:
                               panel['min_ss'] - 1)
                 local_ymax = (panel['cny'] + panel['max_fs'] -
                               panel['min_fs'] + 1)
-
             elif panel['xss'] < 0 and panel['yfs'] > 0:
-
                 # After rotation along y=-x
                 local_xmin = panel['cnx']
                 local_ymax = panel['cny']
@@ -331,7 +325,6 @@ class Image:
         elif (np.abs(panel['xfs']) > np.abs(panel['xss']) and
               np.abs(panel['yfs']) < np.abs(panel['yss'])):
             if panel['xfs'] < 0 and panel['yss'] < 0:
-
                 # After rotation along y-axis
                 local_xmax = panel['cnx']
                 local_ymax = panel['cny']
@@ -339,9 +332,7 @@ class Image:
                               panel['min_fs'] - 1)
                 local_ymin = (panel['cny'] - panel['max_ss'] +
                               panel['min_ss'] - 1)
-
             elif panel['xfs'] > 0 and panel['yss'] > 0:
-
                 # After rotation along x-axis
                 local_xmin = panel['cnx']
                 local_ymin = panel['cny']
@@ -349,7 +340,6 @@ class Image:
                               panel['min_fs'] + 1)
                 local_ymax = (panel['cny'] + panel['max_ss'] -
                               panel['min_ss'] + 1)
-
         return local_xmin, local_xmax, local_ymin, local_ymax
 
     def find_image_size(self, geom):
@@ -370,7 +360,6 @@ class Image:
         """
         # current length and height.
         x_min = x_max = y_min = y_max = 0
-
         # I am looking for the most remote panel points.
         for name in geom["panels"]:
             local_xmin, local_xmax, local_ymin, local_ymax = self.local_range(
@@ -383,17 +372,14 @@ class Image:
                 y_max = local_ymax
             elif local_ymin < y_min:
                 y_min = local_ymin
-
         # The number of columns.
         columns = x_max - x_min
         # The number of rows.
         rows = y_max - y_min
-
         # Displacement of centre.
         center_y = -int(x_max - columns/2)
         center_x = int(y_max - rows/2)
         # conversion to integer.
         rows = int(np.ceil(rows))
         columns = int(np.ceil(columns))
-
         return columns, rows, center_x, center_y
