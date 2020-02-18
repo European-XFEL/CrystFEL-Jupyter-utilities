@@ -19,8 +19,9 @@ def find_version(*parts):
         return match.group(1)
     raise RuntimeError("Unable to find version string.")
 
+
 setup(name='CrystFEL_Jupyter_utilities',
-      version=find_version("CrystFEL_Jupyter_utilities","__init__.py"),
+      version=find_version("CrystFEL_Jupyter_utilities", "__init__.py"),
       author="European XFEL GmbH, National Centre for Nuclear Research",
       author_email="da-support@xfel.eu",
       url="https://github.com/European-XFEL/CrystFEL-Jupyter-utilities",
@@ -28,7 +29,8 @@ setup(name='CrystFEL_Jupyter_utilities',
       long_description_content_type='text/markdown',
       license="BSD-3-Clause",
       packages=find_packages(),
-      scripts=['scripts/cell_explorer_run.py', 'scripts/hdfsee_run.py', 'scripts/check-peak-detection.sh'],
+      scripts=['scripts/cell_explorer_run.py', 'scripts/hdfsee_run.py',
+               'scripts/check-peak-detection.sh'],
       install_requires=[
           'cfelpyutils>=0.92',
           'h5py>=2.7.1',
@@ -37,9 +39,9 @@ setup(name='CrystFEL_Jupyter_utilities',
           'scipy',
       ],
       extras_require={
-        'docs': [
-               'ipython',
-           ],
+          'docs': [
+              'ipython',
+          ],
           'test': [
               'coverage<5',
           ]
@@ -57,5 +59,4 @@ setup(name='CrystFEL_Jupyter_utilities',
           'Programming Language :: Python :: 3.7',
           'Topic :: Scientific/Engineering :: Information Analysis',
           'Topic :: Scientific/Engineering :: Physics',
-      ]
-)
+      ])

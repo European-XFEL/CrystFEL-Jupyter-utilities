@@ -43,6 +43,7 @@ class Histogram:
 
         Individual patches used to create the histogram.
     """
+
     def __init__(self, axs, name, xlabel, data_to_histogram, colors, bins):
         """
             Attributes
@@ -56,7 +57,7 @@ class Histogram:
                 Histogram name used in title.
             xlabel : str
 
-                Distanse or angle unit.
+                Distance or angle unit.
             bins : int
 
                 Number of bins.
@@ -84,26 +85,19 @@ class Histogram:
             except KeyError:
                 self.list_data.append([])
             self.data_included += self.list_data[k]
-
         try:
             self.data_excluded = []
         except KeyError:
             self.data_excluded = []
-
         self.list_data.append(self.data_excluded)
-
         self.max = max(self.data_included + self.data_excluded)
         self.min = min(self.data_included + self.data_excluded)
-
         self.color_exclude = 'lightgray'
-
-        self.__list_colors = \
-            [colors[centering] for centering in self.cryst_list]
+        self.__list_colors = [
+            colors[centering] for centering in self.cryst_list]
         self.__list_colors.append(self.color_exclude)
-
         self.axs.set_title("Histogram of " + self.name)
         self.axs.set_xlabel(self.xlabel)
-
         _, _, self.patches = self.axs.hist(x=self.list_data, bins=self.bins,
                                            density=1, stacked=True, alpha=0.9,
                                            range=(self.min, self.max),
@@ -142,13 +136,12 @@ class Histogram:
 
         Boolean value.
         """
-        if self.__range_green_space[0] is None or\
-           self.__range_green_space[1] is None:
+        if (self.__range_green_space[0] is None or
+                self.__range_green_space[1] is None):
             return False
-        elif data < self.__range_green_space[0] or\
-                data > self.__range_green_space[1]:
+        elif (data < self.__range_green_space[0] or
+                data > self.__range_green_space[1]):
             return True
-
         return False
 
     @property
@@ -171,8 +164,8 @@ class Histogram:
     def draw_green_space(self):
         """Draw the range of ​​interest ('green')
         """
-        if self.__range_green_space[0] is not None or\
-           self.__range_green_space[1] is not None:
+        if (self.__range_green_space[0] is not None or
+                self.__range_green_space[1] is not None):
             self.axs.axvspan(self.__range_green_space[0],
                              self.__range_green_space[1],
                              facecolor='#2ca02c', alpha=0.5)
@@ -188,7 +181,7 @@ class Histogram:
     def was_clicked_before(self, true_false):
         """Set flag was_clicked_before.
 
-        Parametetrs
+        Parameters
         -----------
         true_false : boolean
 
@@ -223,7 +216,7 @@ class Histogram:
         -------
         list_colors : list
 
-            The list  with colors for each centerning
+            The list with colors for each centering
             in the histogram.
         """
         return self.__list_colors
@@ -239,8 +232,8 @@ class Histogram:
 
             Colors of changing the bars in the histogram.
         """
-        self.__list_colors = \
-            [colors[centering] for centering in self.cryst_list]
+        self.__list_colors = [
+            colors[centering] for centering in self.cryst_list]
         self.__list_colors.append(self.color_exclude)
 
     def update_colors(self):
@@ -267,12 +260,11 @@ class Histogram:
             Default is None when we only refresh histogram.
         """
         # update new data to the histogram when selecting the range.
-        if (data_to_histogram is not None and data_excluded is not None):
+        if data_to_histogram is not None and data_excluded is not None:
             try:
                 self.data_excluded = data_excluded
             except KeyError:
                 self.data_excluded = []
-
             self.list_data = []
             self.data_included = []
             for k, a_cryst in enumerate(self.cryst_list):
@@ -304,7 +296,7 @@ class Histogram:
 
         Returns
         -------
-        xlim : touple
+        xlim : tuple
 
             The x-axis limits of the histogram.
         """
