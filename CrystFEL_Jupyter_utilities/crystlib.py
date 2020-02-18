@@ -50,6 +50,5 @@ def histograms_data(crystal_list):
     """
     cryst = crystal_list  # Crystals list
     histogram_order = ['a', 'b', 'c', 'alfa', 'beta', 'gamma']
-    dict_data = {key: crystal_search(cryst, key)
-                 for key in histogram_order}
+    dict_data = {key: crystal_search(cryst, key) for key in histogram_order}
     return dict_data

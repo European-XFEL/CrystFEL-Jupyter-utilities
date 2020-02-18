@@ -395,8 +395,7 @@ class CellExplorer:
             hist.draw_green_space()
             m, s = stats.norm.fit(hist.data_included)
             # Computing mu and sigma
-            lnspc = np.linspace(hist.current_xlim[0],
-                                hist.current_xlim[1], 80)
+            lnspc = np.linspace(hist.current_xlim[0], hist.current_xlim[1], 80)
             # Table 80 arguments x by equal distances [0,1,2]
             pdf_g = stats.norm.pdf(lnspc, m, s)
             # Theoretical value for our arguments
