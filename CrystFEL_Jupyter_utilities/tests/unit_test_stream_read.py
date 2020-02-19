@@ -94,7 +94,8 @@ class TestStreamRead(unittest.TestCase):
         with patch('builtins.open', mock_open(read_data=self.file_cont),
                    create=True) as m:
             m.return_value.__iter__.return_value = self.file_cont.splitlines()
-            s = stream_read.search_peaks(self.file_name, "db.h5")
+            s = stream_read.search_peaks(self.file_name, "db.h5",
+                                         'Image filename:')
             assert m.called
             m.assert_called_once_with(self.file_name)
             self.assertEqual(list(s[0].keys()).sort(), self.peak_list.sort())
