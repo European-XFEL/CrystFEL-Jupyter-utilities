@@ -17,7 +17,7 @@ class TestPanel(unittest.TestCase):
                                        self.Raw_data)
         self.bad_place = panel.BadRegion(self.size_image, name='bad_thing',
                                          min_x=-390, max_x=-270, min_y=820,
-                                         max_y=890)
+                                         max_y=890, center_x=0, center_y=0)
         self.geom = {"panels": {'q0a0': {"cnx": 450.549, "cny": -26.0936,
                                          "min_fs": 0, "min_ss": 0,
                                          "max_fs": 193, "max_ss": 184,
@@ -89,19 +89,13 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.bad_place.min_y, min_y)
 
     def test_bad_places(self):
-        bad = panel.bad_places(self.size_image, self.geom)
+        bad = panel.bad_places(self.size_image, self.geom, 0, 0)
         max_x = -270
         max_x = int(numpy.round(max_x + self.size_image[1]/2, 0))
         min_y = 820
         min_y = int(numpy.round(-min_y + self.size_image[0]/2, 0))
         self.assertEqual(bad['thing'].max_x, max_x)
         self.assertEqual(bad['thing'].min_y, min_y)
-
-    def test_get_detectors(self):
-        panels = panel.get_detectors(self.Raw_data, self.size_image, self.geom,
-                                     self.peaks_search, self.peaks_reflections)
-        self.assertListEqual([1, 2, 3], panels['q0a0'].peaks_search)
-        self.assertListEqual([3, 3, 3], panels['q1a1'].peaks_reflection)
 
 
 if __name__ == '__main__':
