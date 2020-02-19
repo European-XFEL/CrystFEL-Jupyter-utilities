@@ -124,6 +124,13 @@ class TestHistogram(unittest.TestCase):
         self.hist.update_current_xlim()
         assert self.mock_ax.get_xlim.called
 
+    def test_reset(self):
+        self.hist.was_clicked_before = True
+        self.hist.range_green_space = 0, 0
+        self.hist.reset()
+        self.assertEqual(self.hist.was_clicked_before, False)
+        self.assertEqual(self.hist.range_green_space, (None, None))
+
 
 if __name__ == '__main__':
     unittest.main()
