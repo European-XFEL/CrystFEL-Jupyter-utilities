@@ -55,7 +55,7 @@ Features buttons for changing contrast and colour space, displaying diffraction 
    ```
    from CrystFEL_Jupyter_utilities.hdfsee import Image
    %matplotlib notebook
-   Image_run = Image(path=<hdf5 file>, geomfile=<geometry file>, streamfile=<stream file>)
+   Image_run = Image(path=<filename>, geomfile=<geometry file>, streamfile=<stream file>)
    ```
 ## check-peak-detection.sh
 `check-peak-detection.sh <stream file> <geometry file>`
@@ -81,4 +81,4 @@ and displays fitting parameters.
    RUN = CellExplorer(<stream file>)
    ```
 ### Example in jupyter notebook
-`magic-cell_explorer_and_hdfsee.ipynb`
+`CellExplorer_and_H5see_usage.ipynb`
