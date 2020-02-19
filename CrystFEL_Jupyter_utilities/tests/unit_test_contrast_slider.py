@@ -27,7 +27,6 @@ class TestContrastSlider(unittest.TestCase):
         assert self.image.set_clim.called
         assert self.fig.canvas.draw.called
         self.image.set_clim.assert_called_once_with(vmax=event)
-        self.assertEqual(self.slider.vmax, event)
 
     @patch('matplotlib.image')
     def test_image(self, mock_image):
@@ -36,9 +35,10 @@ class TestContrastSlider(unittest.TestCase):
         self.slider.set_image(image)
         self.assertEqual(image, self.slider.image)
 
-    def test_vmax_vmin(self):
-        self.assertEqual(self.slider.get_vmax(), self.vmax)
-        self.assertEqual(self.slider.get_vmin(), self.vmin)
+    def test_clim(self):
+        self.slider.get_clim()
+        assert self.image.get_clim.called
+        self.assertEqual(self.slider.get_clim(), self.image.get_clim())
 
 
 if __name__ == '__main__':
