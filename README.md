@@ -20,8 +20,9 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 * R. A. Kirian, X. Wang, U. Weierstall, K. E. Schmidt, J. C. H. Spence, M. Hunter, P. Fromme, T. White, H. N. Chapman and J. Holton. "Femtosecond protein nanocrystallography - data analysis methods". Optics Express 18 (2010) p5713.
 
 ## Tools
-* hdfsee.py - for displaying a diffraction image from a h5 file.  
-* GUI_tools.py - displaying histograms from a indexing.stream file (produced by indexamajig) and fitting gaussian curves.
+* Displaying a diffraction image from a h5 file.  
+* Displaying histograms from a indexing.stream file (produced by indexamajig) and fitting gaussian curves.
+* Dispalying a each diffraction image from a indexing.stream.
 
 ## Dependencies
 `cfelpyutils`  
