@@ -23,7 +23,7 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 * Displaying a diffraction image from a h5 file.
 * Displaying series of diffraction images with detected peaks using CrystFEL indexing output file.
 * Examining the distributions of unit cell parameters in CrystFEL indexing output file.
-
+`
 ## Dependencies
 `cfelpyutils`  
 `h5py`  
@@ -33,7 +33,7 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 `Python >= 3.5`  
 `scipy`
 ## Installing
-`git clone` <https://github.com/European-XFEL/CrystFEL-Jupyter-utilities.git>  
+`git clone <https://github.com/European-XFEL/CrystFEL-Jupyter-utilities.git>`  
 `python setup.py install`
 
 ## Tests
