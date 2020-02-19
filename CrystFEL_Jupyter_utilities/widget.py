@@ -500,7 +500,6 @@ class ContrastSlider(Slider):
 
             Range that the colormap covers.
         """
-        print(type(self.image.get_clim()))
         return self.image.get_clim()
 
 
