@@ -2,6 +2,7 @@ import h5py
 import numpy
 import unittest
 import tempfile
+from unittest.mock import patch
 
 import CrystFEL_Jupyter_utilities.data as data
 
@@ -101,6 +102,16 @@ class TestH5(unittest.TestCase):
         panels = data.creat_panels(list_datasets, self.geom, (0, 0))
         numpy.testing.assert_array_equal(panels['q0a0'].array,
                                          self.panel_data_2[0, 0, :])
+        self.geom['panels']['q0a0']['dim_structure'] = ["%", 0, 'dd', 'dd']
+        with self.assertRaises(Exception) as exep:
+            data.creat_panels(list_datasets, self.geom, (0, 0))
+        self.assertTrue('Unknown dimension structure' in str(exep.exception))
+
+    @patch('h5py.File')
+    def test_get_file_data(self, mock_file):
+        mock_file.return_value = self.h5file
+        data_file = data.get_file_data(self.temporaryfile)
+        numpy.testing.assert_array_equal(data_file, self.panel_data)
 
 
 if __name__ == '__main__':
