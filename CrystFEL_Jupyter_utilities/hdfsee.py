@@ -327,12 +327,12 @@ class Image:
                 self.matrix[detector.position[0]: detector.position[0] +
                             detector.array.shape[0],
                             detector.position[1]: detector.position[1] +
-                            detector.array.shape[1]] = \
-                                detector.get_array_rotated(center_x, center_y)
+                            detector.array.shape[1]] = (
+                                detector.get_array_rotated(center_x, center_y))
             except ValueError:
                 text = " ".join(["Wrong panel position",
-                                "{}, Position: {}".format(detector.name,
-                                                          detector.position)])
+                                 "{}, Position: {}".format(detector.name,
+                                                           detector.position)])
                 LOGGER.critical(text)
                 sys.exit(1)
 

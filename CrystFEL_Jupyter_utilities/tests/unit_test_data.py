@@ -15,7 +15,7 @@ class TestH5(unittest.TestCase):
              [357.61907958984375, 0.3685567378997803, 1977.989501953125, 5.0],
              [-365.4927673339844, -172.0950164794922, 576.232666015625, 3.0]])
         self.panel_data = numpy.array([[1, 1, 1, 1], [2, 2, 2, 2],
-                                      [3, 3, 3, 3], [4, 4, 4, 4]])
+                                       [3, 3, 3, 3], [4, 4, 4, 4]])
         self.panel_data_2 = numpy.array([[[[1, 1], [1, 1]]]])
         dts_data = self.h5file.create_dataset("/data/data",
                                               (4, 4), dtype='i')

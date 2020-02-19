@@ -451,6 +451,7 @@ class BadRegion:
 
         Range y_max  bad region.
     """
+
     def __init__(self, image_size, name, min_x, max_x, min_y, max_y,
                  center_x, center_y):
         """

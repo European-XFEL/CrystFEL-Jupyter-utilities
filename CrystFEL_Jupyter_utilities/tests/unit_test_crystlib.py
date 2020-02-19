@@ -5,13 +5,13 @@ import CrystFEL_Jupyter_utilities.crystlib as crystlib
 
 class TestCrystlib(unittest.TestCase):
     def setUp(self):
-        self.crystals = [{'centering': 'P','a': 10, 'b': 10, 'c': 10,
+        self.crystals = [{'centering': 'P', 'a': 10, 'b': 10, 'c': 10,
                           'alfa': 80, 'beta': 80, 'gamma': 80},
-                         {'centering': 'C','a': 22, 'b': 22, 'c': 32,
+                         {'centering': 'C', 'a': 22, 'b': 22, 'c': 32,
                           'alfa': 89, 'beta': 90, 'gamma': 92},
-                         {'centering': 'C','a': 31, 'b': 200, 'c': 120,
+                         {'centering': 'C', 'a': 31, 'b': 200, 'c': 120,
                           'alfa': 90, 'beta': 90, 'gamma': 90}]
-        
+
     def test_crystal_search(self):
         test_value = crystlib.crystal_search([], None)
         self.assertEqual(test_value, {})
