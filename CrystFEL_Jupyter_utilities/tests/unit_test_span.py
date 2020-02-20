@@ -43,6 +43,12 @@ class TestSpan(unittest.TestCase):
         self.span.onselect(20, 20)
         self.assertEqual(self.mock_hist.was_clicked_before, False)
         self.assertEqual(self.mock_hist.range_green_space, (None, None))
+        self.mock_hist.bool_crystal_exluded_green_space.return_value = False
+        self.span.onselect(2, 200)
+        self.assertEqual(
+            self.mock_hist.was_clicked_before, True)
+        self.assertEqual(self.mock_hist.range_green_space, (2, 200))
+        self.assertEqual(len(self.crystals_excluded), 0)
 
     @patch('CrystFEL_Jupyter_utilities.widget.histograms_data')
     def test_data_update(self, mock_histograms_data):
@@ -67,6 +73,17 @@ class TestSpan(unittest.TestCase):
             self.mock_hist.bool_crystal_exluded_green_space.call_count, 6)
         self.mock_hist.bool_crystal_exluded_green_space.return_value = True
         self.assertEqual(self.span.is_exluded(crystal), True)
+
+    def test_get_all_used(self):
+        self.assertEqual(self.span.get_all_used(),
+                         [False, False, False, False, False, False])
+        self.span.onselect(10, 10)
+        self.assertEqual(self.span.get_all_used(),
+                         [False, True, False, False, False, False])
+        self.span.index = 3
+        self.span.onselect(10, 10)
+        self.assertEqual(self.span.get_all_used(),
+                         [False, False, False, True, False, False])
 
 
 if __name__ == '__main__':
