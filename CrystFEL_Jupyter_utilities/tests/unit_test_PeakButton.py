@@ -31,6 +31,7 @@ class TestPeakButtons(unittest.TestCase):
         self.peaks = [{'position': (1, 2)}, {'position': (2, 5)},
                       {'position': (3, 4)}]
         self.matrix = numpy.ones((2, 3))
+        mock_axes.return_value = True
         self.bttn = PeakButtons(fig=self.mock_fig, ax=self.mock_ax,
                                 matrix=self.matrix, peaks=self.peaks,
                                 panels=self.mock_detectors,
@@ -76,23 +77,36 @@ class TestPeakButtons(unittest.TestCase):
         self.mock_ax.add_artist.assert_called_with(mock_circle())
         self.assertEqual(self.mock_ax.add_artist.call_count, 3)
         self.assertEqual(self.bttn.list_active_peak, [False, False, False])
+        self.bttn.peaks = None
+        self.assertEqual(self.bttn.visual_peaks(), None)
 
     @patch('matplotlib.backend_bases.Event')
     def test_peaks_on_of(self, mock_event):
         self.mock_radio.get_cmap.return_value = 'inferno'
         self.mock_slider.get_clim.return_value = (100, 400)
+        mock_event.inaxes = True
+        # self.bttn.axis_list[0] = mock_event
+        self.bttn.list_active_peak[0] = False
+        self.bttn.list_active_peak[1] = False
+        self.bttn.list_active_peak[2] = False
         self.bttn.peaks_on_of(mock_event)
-        assert self.mock_ax.cla.called
-        assert self.mock_radio.get_cmap.called
-        assert self.mock_slider.get_clim.called
+        self.bttn.list_active_peak[0] = True
+        self.bttn.list_active_peak[1] = True
+        self.bttn.list_active_peak[2] = True
+        self.bttn.peaks_on_of(mock_event)
+        self.assertEqual(self.mock_ax.add_artist.call_count, 9)
+        self.assertEqual(self.mock_fig.canvas.draw.call_count, 2)
+        self.assertEqual(self.mock_ax.cla.call_count, 2)
+        self.assertEqual(self.mock_radio.get_cmap.call_count, 2)
+        self.assertEqual(self.mock_slider.get_clim.call_count, 2)
+        self.assertEqual(self.mock_ax.set_title.call_count, 2)
+        self.assertEqual(self.mock_ax.imshow.call_count, 2)
+        self.assertEqual(self.mock_radio.set_image.call_count, 2)
+        self.assertEqual(self.mock_slider.set_image.call_count, 2)
         assert self.mock_ax.imshow.called
         self.mock_ax.imshow.assert_called_with(self.matrix, cmap='inferno',
                                                vmax=400, vmin=100)
-        assert self.mock_fig.canvas.draw.called
-        assert self.mock_ax.set_title.called
         self.mock_ax.set_title.assert_called_with(self.title)
-        assert self.mock_radio.set_image.called
-        assert self.mock_slider.set_image.called
 
 
 if __name__ == '__main__':
