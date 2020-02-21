@@ -41,16 +41,12 @@ Is is recommended to cite the original CrystFEL papers if one is planning to ref
 or  
 `python setup.py test`
 
-## hdfsee.py usage
-The tool is designed to work with h5 files (hdf5). Tested only with LCLS specific data structure <http://www.cxidb.org/data/21/cxidb-21-run0130.tar>
-Features buttons for changing contrast and colour space, displaying diffraction peaks from indexing.stream file or peaks embedded in the h5 file.
-
-### Example usage
+## Displaying the image
 1. Basic displaynig of the data as it is:  
    `hdfsee_run.py <filename>`
 2. Displaying the image with geometry reconstruction:  
     `hdfsee_run.py <filename> -g <geometry file>`  
-3. Displaying the image with geometry reconstruction and peaks written in the indexing.stream file produced by indexamajig:  
+3. Displaying the image with geometry reconstruction and peaks written in the indexing.stream file produced by `indexamajig`:
     `hdfsee_run.py <filename> -g <geometry file> -p <stream file>`
 4. Run from code cell in jupyter-notebook:  
    ```
@@ -58,14 +54,17 @@ Features buttons for changing contrast and colour space, displaying diffraction 
    %matplotlib notebook
    Image_run = Image(path=<filename>, geomfile=<geometry file>, streamfile=<stream file>)
    ```
-## check-peak-detection.sh
+## Iterate through images
+To display images in the `indexamajig` output: 
 `check-peak-detection.sh <stream file> <geometry file>`
 
 **Instructions for running on maxwell cluster**  
 #####TODO#####
 
-## GUI_tools.py usage
-GUI_tools.py is a `cell_explorer` tool from CrystFEL ported to Python.
+## Examining the distributions of unit cell parameters
+`cell_explorer` tool from CrystFEL has been ported to Python in a form of `CellExplorer` 
+class which can be used directly in a Jupyter Notebook and executed with the `cell_explorer_run.py` 
+script.
 To select a range of intrerest for gaussian fitting press and hold left mouse button,
 release the button after the selection is ready. To deselect click left mouse button
 anywhere on the plot. Pressing '+' or '-' changes the binning size by a factor
