@@ -409,5 +409,6 @@ def main(argv=None):
     streamfile = ARGS.filename[0]
     CellExplorer(streamfile)
 
+
 if __name__ == '__main__':
     main()
