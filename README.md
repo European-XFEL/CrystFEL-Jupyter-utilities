@@ -55,7 +55,7 @@ or
    Image_run = Image(path=<filename>, geomfile=<geometry file>, streamfile=<stream file>)
    ```
 ## Iterate through images
-To display images in the `indexamajig` output: 
+To display images in the `indexamajig` output:  
 `check-peak-detection.sh <stream file> <geometry file>`
 
 **Instructions for running on maxwell cluster**  
