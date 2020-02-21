@@ -1,16 +1,17 @@
 # Description:
-H5see is a project with graphical tools from CrystFEL implemented in Python.
-The project is intended to work as a wrapper for CrystFEL tools when it is not
-possible to use a graphical environment but graphical (interactive) features
-are needed. The tools were written to resemble original CrystFEL tools while
-at the same time feature some of the requests from CrystFEL users.
-In particular following tools are available:
+CrystFEL-Jupyter-utilities is a project with graphical tools from CrystFEL
+implemented in Python. The project is intended to work as a wrapper for
+CrystFEL tools when it is notpossible to use a graphical environment but
+graphical (interactive) features are needed. The tools were written to resemble
+original CrystFEL tools while at the same time feature some of the requests
+from CrystFEL users. In particular following tools are available:
 
 * hdfsee
 * check-peak-detection.sh (script)
 * cell_explorer
 
-Is is recommended to cite the original CrystFEL papers if one is planning to refer to the h5see package:
+Is is recommended to cite the original CrystFEL papers if one is planning to
+refer to the CrystFEL-Jupyter-utilities package:
 
 * T. A. White, V. Mariani, W. Brehm, O. Yefanov, A. Barty, K. R. Beyerlein, F. Chervinskii, L. Galli, C. Gati, T. Nakane, A. Tolstikova, K. Yamashita, C. H. Yoon, K. Diederichs and H. N. Chapman. "Recent developments in CrystFEL". J. Applied Crystallography 49 (2016) p680-689.
 * O. Yefanov, V. Mariani, C. Gati, T. A. White, H. N. Chapman and A. Barty. "Accurate determination of segmented X-ray detector geometry". Optics Express 23 (2015) p28459-28470.
