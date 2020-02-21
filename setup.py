@@ -29,8 +29,13 @@ setup(name='CrystFEL_Jupyter_utilities',
       long_description_content_type='text/markdown',
       license="BSD-3-Clause",
       packages=find_packages(),
-      scripts=['scripts/cell_explorer_run', 'scripts/hdfsee_run',
-               'scripts/check-peak-detection'],
+      scripts=['scripts/check-peak-detection'],
+      entry_points={
+          "console_scripts": [
+              "hdfsee_py = CrystFEL_Jupyter_utilities.hdfsee:main",
+              "cell_explorer_run = CrystFEL_Jupyter_utilities.GUI_tools:main"
+          ],
+      },
       install_requires=[
           'cfelpyutils>=0.92',
           'h5py>=2.7.1',
