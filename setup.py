@@ -33,7 +33,7 @@ setup(name='CrystFEL_Jupyter_utilities',
       entry_points={
           "console_scripts": [
               "hdfsee_py = CrystFEL_Jupyter_utilities.hdfsee:main",
-              "cell_explorer_run = CrystFEL_Jupyter_utilities.GUI_tools:main"
+              "cell_explorer_py = CrystFEL_Jupyter_utilities.GUI_tools:main"
           ],
       },
       install_requires=[
