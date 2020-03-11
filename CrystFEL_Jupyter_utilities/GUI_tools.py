@@ -1,7 +1,7 @@
 """Module can be executed in a notebook.
 Joins work of other modules together.
 """
-# !/usr/bin/env python
+import argparse
 
 import matplotlib.pyplot as plt
 # In there we have references on to 'home' button
@@ -401,8 +401,14 @@ class CellExplorer:
             hist.axs.grid(True)
 
 
-if __name__ == "__main__":
-    streamfile = '/home/tsachanowski/Dokumenty/Process.stream'
-    RUN = CellExplorer(streamfile)
-    RUN = CellExplorer(streamfile, alfa=(80, 90),
-                       beta=(80, 90), gamma=(80, 90))
+def main(argv=None):
+    PARSER = argparse.ArgumentParser()
+    PARSER.add_argument('filename', nargs=1, metavar="name.stream",
+                        help="Download data from this file")
+    ARGS = PARSER.parse_args()
+    streamfile = ARGS.filename[0]
+    CellExplorer(streamfile)
+
+
+if __name__ == '__main__':
+    main()
