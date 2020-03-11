@@ -102,9 +102,9 @@ class Image:
         # Dictionary containing panels and peaks info from the h5 file.
         # Creating a figure and suplot
         # used 10X10 because default size is to small in notebook
-        self.fig, self.ax = self.__creat_figure(path=self.path,
-                                                figsize=(9.5, 9.5),
-                                                event=self.event)
+        self.fig, self.ax = self.creat_figure(path=self.path,
+                                              figsize=(9.5, 9.5),
+                                              event=self.event)
         # Setting the contrast.
         self.range = range
         # Setting the default colour map.
@@ -191,7 +191,7 @@ class Image:
         # Display the image:
         plt.show()
 
-    def __creat_figure(self, path, figsize=(10, 10), event=None):
+    def creat_figure(self, path, figsize=(10, 10), event=None):
         """Creats new figure object, adds subplot.
 
         Parameters
