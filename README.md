@@ -10,7 +10,7 @@ from CrystFEL users. In particular following tools are available:
 * check-peak-detection (script)
 * cell_explorer
 
-Is is recommended to cite the original CrystFEL papers if one is planning to
+It is recommended to cite the original CrystFEL papers if one is planning to
 refer to the CrystFEL-Jupyter-utilities package:
 
 * T. A. White, V. Mariani, W. Brehm, O. Yefanov, A. Barty, K. R. Beyerlein, F. Chervinskii, L. Galli, C. Gati, T. Nakane, A. Tolstikova, K. Yamashita, C. H. Yoon, K. Diederichs and H. N. Chapman. "Recent developments in CrystFEL". J. Applied Crystallography 49 (2016) p680-689.
