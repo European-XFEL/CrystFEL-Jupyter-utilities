@@ -1,13 +1,13 @@
 # Description:
 CrystFEL-Jupyter-utilities is a project with graphical tools from CrystFEL
 implemented in Python. The project is intended to work as a wrapper for
-CrystFEL tools when it is notpossible to use a graphical environment but
+CrystFEL tools when it is not possible to use a graphical environment but
 graphical (interactive) features are needed. The tools were written to resemble
 original CrystFEL tools while at the same time feature some of the requests
 from CrystFEL users. In particular following tools are available:
 
 * hdfsee
-* check-peak-detection.sh (script)
+* check-peak-detection (script)
 * cell_explorer
 
 Is is recommended to cite the original CrystFEL papers if one is planning to
@@ -24,7 +24,7 @@ refer to the CrystFEL-Jupyter-utilities package:
 * Displaying a diffraction image from a h5 file.
 * Displaying series of diffraction images with detected peaks using CrystFEL indexing output file.
 * Examining the distributions of unit cell parameters in CrystFEL indexing output file.
-`
+
 ## Dependencies
 `cfelpyutils`  
 `h5py`  
@@ -43,12 +43,12 @@ or
 `python setup.py test`
 
 ## Displaying the image
-1. Basic displaynig of the data as it is:  
-   `hdfsee_run.py <filename>`
+1. Basic displaying of the data as it is:  
+   `hdfsee_py <filename>`
 2. Displaying the image with geometry reconstruction:  
-    `hdfsee_run.py <filename> -g <geometry file>`  
-3. Displaying the image with geometry reconstruction and peaks written in the indexing.stream file produced by `indexamajig`:
-    `hdfsee_run.py <filename> -g <geometry file> -p <stream file>`
+    `hdfsee_py <filename> -g <geometry file>`  
+3. Displaying the image with geometry reconstruction and peaks written in the CrystFEL indexing output file:
+    `hdfsee_py <filename> -g <geometry file> -p <stream file>`
 4. Run from code cell in jupyter-notebook:  
    ```
    from CrystFEL_Jupyter_utilities.hdfsee import Image
@@ -56,15 +56,15 @@ or
    Image_run = Image(path=<filename>, geomfile=<geometry file>, streamfile=<stream file>)
    ```
 ## Iterate through images
-To display images in the `indexamajig` output:  
-`check-peak-detection.sh <stream file> <geometry file>`
+To display images in the CrystFEL indexing output file:  
+`check-peak-detection <stream file> <geometry file>`
 
 **Instructions for running on maxwell cluster**  
 #####TODO#####
 
 ## Examining the distributions of unit cell parameters
 `cell_explorer` tool from CrystFEL has been ported to Python in a form of `CellExplorer` 
-class which can be used directly in a Jupyter Notebook and executed with the `cell_explorer_run.py` 
+class which can be used directly in a Jupyter Notebook and executed with the `cell_explorer_py` 
 script.
 To select a range of intrerest for gaussian fitting press and hold left mouse button,
 release the button after the selection is ready. To deselect click left mouse button
@@ -74,7 +74,7 @@ and displays fitting parameters.
 
 ### Example
 1. Run from the command line:  
-   `cell_explorer_run.py <stream file>`
+   `cell_explorer_py <stream file>`
 2. Run from code cell in jupyter-notebook:  
    ```
    from CrystFEL_Jupyter_utilities.GUI_tools import CellExplorer
