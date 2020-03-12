@@ -47,7 +47,7 @@ or
    `hdfsee_py <filename>`
 2. Displaying the image with geometry reconstruction:  
     `hdfsee_py <filename> -g <geometry file>`  
-3. Displaying the image with geometry reconstruction and peaks written in the CrystFEL indexing output file:
+3. Displaying the image with geometry reconstruction and peaks written in the CrystFEL indexing output file:  
     `hdfsee_py <filename> -g <geometry file> -p <stream file>`
 4. Run from code cell in jupyter-notebook:  
    ```
@@ -56,7 +56,7 @@ or
    Image_run = Image(path=<filename>, geomfile=<geometry file>, streamfile=<stream file>)
    ```
 ## Iterate through images
-To display images in the CrystFEL indexing output file:  
+To display images from the CrystFEL indexing output file:  
 `check-peak-detection <stream file> <geometry file>`
 
 **Instructions for running on maxwell cluster**  
