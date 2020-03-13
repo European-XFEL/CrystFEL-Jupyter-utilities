@@ -10,7 +10,7 @@ import CrystFEL_Jupyter_utilities.data as data
 class TestH5(unittest.TestCase):
     def setUp(self):
         self.temporaryfile = tempfile.NamedTemporaryFile(delete=True)
-        self.h5file = h5py.File(self.temporaryfile, mode="r+")
+        self.h5file = h5py.File(self.temporaryfile.name, mode="r+")
         self.peak_data = numpy.array(
             [[401.771728515625, 138.53125, 409.2867736816406, 3.0],
              [357.61907958984375, 0.3685567378997803, 1977.989501953125, 5.0],
