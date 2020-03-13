@@ -407,7 +407,8 @@ class Image:
         # first panel name
         panel_name = list(geom["panels"].keys())[0]
         # current length and height are from first panel.
-        x_min, x_max, y_min, y_max = self.local_range(geom["panels"][panel_name])
+        x_min, x_max, y_min, y_max = self.local_range(
+            geom["panels"][panel_name])
         # I am looking for the most remote panel points.
         for name in geom["panels"]:
             local_xmin, local_xmax, local_ymin, local_ymax = self.local_range(
@@ -474,7 +475,8 @@ def main(argv=None):
         geomfile = None
         event = None
 
-    IMAGE = Image(path=path, geomfile=geomfile, streamfile=streamfile, event=event)
+    IMAGE = Image(path=path, geomfile=geomfile,
+                  streamfile=streamfile, event=event)
 
 
 if __name__ == '__main__':
