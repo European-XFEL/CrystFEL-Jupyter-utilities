@@ -5,7 +5,6 @@ refreshes (updates) the image and adds widgets.
 """
 import argparse
 import logging
-import re
 import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
