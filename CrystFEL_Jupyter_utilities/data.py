@@ -1,4 +1,4 @@
-"""Module for creating functions on h5 files.
+"""Module of obtaining data from an h5 files.
 """
 import logging
 import sys

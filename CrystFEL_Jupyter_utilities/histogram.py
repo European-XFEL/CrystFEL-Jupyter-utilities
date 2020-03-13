@@ -1,4 +1,4 @@
-"""Module for displaying a single module in a subplot.
+"""Module containing a single histogram in a subplot.
 """
 
 

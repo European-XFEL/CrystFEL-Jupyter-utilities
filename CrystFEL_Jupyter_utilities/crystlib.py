@@ -1,4 +1,5 @@
-"""Module for getting crystals info from input indexing stream file.
+"""Module for dividing information about crystals into centering
+and histogram types.
 """
 
 

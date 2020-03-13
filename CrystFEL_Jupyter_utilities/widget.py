@@ -1,4 +1,4 @@
-"""Module for centering switches and handling mouse events.
+"""Module containing widgets used in the application.
 """
 import logging
 import itertools

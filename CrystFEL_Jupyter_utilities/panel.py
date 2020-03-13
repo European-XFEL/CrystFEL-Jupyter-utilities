@@ -1,6 +1,4 @@
-"""Module representing detector.
-Creates a detector list from a geometry file (crystfel type) and
-matrix size for the image.
+"""Module representing single detector and mask region.
 """
 import logging
 import sys
