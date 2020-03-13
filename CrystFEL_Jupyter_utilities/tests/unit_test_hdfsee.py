@@ -121,7 +121,6 @@ class TestHdfsee(unittest.TestCase):
         mock_get_file_data.assert_called_with(geom=self.geom, event=self.event,
                                               file=self.path,
                                               image_size=(268, 485))
-        print(self.image.matrix)
         self.assertTrue(
             (self.image.matrix == hdfsee.np.ones(((268, 485)))).all())
         mock_slider.assert_called_with(ax=mock_plt.axes(), vmin=300, vmax=900,
