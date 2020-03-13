@@ -405,8 +405,10 @@ class Image:
             columns, rows : Matrix size used in imshow.
             center_x, center_y : Displacement of centre.
         """
-        # current length and height.
-        x_min = x_max = y_min = y_max = 0
+        # first panel name
+        panel_name = list(geom["panels"].keys())[0]
+        # current length and height are from first panel.
+        x_min, x_max, y_min, y_max = self.local_range(geom["panels"][panel_name])
         # I am looking for the most remote panel points.
         for name in geom["panels"]:
             local_xmin, local_xmax, local_ymin, local_ymax = self.local_range(
