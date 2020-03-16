@@ -18,7 +18,7 @@ before_install:
 
 install:
   - pip install codecov
-  - pip install cfelpyutils==0.92
+  - pip install cfelpyutils>=0.92
   - pip install h5py==2.9.0
   - pip install matplotlib==3.0.3
   - pip install numpy==1.17.0
