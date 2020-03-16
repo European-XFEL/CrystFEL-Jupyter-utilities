@@ -35,6 +35,8 @@ refer to the CrystFEL-Jupyter-utilities package:
 `scipy`
 ## Installing
 `git clone <https://github.com/European-XFEL/CrystFEL-Jupyter-utilities.git>`  
+`pip install .`  
+or  
 `python setup.py install`
 
 ## Tests
