@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/European-XFEL/CrystFEL-Jupyter-utilities.svg?branch=master)](https://travis-ci.org/github/European-XFEL/CrystFEL-Jupyter-utilities)
-
+[![codecov](https://codecov.io/gh/European-XFEL/CrystFEL-Jupyter-utilities/branch/master/graph/badge.svg)](https://codecov.io/gh/European-XFEL/CrystFEL-Jupyter-utilities)
 # Description:
 CrystFEL-Jupyter-utilities is a project with graphical tools from CrystFEL
 implemented in Python. The project is intended to work as a wrapper for
