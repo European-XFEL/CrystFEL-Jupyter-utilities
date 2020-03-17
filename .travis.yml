@@ -1,28 +1,21 @@
 language: python
 python:
+  - 3.8
+  - 3.7
   - 3.6
-  - 3.5
 
 # Python 3.7 currently (early 2019) needs a newer Ubuntu version than the
 # default image on Travis.
-matrix:
-  include:
-    - python: 3.7
-      dist: xenial
-      sudo: true
 
-before_install:
-  - python --version
-  - pip install -U pip
-  - pip install -U pytest
+env:
+  global:
+    - MPLBACKEND=agg
 
 install:
+  - make dev-install
   - pip install codecov
-  - pip install cfelpyutils>=0.92
-  - pip install h5py==2.9.0
-  - pip install matplotlib==3.0.3
-  - pip install numpy==1.17.0
-  - pip install scipy==1.3.0
 
 script:
-  - python -m unittest discover -s tests/ -p 'unit_*' -v
+  - make test
+
+after_success: codecov
