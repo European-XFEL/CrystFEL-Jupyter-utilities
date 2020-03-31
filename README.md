@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/European-XFEL/CrystFEL-Jupyter-utilities.svg?branch=master)](https://travis-ci.org/github/European-XFEL/CrystFEL-Jupyter-utilities)
+[![codecov](https://codecov.io/gh/European-XFEL/CrystFEL-Jupyter-utilities/branch/master/graph/badge.svg)](https://codecov.io/gh/European-XFEL/CrystFEL-Jupyter-utilities)
 # Description:
 CrystFEL-Jupyter-utilities is a project with graphical tools from CrystFEL
 implemented in Python. The project is intended to work as a wrapper for
@@ -35,6 +37,8 @@ refer to the CrystFEL-Jupyter-utilities package:
 `scipy`
 ## Installing
 `git clone <https://github.com/European-XFEL/CrystFEL-Jupyter-utilities.git>`  
+`pip install .`  
+or  
 `python setup.py install`
 
 ## Tests
@@ -47,7 +51,7 @@ or
    `hdfsee_py <filename>`
 2. Displaying the image with geometry reconstruction:  
     `hdfsee_py <filename> -g <geometry file>`  
-3. Displaying the image with geometry reconstruction and peaks written in the CrystFEL indexing output file:
+3. Displaying the image with geometry reconstruction and peaks written in the CrystFEL indexing output file:  
     `hdfsee_py <filename> -g <geometry file> -p <stream file>`
 4. Run from code cell in jupyter-notebook:  
    ```
@@ -56,7 +60,7 @@ or
    Image_run = Image(path=<filename>, geomfile=<geometry file>, streamfile=<stream file>)
    ```
 ## Iterate through images
-To display images in the CrystFEL indexing output file:  
+To display images from the CrystFEL indexing output file:  
 `check-peak-detection <stream file> <geometry file>`
 
 **Instructions for running on maxwell cluster**  
