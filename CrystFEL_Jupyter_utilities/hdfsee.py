@@ -170,16 +170,15 @@ class Image:
                 # Additional buttons for switching on/off
                 # peaks from stream file.
                 self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
-                                                number_peaks_button=3,
                                                 matrix=self.matrix,
                                                 radio=self.radio,
                                                 slider=self.slider,
                                                 ax=self.ax,
+                                                streamfile_flag=True,
                                                 panels=self.detectors)
             else:
                 # Only one button for showing peaks from h5 file.
                 self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
-                                                number_peaks_button=1,
                                                 matrix=self.matrix,
                                                 radio=self.radio,
                                                 slider=self.slider,

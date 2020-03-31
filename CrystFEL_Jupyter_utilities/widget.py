@@ -56,16 +56,10 @@ class PeakButtons:
     matrix : numpy.array object
 
         Data with pixels.
-    number_peaks_button : int
-
-        Number of buttons.
-        1- Only button for peaks from hdf5.
-        2- Only two buttons for peaks from stream.
-        3- three buttons for all peaks.
     """
 
-    def __init__(self, fig, ax, matrix, peaks, number_peaks_button, panels,
-                 radio, slider):
+    def __init__(self, fig, ax, matrix, peaks, panels,
+                 radio, slider, streamfile_flag=False):
         """
         Parameters
         ----------
@@ -84,12 +78,14 @@ class PeakButtons:
         peaks -  list
 
             Objects class Peak form h5 file.
-        number_peaks_button : int
-
-            Number of buttons.
         radio : object form widget/Radio
 
         slider : object form widget/ContrastSlider
+
+        streamfile_flag : boolean
+
+            True if stream file is used.
+            Default = False.
         """
         self.fig = fig
         self.ax = ax
@@ -102,38 +98,63 @@ class PeakButtons:
         self.radio = radio
         self.slider = slider
         self.buttons = []
-        if number_peaks_button != 2:
+        self.creat_buttons(streamfile_flag)
+
+    def creat_buttons(self, streamfile_flag=False):
+        """Create buttons for given peak types if they contain elements.
+
+        Parameters
+        ----------
+        streamfile_flag : boolean
+
+            True if stream file is used.
+            Default = False.
+        """
+        peak_flags = [False, False]
+        # checking if there are any peaks from the h5 file
+        if len(self.peaks) > 0:
             self.axis_list[0] = plt.axes([.90, 0.55, 0.09, 0.08],
                                          facecolor='yellow')
+            # Create button object.
             button = Button(ax=self.axis_list[0],
                             label='peaks_cheetah on/off')
-            button.on_clicked(self.peaks_on_of)
-            self.buttons.append(button)
-            # On click reaction.
-        if number_peaks_button != 1:
-            self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08],
-                                          facecolor='yellow'))
-            # Create button object.
-            button = Button(ax=self.axis_list[1],
-                            label='peaks_search   on/off')
             # On click reaction.
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
             self.buttons.append(button)
-            self.axis_list[2] = (plt.axes([.90, 0.35, 0.09, 0.08],
-                                          facecolor='yellow'))
-            button = Button(ax=self.axis_list[2],
-                            label='peaks_reflections on/off')
-            # On click reaction.
-            button.on_clicked(self.peaks_on_of)
-            # Add to list of buttons.
-            self.buttons.append(button)
+        # checking if any panel contains peaks
+        for name in self.panels:
+            if peak_flags == [True, True] or not streamfile_flag:
+                break
+            if (len(self.panels[name].get_peaks_search()) > 0 and
+                peak_flags[0] == False):
+                    peak_flags[0] = True
+                    self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08],
+                                                facecolor='yellow'))
+                    # Create button object.
+                    button = Button(ax=self.axis_list[1],
+                                    label='peaks_search   on/off')
+                    # On click reaction.
+                    button.on_clicked(self.peaks_on_of)
+                    # Add to list of buttons.
+                    self.buttons.append(button)
+            if (len(self.panels[name].get_peaks_reflection()) > 0 and
+                peak_flags[1] == False):
+                    peak_flags[1] = True
+                    self.axis_list[2] = (plt.axes([.90, 0.35, 0.09, 0.08],
+                                                facecolor='yellow'))
+                    button = Button(ax=self.axis_list[2],
+                                    label='peaks_reflections on/off')
+                    # On click reaction.
+                    button.on_clicked(self.peaks_on_of)
+                    # Add to list of buttons.
+                    self.buttons.append(button)
+
         for button in self.buttons:
             button.label.set_fontsize(8)
             button.label.set_wrap(True)
             button.label.set_fontstretch(200)
             button.label.set_linespacing(2)
-
     def visual_peaks_reflection(self):
         """Draw peaks from line `reflections measured after indexing`
         from stream file. Like as script near_bragg.
