@@ -65,7 +65,7 @@ class PeakButtons:
     """
 
     def __init__(self, fig, ax, matrix, peaks, number_peaks_button, panels,
-                 title, radio, slider):
+                 radio, slider):
         """
         Parameters
         ----------
@@ -87,9 +87,6 @@ class PeakButtons:
         number_peaks_button : int
 
             Number of buttons.
-        title : Python unicode str (on py3)
-
-            title image.
         radio : object form widget/Radio
 
         slider : object form widget/ContrastSlider
@@ -101,7 +98,7 @@ class PeakButtons:
         self.list_active_peak = [False, False, False]
         self.peaks = peaks
         self.panels = panels
-        self.title = title
+        self.title = ax.get_title()
         self.radio = radio
         self.slider = slider
         self.buttons = []

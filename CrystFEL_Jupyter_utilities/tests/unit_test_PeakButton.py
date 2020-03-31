@@ -31,11 +31,12 @@ class TestPeakButtons(unittest.TestCase):
         self.peaks = [{'position': (1, 2)}, {'position': (2, 5)},
                       {'position': (3, 4)}]
         self.matrix = numpy.ones((2, 3))
-        mock_axes.return_value = True
+        self.mock_axes.return_value = True
+        self.mock_ax.get_title.return_value = self.title
         self.bttn = PeakButtons(fig=self.mock_fig, ax=self.mock_ax,
                                 matrix=self.matrix, peaks=self.peaks,
                                 panels=self.mock_detectors,
-                                number_peaks_button=3, title=self.title,
+                                number_peaks_button=3,
                                 radio=self.mock_radio, slider=self.mock_slider)
 
     def test_init(self):
