@@ -39,7 +39,7 @@ class TestPeakButtons(unittest.TestCase):
         self.mock_ax.get_title.return_value = self.title
         self.bttn = PeakButtons(fig=self.mock_fig, ax=self.mock_ax,
                                 matrix=self.matrix, peaks=self.peaks,
-                                streamfile_flag = True,
+                                streamfile=True,
                                 panels=self.mock_detectors,
                                 radio=self.mock_radio, slider=self.mock_slider)
 

@@ -1,13 +1,12 @@
 """Main module for running code.
-
 Creates image from a ndarray, arranges the panels,
 refreshes (updates) the image and adds widgets.
 """
 import argparse
 import logging
 import sys
-# Module for parsing geometry file and determining size of the
-# image after panel arrangement.
+
+# Module for parsing geometry file.
 from cfelpyutils.crystfel_utils import load_crystfel_geometry
 import matplotlib.pyplot as plt
 import numpy as np
@@ -45,12 +44,9 @@ class Image:
     ax : The class:`matplotlib.axes.Axes`
 
             The Axes contains most of the figure elements
-    vmax : int
+    range : tuple
 
-        max value for contrast.
-    vmin : int
-
-        min value for contrast.
+        min, max value for contrast.
     cmap : Python unicode str (on py3).
 
         Colormap name used to map scalar data to colors.
@@ -94,80 +90,74 @@ class Image:
 
             Event to show from multi-event file.
         """
+        # Following initialized depending on the execution arguments.
         self.path = path
         self.geomfile = geomfile
         self.streamfile = streamfile
         self.event = event
-        # Dictionary containing panels and peaks info from the h5 file.
-        # Creating a figure and suplot
-        # used 10X10 because default size is to small in notebook
-        self.fig, self.ax = self.creat_figure(path=self.path,
-                                              figsize=(9.5, 9.5),
-                                              event=self.event)
         # Setting the contrast.
         self.range = range
-        # Setting the default colour map.
+        # Setting the default colormap.
         self.cmap = 'inferno'
-        # Following initialized depending on the execution arguments.
         self.matrix = None
         self.image = None
         self.peaks = []
         self.detectors = []
         self.bad_places = None
-        # For displaying the image in the right orientation (?).
-        # display without laying the panels
-        if self.geomfile is None:
-            # Just the image from file with no buttons or reconstruction.
+        # Created a figure and suplot
+        # Used 9.5 because default size is to small in notebook
+        self.fig, self.ax = self.creat_figure(path=self.path,
+                                              figsize=(9.5, 9.5),
+                                              event=self.event)
+        # Displaying without laying the panels
+        if self.geomfile is None:                                                                
+            # Raw data from h5 file without peaks data. 
             data = get_file_data(self.path)
+            # Numpy.ndarray with panel data
             self.matrix = np.copy(data)
             # Rotating to get the same image as CrystFEL hdfsee.
             self.matrix = self.matrix[::-1, :]
-            # Creating the image with imshow().
+            # Display data as an image; i.e. on a 2D regular raster.
             self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
                                         vmin=self.range[0],
                                         vmax=(self.range[0]+self.range[1])/2)
         # When the geometry file was provided:
         else:
             try:
-                self.geom = load_crystfel_geometry(self.geomfile)
-            # Dictionary with information about the image: panels, bad places.
+                # Load geometry information.
+                # Dictionary with information about the image: panels, bad places.
+                self.geom = load_crystfel_geometry(self.geomfile)                                             
             except FileNotFoundError:
                 LOGGER.critical("Error while opening geometry file.")
                 sys.exit(1)
             # Panels reconstruction:
             self.display_arrangement_view()
-            # Positioning buttons for switching on/off displaying peaks from
-            # h5 file in path /processing/hitfinder/peakinfo-assembled.
-            # Position has to be saved to be able to
-            # determine what has been clicked.
-            # For displaying peaks from stream file.
-            # Additional buttons for switching on/off
-            # peaks from stream file.
-        # Slider position.
+        # Position ContrastSlider.
         axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
+        # Created ContrastSlider widget to change the contrast.
         self.slider = ContrastSlider(image=self.image, fig=self.fig,
                                         ax=axes, label="Contrast",
                                         vmax=self.range[1],
                                         vmin=self.range[0])
-        # Radio (?) position.
-        # Position RadioButton
+        # Position RadioButton.
         axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
-        # created button radio
+        # Created Radio widget to change the colormap.
         self.radio = Radio(fig=self.fig, ax=axes2,
                             labels=('inferno', 'plasma', 'Greys'),
                             cmap=self.cmap, image=self.image)
+        # Created PeakButtons widget to switching enable / disable the peaks display.
         self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
                                         matrix=self.matrix,
                                         radio=self.radio,
                                         slider=self.slider,
                                         ax=self.ax,
-                                        streamfile_flag=streamfile,
+                                        streamfile=streamfile,
                                         panels=self.detectors)
         # Display the image:
         plt.show()
 
     def creat_figure(self, path, figsize=(10, 10), event=None):
-        """Creats new figure object, adds subplot.
+        """Creating new figure object, adds subplot.
 
         Parameters
         ----------
@@ -200,7 +190,7 @@ class Image:
 
     def add_stream_peaks(self, panels, streamfile, event=None):
         """Search for peaks `peak search` and
-        `peak reflection` from streamfile.
+        `peak reflection` from stream file.
 
        Parameters
         ----------
@@ -235,35 +225,39 @@ class Image:
                 pass
 
     def display_arrangement_view(self):
-        """Creating the image filled with ones (?) and
+        """Display panels data as an image; i.e. on a 2D regular raster.
+        Creating the image filled with ones (?) and
         applies bad pixel mask (?). Then adds panels (?).
         """
+        # matrix size and shifted layout Oxy.
         columns, rows, center_x, center_y = self.find_image_size(self.geom)
-        # Creating an 'empty' matrix ready to be filled with pixel data.
+        # Created an 'empty' matrix ready to be filled with pixel data.
         self.matrix = np.ones((rows, columns))
-        # Creates a detector dictionary with keys as panels name and values
+        # Created a detector dictionary with keys as panels name and values
         # as class Panel objects.
         self.detectors, self.peaks = get_file_data(
             file=self.path, geom=self.geom, event=self.event,
             image_size=(rows, columns))
+        # With stream file.
         if self.streamfile is not None:
+            # Add peaks to panels.
             self.add_stream_peaks(self.detectors, self.streamfile, self.event)
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
         # Add mask
         if self.event is None:
-            # Creating a bad pixel mask (?).
+            # Created a BadRegion numpy.ndarray (mask).
             self.bad_places = bad_places((rows, columns), self.geom,
                                          center_x, center_y)
-            # Masking the bad pixels (?).
+            # Arranging the BadRegion.
             self.arrangement_bad_places()
-        # Displaying the image.
+        # Display data as an image; i.e. on a 2D regular raster.
         self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
                                     vmin=self.range[0],
                                     vmax=(self.range[0]+self.range[1])/2)
 
     def arrangement_bad_places(self):
-        """Iterates through each mask and
+        """Iterates through each BadRegion and
            sets them in the right place in the image.
 
         Raises
