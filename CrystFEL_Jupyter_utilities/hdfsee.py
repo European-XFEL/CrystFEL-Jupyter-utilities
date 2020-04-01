@@ -111,8 +111,8 @@ class Image:
         # Following initialized depending on the execution arguments.
         self.matrix = None
         self.image = None
-        self.peaks = None
-        self.detectors = None
+        self.peaks = []
+        self.detectors = []
         self.bad_places = None
         # For displaying the image in the right orientation (?).
         # display without laying the panels
@@ -126,19 +126,6 @@ class Image:
             self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
                                         vmin=self.range[0],
                                         vmax=(self.range[0]+self.range[1])/2)
-            # Slider position.
-            axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
-            self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                         ax=axes, label="Contrast",
-                                         vmax=self.range[1],
-                                         vmin=self.range[0])
-            # Radio (?) position.
-            # Position RadioButton
-            axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
-            # created button radio
-            self.radio = Radio(fig=self.fig, ax=axes2,
-                               labels=('inferno', 'plasma', 'Greys'),
-                               cmap=self.cmap, image=self.image)
         # When the geometry file was provided:
         else:
             try:
@@ -149,41 +136,33 @@ class Image:
                 sys.exit(1)
             # Panels reconstruction:
             self.display_arrangement_view()
-            # Slider position.
-            axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
-            self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                         ax=axes, label="Contrast",
-                                         vmax=self.range[1],
-                                         vmin=self.range[0])
-            # Radio position.
-            axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
-            # Radio button.
-            self.radio = Radio(fig=self.fig, ax=axes2,
-                               labels=('inferno', 'plasma', 'Greys'),
-                               cmap=self.cmap, image=self.image)
             # Positioning buttons for switching on/off displaying peaks from
             # h5 file in path /processing/hitfinder/peakinfo-assembled.
             # Position has to be saved to be able to
             # determine what has been clicked.
             # For displaying peaks from stream file.
-            if self.streamfile is not None:
-                # Additional buttons for switching on/off
-                # peaks from stream file.
-                self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
-                                                matrix=self.matrix,
-                                                radio=self.radio,
-                                                slider=self.slider,
-                                                ax=self.ax,
-                                                streamfile_flag=True,
-                                                panels=self.detectors)
-            else:
-                # Only one button for showing peaks from h5 file.
-                self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
-                                                matrix=self.matrix,
-                                                radio=self.radio,
-                                                slider=self.slider,
-                                                ax=self.ax,
-                                                panels=self.detectors)
+            # Additional buttons for switching on/off
+            # peaks from stream file.
+        # Slider position.
+        axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
+        self.slider = ContrastSlider(image=self.image, fig=self.fig,
+                                        ax=axes, label="Contrast",
+                                        vmax=self.range[1],
+                                        vmin=self.range[0])
+        # Radio (?) position.
+        # Position RadioButton
+        axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
+        # created button radio
+        self.radio = Radio(fig=self.fig, ax=axes2,
+                            labels=('inferno', 'plasma', 'Greys'),
+                            cmap=self.cmap, image=self.image)
+        self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
+                                        matrix=self.matrix,
+                                        radio=self.radio,
+                                        slider=self.slider,
+                                        ax=self.ax,
+                                        streamfile_flag=streamfile,
+                                        panels=self.detectors)
         # Display the image:
         plt.show()
 

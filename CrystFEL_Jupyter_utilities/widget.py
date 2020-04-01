@@ -59,7 +59,7 @@ class PeakButtons:
     """
 
     def __init__(self, fig, ax, matrix, peaks, panels,
-                 radio, slider, streamfile_flag=False):
+                 radio, slider, streamfile=None):
         """
         Parameters
         ----------
@@ -82,10 +82,9 @@ class PeakButtons:
 
         slider : object form widget/ContrastSlider
 
-        streamfile_flag : boolean
+        streamfile : Python unicode str (on py3)
 
-            True if stream file is used.
-            Default = False.
+            Path to stream file.
         """
         self.fig = fig
         self.ax = ax
@@ -98,17 +97,16 @@ class PeakButtons:
         self.radio = radio
         self.slider = slider
         self.buttons = []
-        self.creat_buttons(streamfile_flag)
+        self.creat_buttons(streamfile)
 
-    def creat_buttons(self, streamfile_flag=False):
+    def creat_buttons(self, streamfile=None):
         """Create buttons for given peak types if they contain elements.
 
         Parameters
         ----------
-        streamfile_flag : boolean
+        streamfile : Python unicode str (on py3)
 
-            True if stream file is used.
-            Default = False.
+            Path to stream file.
         """
         peak_flags = [False, False]
         # checking if there are any peaks from the h5 file
@@ -124,7 +122,8 @@ class PeakButtons:
             self.buttons.append(button)
         # checking if any panel contains peaks
         for name in self.panels:
-            if peak_flags == [True, True] or not streamfile_flag:
+            # if streamfile is None it will be break
+            if peak_flags == [True, True] or not streamfile:
                 break
             if (len(self.panels[name].get_peaks_search()) > 0 and
                 peak_flags[0] == False):
