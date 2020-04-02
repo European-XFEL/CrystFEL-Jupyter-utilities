@@ -55,8 +55,6 @@ class TestPeakButtons(unittest.TestCase):
     @patch('CrystFEL_Jupyter_utilities.widget.plt.Circle')
     def test_visual_peaks_reflection(self, mock_circle):
         self.mock_detector.reset_mock()
-        # self.mock_detector.get_peaks_reflection.return_value = \
-        #     [{'position': (1, 2)}, {'position': (3, 1)}, {'position': (2, 2)}]
         self.bttn.visual_peaks_reflection()
         self.assertEqual(self.mock_detector.get_peaks_reflection.call_count, 2)
         mock_circle.assert_called_with((2, 2), color='r', fill=False, radius=5)
@@ -67,8 +65,6 @@ class TestPeakButtons(unittest.TestCase):
     @patch('CrystFEL_Jupyter_utilities.widget.plt.Circle')
     def test_visual_peaks_search(self, mock_circle):
         self.mock_detector.reset_mock()
-        # self.mock_detector.get_peaks_search.return_value = [
-        #     {'position': (3, 1)}, {'position': (8, 9)}]
         self.bttn.visual_peaks_search()
         self.assertEqual(self.mock_detector.get_peaks_search.call_count, 2)
         mock_circle.assert_called_with((8, 9), color='g', fill=False, radius=5)

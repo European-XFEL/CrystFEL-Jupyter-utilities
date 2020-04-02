@@ -104,14 +104,14 @@ class Image:
         self.peaks = []
         self.detectors = []
         self.bad_places = None
-        # Created a figure and suplot
+        # Created a figure and subplot
         # Used 9.5 because default size is to small in notebook
         self.fig, self.ax = self.creat_figure(path=self.path,
                                               figsize=(9.5, 9.5),
                                               event=self.event)
         # Displaying without laying the panels
-        if self.geomfile is None:                                                                
-            # Raw data from h5 file without peaks data. 
+        if self.geomfile is None:
+            # Raw data from h5 file without peaks data.
             data = get_file_data(self.path)
             # Numpy.ndarray with panel data
             self.matrix = np.copy(data)
@@ -125,8 +125,9 @@ class Image:
         else:
             try:
                 # Load geometry information.
-                # Dictionary with information about the image: panels, bad places.
-                self.geom = load_crystfel_geometry(self.geomfile)                                             
+                # Dictionary with information about the image:
+                #  panels, bad places.
+                self.geom = load_crystfel_geometry(self.geomfile)
             except FileNotFoundError:
                 LOGGER.critical("Error while opening geometry file.")
                 sys.exit(1)
@@ -136,16 +137,17 @@ class Image:
         axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
         # Created ContrastSlider widget to change the contrast.
         self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                        ax=axes, label="Contrast",
-                                        vmax=self.range[1],
-                                        vmin=self.range[0])
+                                     ax=axes, label="Contrast",
+                                     vmax=self.range[1],
+                                     vmin=self.range[0])
         # Position RadioButton.
         axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
         # Created Radio widget to change the colormap.
         self.radio = Radio(fig=self.fig, ax=axes2,
-                            labels=('inferno', 'plasma', 'Greys'),
-                            cmap=self.cmap, image=self.image)
-        # Created PeakButtons widget to switching enable / disable the peaks display.
+                           labels=('inferno', 'plasma', 'Greys'),
+                           cmap=self.cmap, image=self.image)
+        # Created PeakButtons widget to switching enable / disable
+        # the peaks display.
         self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
                                         matrix=self.matrix,
                                         radio=self.radio,
