@@ -24,6 +24,7 @@ refer to the CrystFEL-Jupyter-utilities package:
 
 ## Tools
 * Displaying a diffraction image from a h5 file.
+* Displaying a diffraction image from a Virtual CXI data file.
 * Displaying series of diffraction images with detected peaks using CrystFEL indexing output file.
 * Examining the distributions of unit cell parameters in CrystFEL indexing output file.
 
