@@ -103,15 +103,16 @@ class TestStreamRead(unittest.TestCase):
                        "--- End crystal"
                        "----- End chunk -----"])
         self.image = [{'name': 'Image filename: some/dir/db.h5',
-                       'a': 60.778685046272585, 'b': 121.84711757099609,
-                       'c': 166.14007639970967, 'alfa': 89.98645173202746,
-                       'beta': 91.09237940448791, 'gamma': 89.77390240042467,
+                       'a': 60.7786850462726, 'b': 121.8471175709961,
+                       'c': 166.1400763997097, 'alfa': 89.9864517320275,
+                       'beta': 91.0923794044879, 'gamma': 89.7739024004247,
                        'centering': 'C', 'lattice_type': 'monoclinic',
                        'unique_axis': 'b'}]
         self.image_2 = [{'name': 'Image filename: some/dir/db.h5',
-                         'a': 60.778685046272585, 'b': 121.84711757099609,
-                         'c': 166.14007639970967, 'alfa': 89.98645173202746,
-                         'beta': 91.09237940448791, 'gamma': 89.77390240042467,
+                         'a': 60.7786850462726, 'b': 121.8471175709961,
+                         'c': 166.1400763997097, 'alfa': 89.9864517320275,
+                         'beta': 91.0923794044879, 'gamma': 89.7739024004247,
+                         'centering': 'C', 'lattice_type': 'monoclinic',
                          'centering': 'P', 'lattice_type': 'triclinic',
                          'unique_axis': '?'}]
         self.peak_list = ['q0a1', 'q1a0', 'q0a2']
@@ -132,14 +133,40 @@ class TestStreamRead(unittest.TestCase):
             s = stream_read.search_crystals_parameters(self.file_name)
             assert m.called
             m.assert_called_once_with(self.file_name)
-            self.assertEqual(s, self.image)
+            self.assertEqual(s[0]['name'], self.image[0]['name'])
+            self.assertEqual(np.round(s[0]['a'], 13), self.image[0]['a'])
+            self.assertEqual(np.round(s[0]['b'], 13), self.image[0]['b'])
+            self.assertEqual(np.round(s[0]['c'], 13), self.image[0]['c'])
+            self.assertEqual(np.round(s[0]['alfa'], 13), self.image[0]['alfa'])
+            self.assertEqual(np.round(s[0]['beta'], 13), self.image[0]['beta'])
+            self.assertEqual(np.round(s[0]['gamma'], 13),
+                             self.image[0]['gamma'])
+            self.assertEqual(s[0]['centering'], self.image[0]['centering'])
+            self.assertEqual(s[0]['lattice_type'],
+                             self.image[0]['lattice_type'])
+            self.assertEqual(s[0]['unique_axis'], self.image[0]['unique_axis'])
+
         with patch('builtins.open', mock_open(read_data=self.file_wrong),
                    create=True) as m:
             m.return_value.__iter__.return_value = self.file_wrong.splitlines()
             s = stream_read.search_crystals_parameters(self.file_name)
             assert m.called
             m.assert_called_once_with(self.file_name)
-            self.assertEqual(s, self.image_2)
+            self.assertEqual(s[0]['name'], self.image_2[0]['name'])
+            self.assertEqual(np.round(s[0]['a'], 13), self.image_2[0]['a'])
+            self.assertEqual(np.round(s[0]['b'], 13), self.image_2[0]['b'])
+            self.assertEqual(np.round(s[0]['c'], 13), self.image_2[0]['c'])
+            self.assertEqual(np.round(s[0]['alfa'], 13),
+                             self.image_2[0]['alfa'])
+            self.assertEqual(np.round(s[0]['beta'], 13),
+                             self.image_2[0]['beta'])
+            self.assertEqual(np.round(s[0]['gamma'], 13),
+                             self.image_2[0]['gamma'])
+            self.assertEqual(s[0]['centering'], self.image_2[0]['centering'])
+            self.assertEqual(s[0]['lattice_type'],
+                             self.image_2[0]['lattice_type'])
+            self.assertEqual(s[0]['unique_axis'],
+                             self.image_2[0]['unique_axis'])
 
     def test_search_peaks(self):
         with patch('builtins.open', mock_open(read_data=self.file_cont),
