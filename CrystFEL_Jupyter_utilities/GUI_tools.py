@@ -327,9 +327,10 @@ class CellExplorer:
         """The method sets the ranges for given types of histograms.
         """
         for hist_indx, hist_name in enumerate(self.histogram_order):
+            # Not all parameters may have a range.
             try:
                 self.span_list[hist_indx].onselect(*self.kwargs[hist_name])
-            except Exception:
+            except KeyError:
                 pass
 
     def remember_pos_panel(self, event):
