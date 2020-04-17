@@ -1,4 +1,4 @@
-"""Module of obtaining data from an h5 files.
+"""Module for obtaining data from an h5 files.
 """
 import logging
 import sys
@@ -23,7 +23,7 @@ LOGGER.addHandler(ch)
 
 def list_datasets(fileh5, list_dataset):
     """Recursively searches all Datasets
-    from the h5 file and add at the end of the list.
+    from the h5 file and adds at the end of the list.
 
     Parameters
     ----------
@@ -112,7 +112,7 @@ def get_panel_dataset(list_dataset, dataset_name, event=None, idx=0):
 
 
 def creat_panels(list_dataset, geom, image_size, event=None):
-    """Create panels from raw data from the h5 file.
+    """Create panels based on geomfile and raw data from the h5 file.
     The dataset name should be in the geometry file.
     Default is specific name '/data/data'.
 
@@ -124,7 +124,7 @@ def creat_panels(list_dataset, geom, image_size, event=None):
     geom : dict
 
         Dictionary with the geometry information loaded from the geomfile.
-    image_size : touple
+    image_size : tuple
 
         numpy.array shape storing the minimum array size used in image.
     event : int
@@ -168,9 +168,7 @@ def creat_panels(list_dataset, geom, image_size, event=None):
 
 
 def cheetah_peaks_list(list_dataset, image_size):
-    """Return a list of cheetah peaks form H5
-    gets a peaks_data with data for all peaks given
-    file h5.
+    """Return a list of cheetah peaks form h5 file.
 
     Parameters
     ----------
@@ -184,7 +182,7 @@ def cheetah_peaks_list(list_dataset, image_size):
     -------
     peaks : list
 
-        List of class Peak object.
+        List of peaks dictionary.
     """
     peaks = []
     peaks_data = get_peaks_data(list_dataset)
@@ -204,12 +202,12 @@ def cheetah_peaks_list(list_dataset, image_size):
 def get_file_data(file, event=None, geom=None, image_size=None):
     """Opens the H5 file and creates a tuple
     with two entries: panels and peaks.
-
+    If geom file is None returns all panels data from h5 file.
     Parameters
     ----------
     file : Python unicode str (on py3)
 
-        Path to hdf5 file.
+        Path to h5 file.
     event : int
 
         Event to show from multi-event file.
@@ -223,7 +221,8 @@ def get_file_data(file, event=None, geom=None, image_size=None):
     -------
     all_data : dict
 
-        Dictionary with two entries: panels data and peaks data.
+        Dictionary with two entries: panels data and peaks data or
+        if geom file is None returns all panels data from h5 file.
     """
     # the variable contains all dataset from H5
     list_dataset = []
