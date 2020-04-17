@@ -1,6 +1,4 @@
-"""Module representing detector.
-Creates a detector list from a geometry file (crystfel type) and
-matrix size for the image.
+"""Module representing single detector and mask region.
 """
 import logging
 import sys
@@ -232,7 +230,6 @@ class Detector:
         pos_y = int(np.round(self.image_size[1]/2.0 + self.corner_x, 0))
         # position + displacement.
         self.position = (pos_x + center_x, pos_y + center_y)
-
         # two loop for:
         for peak_search in self.peaks_search:
             # for check peak detection
@@ -264,7 +261,7 @@ class Detector:
             peak_reflection['position'] = (posx, posy)
 
     def rot_y(self, center_x, center_y):
-        """Rotation along y-axis, columns order is reversed,
+        """Rotation along y-axis, columns order is inversed,
         rows stay the same.
 
         Parameters
@@ -426,63 +423,6 @@ class Detector:
             peak_reflection['position'] = (posx, posy)
 
 
-def get_detectors(raw_data_from_h5, image_size, geom,
-                  peaks_search, peaks_reflections):
-    """Creates a dictionary with detector class objects as items and
-    panel names as in the geometry file as keys. Function reads 'raw' data
-    for each panel from the h5 file.
-
-    Parameters
-    ----------
-    raw_data_from_h5 : numpy.array
-
-        Data from h5 for all detectors.
-    image_size : tuple
-
-        Image size.
-    geom : dict
-
-        Dictionary with the geometry information loaded from the geomfile.
-    peaks_search : dict
-
-        Dictionary with list of Peaks detector name and value list.
-    peaks_reflections : dict
-
-        Dictionary with list of Peaks detector name and value list.
-    Returns
-    -------
-    panels : dict
-
-        Dictionary with class Detector object.
-            """
-    panels = {panel_name: Detector(name=panel_name, image_size=image_size,
-                                   corner_x=geom["panels"][panel_name]["cnx"],
-                                   corner_y=geom["panels"][panel_name]["cny"],
-                                   min_fs=geom["panels"][panel_name]["min_fs"],
-                                   min_ss=geom["panels"][panel_name]["min_ss"],
-                                   max_fs=geom["panels"][panel_name]["max_fs"],
-                                   max_ss=geom["panels"][panel_name]["max_ss"],
-                                   xfs=geom["panels"][panel_name]["xfs"],
-                                   yfs=geom["panels"][panel_name]["yfs"],
-                                   xss=geom["panels"][panel_name]["xss"],
-                                   yss=geom["panels"][panel_name]["yss"],
-                                   data=raw_data_from_h5)
-              for panel_name in geom["panels"]}
-    # complete all panels  with a list of peaks they have.
-    # peaks which `check peak detection` shows
-    # and peaks which  `near bragg` shows.
-    for name in panels:
-        try:
-            panels[name].peaks_search = peaks_search[name]
-        except Exception:
-            pass
-        try:
-            panels[name].peaks_reflection = peaks_reflections[name]
-        except Exception:
-            pass
-    return panels
-
-
 class BadRegion:
     """Class for mapping bad pixel regions on the image.
     Regions are read from the geometry file.
@@ -510,7 +450,8 @@ class BadRegion:
         Range y_max  bad region.
     """
 
-    def __init__(self, image_size, name, min_x, max_x, min_y, max_y):
+    def __init__(self, image_size, name, min_x, max_x, min_y, max_y,
+                 center_x, center_y):
         """
         Parameters
         ----------
@@ -533,13 +474,19 @@ class BadRegion:
         max_y : int
 
             Range y_max bad region.
+        center_x : int
+
+            Displacement of centre x-axis.
+        center_y : int
+
+            Displacement of centre y-axis.
         """
         self.name = name
         self.image_size = image_size
-        self.min_x = int(np.round(min_x + self.image_size[1]/2, 0))
-        self.max_x = int(np.round(max_x + self.image_size[1]/2, 0))
-        self.min_y = int(np.round(-min_y + self.image_size[0]/2, 0))
-        self.max_y = int(np.round(-max_y + self.image_size[0]/2, 0))
+        self.min_x = int(np.round(min_x + self.image_size[1]/2, 0)) + center_x
+        self.max_x = int(np.round(max_x + self.image_size[1]/2, 0)) + center_x
+        self.min_y = int(np.round(-min_y + self.image_size[0]/2, 0)) + center_y
+        self.max_y = int(np.round(-max_y + self.image_size[0]/2, 0)) + center_y
         # check if the bad region range are not outside my image size
         if self.min_x < 0:
             self.min_x = 0
@@ -565,7 +512,7 @@ class BadRegion:
         return self.array
 
 
-def bad_places(image_size, geom):
+def bad_places(image_size, geom, center_x, center_y):
     """Creates a dictionary with bad pixel regions from geom file.
 
     Parameters
@@ -576,6 +523,12 @@ def bad_places(image_size, geom):
     geom : dict
 
         Dictionary with the geometry information loaded from the geomfile.
+    center_x : int
+
+        Displacement of centre x-axis.
+    center_y : int
+
+        Displacement of centre y-axis.
 
     Returns
     -------
@@ -583,11 +536,11 @@ def bad_places(image_size, geom):
 
         dictionary with class BadRegion object
     """
-
     bad_places = {bad_name: BadRegion(image_size, bad_name,
                                       geom['bad'][bad_name]['min_x'],
                                       geom['bad'][bad_name]['max_x'],
                                       geom['bad'][bad_name]['min_y'],
-                                      geom['bad'][bad_name]['max_y'])
+                                      geom['bad'][bad_name]['max_y'],
+                                      center_x, center_y)
                   for bad_name in geom['bad']}
     return bad_places

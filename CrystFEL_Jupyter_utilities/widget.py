@@ -1,4 +1,4 @@
-"""Module for centering switches and handling mouse events.
+"""Module containing widgets used in the application.
 """
 import logging
 import itertools
@@ -56,16 +56,10 @@ class PeakButtons:
     matrix : numpy.array object
 
         Data with pixels.
-    number_peaks_button : int
-
-        Number of buttons.
-        1- Only button for peaks from hdf5.
-        2- Only two buttons for peaks from stream.
-        3- three buttons for all peaks.
     """
 
-    def __init__(self, fig, ax, matrix, peaks, number_peaks_button, panels,
-                 title, radio, slider):
+    def __init__(self, fig, ax, matrix, peaks, panels,
+                 radio, slider, streamfile=None):
         """
         Parameters
         ----------
@@ -74,7 +68,7 @@ class PeakButtons:
             The Figure which will be redraw.
         ax : The class:`matplotlib.axes.Axes`
 
-            The Axes contains most of the figure elements.
+            The Axes contains most of the figure elements
         matrix : numpy.array object
 
             Data with pixels.
@@ -84,15 +78,13 @@ class PeakButtons:
         peaks -  list
 
             Objects class Peak form h5 file.
-        number_peaks_button : int
-
-            Number of buttons.
-        title : Python unicode str (on py3)
-
-            Title image.
         radio : object form widget/Radio
 
         slider : object form widget/ContrastSlider
+
+        streamfile : Python unicode str (on py3)
+
+            Path to stream file.
         """
         self.fig = fig
         self.ax = ax
@@ -101,36 +93,62 @@ class PeakButtons:
         self.list_active_peak = [False, False, False]
         self.peaks = peaks
         self.panels = panels
-        self.title = title
+        self.title = ax.get_title()
         self.radio = radio
         self.slider = slider
         self.buttons = []
-        if number_peaks_button != 2:
+        self.creat_buttons(streamfile)
+
+    def creat_buttons(self, streamfile=None):
+        """Create buttons for given peak types if they contain elements.
+
+        Parameters
+        ----------
+        streamfile : Python unicode str (on py3)
+
+            Path to stream file.
+        """
+        peak_flags = [False, False]
+        # checking if there are any peaks from the h5 file
+        if len(self.peaks) > 0:
             self.axis_list[0] = plt.axes([.90, 0.55, 0.09, 0.08],
                                          facecolor='yellow')
+            # Create button object.
             button = Button(ax=self.axis_list[0],
                             label='peaks_cheetah on/off')
-            button.on_clicked(self.peaks_on_of)
-            self.buttons.append(button)
-            # On click reaction.
-        if number_peaks_button != 1:
-            self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08],
-                                          facecolor='yellow'))
-            # Create button object.
-            button = Button(ax=self.axis_list[1],
-                            label='peaks_search   on/off')
             # On click reaction.
             button.on_clicked(self.peaks_on_of)
             # Add to list of buttons.
             self.buttons.append(button)
-            self.axis_list[2] = (plt.axes([.90, 0.35, 0.09, 0.08],
-                                          facecolor='yellow'))
-            button = Button(ax=self.axis_list[2],
-                            label='peaks_reflections on/off')
-            # On click reaction.
-            button.on_clicked(self.peaks_on_of)
-            # Add to list of buttons.
-            self.buttons.append(button)
+        # checking if any panel contains peaks
+        for name in self.panels:
+            # if streamfile is None it will be break
+            if peak_flags == [True, True] or not streamfile:
+                break
+            if (len(self.panels[name].get_peaks_search()) > 0 and
+                    peak_flags[0] is False):
+                peak_flags[0] = True
+                self.axis_list[1] = (plt.axes([.90, 0.45, 0.09, 0.08],
+                                              facecolor='yellow'))
+                # Create button object.
+                button = Button(ax=self.axis_list[1],
+                                label='peaks_search   on/off')
+                # On click reaction.
+                button.on_clicked(self.peaks_on_of)
+                # Add to list of buttons.
+                self.buttons.append(button)
+            if (len(self.panels[name].get_peaks_reflection()) > 0 and
+                    peak_flags[1] is False):
+                peak_flags[1] = True
+                self.axis_list[2] = (plt.axes([.90, 0.35, 0.09, 0.08],
+                                              facecolor='yellow'))
+                button = Button(ax=self.axis_list[2],
+                                label='peaks_reflections on/off')
+                # On click reaction.
+                button.on_clicked(self.peaks_on_of)
+                # Add to list of buttons.
+                self.buttons.append(button)
+
         for button in self.buttons:
             button.label.set_fontsize(8)
             button.label.set_wrap(True)
@@ -173,7 +191,7 @@ class PeakButtons:
         try:
             # loop through all peaks list
             for peak in self.peaks:
-                circle = plt.Circle(peak.get_position(), radius=5,
+                circle = plt.Circle(peak['position'], radius=5,
                                     color='y', fill=False)
                 # draw yellow circle
                 self.ax.add_artist(circle)
@@ -185,22 +203,17 @@ class PeakButtons:
         """React at the click of buttons.
         Clear and create clean image. Checks which flags were active
         and changes the flags due to the button being clicked.
-
-        Parameters
-        ----------
-        event : The class:`matplotlib.backend_bases.Event`.
         """
         # clear subplot
         self.ax.cla()
         # returned color map last used
         cmap = self.radio.get_cmap()
-        # returned contrast range last used
-        vmax = self.slider.get_vmax()
-        vmin = self.slider.get_vmin()
+        # retuned contrast range last used
+        vmin, vmax = self.slider.get_clim()
         # created new image we have a new reference
-        image = self.ax.imshow(self.matrix, cmap=cmap, vmax=vmax,
-                               vmin=vmin, animated=True)
-        # when we clicked button 'cheetah peaks on/off'
+        image = self.ax.imshow(self.matrix, cmap=cmap, vmin=vmin,
+                               vmax=vmax)
+    # when we clicked button 'cheetah peaks on/off'
         if event.inaxes == self.axis_list[0]:
             # 'cheetah peaks on/off' was enabled
             if self.list_active_peak[0]:
@@ -482,8 +495,7 @@ class ContrastSlider(Slider):
         ----------
         event : The class:`matplotlib.backend_bases.Event`.
         """
-        self.vmax = event
-        self.image.set_clim(vmax=self.vmax)
+        self.image.set_clim(vmax=event)
         self.fig.canvas.draw()
 
     def set_image(self, image):
@@ -497,27 +509,16 @@ class ContrastSlider(Slider):
         """
         self.image = image
 
-    def get_vmax(self):
-        """Returns last vmax.
+    def get_clim(self):
+        """Returns the color limits of the current image.
 
         Returns
         -------
-        vmax : int
+        range : tuple
 
-            Max range that the colormap covers.
+            Range that the colormap covers.
         """
-        return self.vmax
-
-    def get_vmin(self):
-        """Returns  last vmin.
-
-        Returns
-        -------
-        vmin : int
-
-            Min range that the colormap covers.
-        """
-        return self.vmin
+        return self.image.get_clim()
 
 
 class CenteringButton(Button):

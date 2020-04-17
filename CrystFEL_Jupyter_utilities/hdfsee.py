@@ -1,23 +1,20 @@
 """Main module for running code.
-
 Creates image from a ndarray, arranges the panels,
 refreshes (updates) the image and adds widgets.
 """
 import argparse
 import logging
 import sys
-# Module for parsing geometry file and determining size of the
-# image after panel arrangement.
+
+# Module for parsing geometry file.
 from cfelpyutils.crystfel_utils import load_crystfel_geometry
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .data import get_diction_data
-from .panel import bad_places,  get_detectors
-from .peak_h5 import get_list_peaks
+from .data import get_file_data
+from .panel import bad_places
 from .stream_read import search_peaks
 from .widget import ContrastSlider, PeakButtons, Radio
-
 
 # remove all the handlers.
 for handler in logging.root.handlers[:]:
@@ -47,12 +44,9 @@ class Image:
     ax : The class:`matplotlib.axes.Axes`
 
             The Axes contains most of the figure elements
-    vmax : int
+    range : tuple
 
-        max value for contrast.
-    vmin : int
-
-        min value for contrast.
+        min, max value for contrast.
     cmap : Python unicode str (on py3).
 
         Colormap name used to map scalar data to colors.
@@ -74,7 +68,8 @@ class Image:
         Containing BadRegion object from 'panel' module.
     """
 
-    def __init__(self, path, geomfile=None, streamfile=None):
+    def __init__(self, path, range=(0, 600), geomfile=None,
+                 streamfile=None, event=None):
         """Method for initializing image and checking options how to run code.
 
         Parameters
@@ -82,200 +77,211 @@ class Image:
         path : Python unicode str (on py3).
 
             Path to h5 file.
+        range : tuple
+
+            min, max value for contrast.
        geomfile : Python unicode str (on py3)
 
-            Path to geomfile file.
+            Path to geometry file.
         streamfile : Python unicode str (on py3)
 
             Path to stream file.
+        event : int
+
+            Event to show from multi-event file.
         """
+        # Following initialized depending on the execution arguments.
         self.path = path
         self.geomfile = geomfile
         self.streamfile = streamfile
-        # Dictionary containing panels and peaks info from the h5 file.
-        self.dict_witch_data = get_diction_data(self.path)
-        # Creating a figure and suplot
-        # used 10X10 because default size is to small in notebook
-        self.fig, self.ax = plt.subplots(figsize=(9.5, 9.5))
-        # Setting the title to filename path.
-        self.ax.set_title(self.path)
+        self.event = event
         # Setting the contrast.
-        self.vmax = 600
-        self.vmin = 0
-        # Setting the default colour map.
+        self.range = range
+        # Setting the default colormap.
         self.cmap = 'inferno'
-        # Following initialized depending on the execution arguments.
         self.matrix = None
         self.image = None
-        self.peaks = None
-        self.detectors = None
+        self.peaks = []
+        self.detectors = []
         self.bad_places = None
-        # For displaying the image in the right orientation (?).
-        # display without laying the panels
+        # Created a figure and subplot
+        # Used 9.5 because default size is to small in notebook
+        self.fig, self.ax = self.creat_figure(path=self.path,
+                                              figsize=(9.5, 9.5),
+                                              event=self.event)
+        # Displaying without laying the panels
         if self.geomfile is None:
-            # Just the image from file with no buttons or reconstruction.
-            self.matrix = np.copy(self.dict_witch_data["Panels"])
+            # Raw data from h5 file without peaks data.
+            data = get_file_data(self.path)
+            # Numpy.ndarray with panel data
+            self.matrix = np.copy(data)
             # Rotating to get the same image as CrystFEL hdfsee.
             self.matrix = self.matrix[::-1, :]
-            # Creating the image with imshow().
+            # Display data as an image; i.e. on a 2D regular raster.
             self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
-                                        vmax=self.vmax, vmin=self.vmin)
-            # Slider position.
-            axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
-            self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                         ax=axes, label="Contrast",
-                                         vmin=self.vmin, vmax=self.vmax)
-            # Radio (?) position.
-            # Position RadioButton
-            axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
-            # created button radio
-            self.radio = Radio(fig=self.fig, ax=axes2,
-                               labels=('inferno', 'plasma', 'Greys'),
-                               cmap=self.cmap, image=self.image)
+                                        vmin=self.range[0],
+                                        vmax=(self.range[0]+self.range[1])/2)
         # When the geometry file was provided:
         else:
             try:
+                # Load geometry information.
+                # Dictionary with information about the image:
+                #  panels, bad places.
                 self.geom = load_crystfel_geometry(self.geomfile)
-            # Dictionary with information about the image: panels, bad places.
             except FileNotFoundError:
                 LOGGER.critical("Error while opening geometry file.")
                 sys.exit(1)
             # Panels reconstruction:
             self.display_arrangement_view()
-            # Slider position.
-            axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
-            self.slider = ContrastSlider(image=self.image, fig=self.fig,
-                                         ax=axes, label="Contrast",
-                                         vmin=self.vmin, vmax=self.vmax)
-            # Radio position.
-            axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
-            # Radio button.
-            self.radio = Radio(fig=self.fig, ax=axes2,
-                               labels=('inferno', 'plasma', 'Greys'),
-                               cmap=self.cmap, image=self.image)
-            # Positioning buttons for switching on/off displaying peaks from
-            # h5 file in path /processing/hitfinder/peakinfo-assembled.
-            # Position has to be saved to be able to
-            # determine what has been clicked.
-            # For displaying peaks from stream file.
-            if self.streamfile is not None:
-                # Additional buttons for switching on/off
-                # peaks from stream file.
-                self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
-                                                number_peaks_button=3,
-                                                matrix=self.matrix,
-                                                title=self.ax.get_title(),
-                                                radio=self.radio,
-                                                slider=self.slider,
-                                                ax=self.ax,
-                                                panels=self.detectors)
-            else:
-                # Only one button for showing peaks from h5 file.
-                self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
-                                                number_peaks_button=1,
-                                                matrix=self.matrix,
-                                                title=self.ax.get_title(),
-                                                radio=self.radio,
-                                                slider=self.slider,
-                                                ax=self.ax,
-                                                panels=self.detectors)
+        # Position ContrastSlider.
+        axes = plt.axes([.90, 0.78, 0.09, 0.075], facecolor='lightyellow')
+        # Created ContrastSlider widget to change the contrast.
+        self.slider = ContrastSlider(image=self.image, fig=self.fig,
+                                     ax=axes, label="Contrast",
+                                     vmax=self.range[1],
+                                     vmin=self.range[0])
+        # Position RadioButton.
+        axes2 = plt.axes([.90, 0.65, 0.09, 0.12], facecolor='lightyellow')
+        # Created Radio widget to change the colormap.
+        self.radio = Radio(fig=self.fig, ax=axes2,
+                           labels=('inferno', 'plasma', 'Greys'),
+                           cmap=self.cmap, image=self.image)
+        # Created PeakButtons widget to switching enable / disable
+        # the peaks display.
+        self.peak_buttons = PeakButtons(fig=self.fig, peaks=self.peaks,
+                                        matrix=self.matrix,
+                                        radio=self.radio,
+                                        slider=self.slider,
+                                        ax=self.ax,
+                                        streamfile=streamfile,
+                                        panels=self.detectors)
         # Display the image:
         plt.show()
 
-    def display_arrangement_view(self):
-        """Creating the image filled with ones (?)
-        and applies bad pixel mask (?). Then adds panels (?).
+    def creat_figure(self, path, figsize=(10, 10), event=None):
+        """Creating new figure object, adds subplot.
+
+        Parameters
+        ----------
+        path : Python unicode str (on py3).
+
+            Path to the image data file.
+        figsize : tuple
+
+            Figure size (default = (10, 10)).
+        event : Python unicode str (on py3)
+
+            Event to show from multi-event file.
+
+        Returns
+        -------
+        fig : The class:`matplotlib.figure.Figure`.
+
+            The Figure which will be redraw.
+        ax : The class:`matplotlib.axes.Axes`
+
+            The Axes contains most of the figure elements.
         """
+        fig, ax = plt.subplots(figsize=figsize)
+        event_name = " Event " + str(event)
+        if event is None:
+            event_name = ""
+        # Setting the title to filename path.
+        ax.set_title(path + event_name)
+        return fig, ax
+
+    def add_stream_peaks(self, panels, streamfile, event=None):
+        """Search for peaks `peak search` and
+        `peak reflection` from stream file.
+
+       Parameters
+        ----------
+        streamfile : Python unicode str (on py3)
+
+            Path to stream file.
+        panels : list
+
+            List of panels object.
+        event : Python unicode str (on py3)
+
+            Event to show from multi-event file.
+        """
+        if event is None:
+            line_name = self.path.strip().split('/')[-1]
+            peaks_search, peaks_reflection =\
+                search_peaks(streamfile, line_name, 'Image filename:')
+        else:
+            peaks_search, peaks_reflection = \
+                search_peaks(streamfile, str(event), 'Event')
+        # add peaks to each panel,not everyone can have them.
+        for name in panels:
+            # peaks_search doesn't have the key panel.name
+            try:
+                panels[name].peaks_search = peaks_search[name]
+            except KeyError:
+                pass
+            # peaks_reflection doesn't have the key panel.name
+            try:
+                panels[name].peaks_reflection = peaks_reflection[name]
+            except KeyError:
+                pass
+
+    def display_arrangement_view(self):
+        """Display panels data as an image; i.e. on a 2D regular raster.
+        Creating the image filled with ones (?) and
+        applies bad pixel mask (?). Then adds panels (?).
+        """
+        # matrix size and shifted layout Oxy.
         columns, rows, center_x, center_y = self.find_image_size(self.geom)
-        # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = np.ones((columns, rows))
-        # Creates a detector dictionary with keys as panels name and values
+        # Created an 'empty' matrix ready to be filled with pixel data.
+        self.matrix = np.ones((rows, columns))
+        # Created a detector dictionary with keys as panels name and values
         # as class Panel objects.
-        peaks_search, peaks_reflections = search_peaks(self.streamfile,
-                                                       self.path)
-        self.detectors = get_detectors(self.dict_witch_data["Panels"],
-                                       (columns, rows), self.geom,
-                                       peaks_search, peaks_reflections)
-        # Creating a peak list from the h5 file.
-        self.peaks = get_list_peaks(self.dict_witch_data["Peaks"],
-                                    (columns, rows))
-        # Creating a bad pixel mask (?).
-        self.bad_places = bad_places((columns, rows), self.geom)
+        self.detectors, self.peaks = get_file_data(
+            file=self.path, geom=self.geom, event=self.event,
+            image_size=(rows, columns))
+        # With stream file.
+        if self.streamfile is not None:
+            # Add peaks to panels.
+            self.add_stream_peaks(self.detectors, self.streamfile, self.event)
         # Arranging the panels.
         self.arrangement_panels(center_x, center_y)
-        # Masking the bad pixels (?).
-        self.arrangement_bad_places()
-        # Displaying the image.
-        self.image = plt.imshow(self.matrix, cmap=self.cmap, vmax=self.vmax,
-                                vmin=self.vmin, animated=True)
+        # Add mask
+        if self.event is None:
+            # Created a BadRegion numpy.ndarray (mask).
+            self.bad_places = bad_places((rows, columns), self.geom,
+                                         center_x, center_y)
+            # Arranging the BadRegion.
+            self.arrangement_bad_places()
+        # Display data as an image; i.e. on a 2D regular raster.
+        self.image = self.ax.imshow(self.matrix, cmap=self.cmap,
+                                    vmin=self.range[0],
+                                    vmax=(self.range[0]+self.range[1])/2)
 
-    def set_panel_in_view(self, detector, center_x, center_y):
-        """Positions (?) the detector in the right place on the matrix.
-        Changes the 1 values to the correct pixel value.
-
-        Parameters
-        ----------
-        detector : The: class Detector object
-
-            Detector which has been set in the image.
-        center_x : int
-
-            Displacement of centre x-axis.
-        center_y : int
-
-            Displacement of centre y-axis.
-        Raises
-        ------
-        ValueError
-            If wrong panel position.
-        """
-        # Trying to reposition the panels.
-        try:
-            self.matrix[detector.position[0]: detector.position[0] +
-                        detector.array.shape[0],
-                        detector.position[1]: detector.position[1] +
-                        detector.array.shape[1]] = detector.get_array_rotated(
-                            center_x, center_y)
-        except ValueError:
-            text = " ".join(["Wrong panel position",
-                             "{}, Position: {}".format(detector.name,
-                                                       detector.position)])
-            LOGGER.critical(text)
-            sys.exit(1)
-
-    def set_bad_place_in_view(self, bad_place):
-        """Copying the bad pixel ranges to the image.
-
-        Parameters
-        ----------
-        bad_place : The: class BadRegion object
-
-            BadRegion which has been set in the image.
+    def arrangement_bad_places(self):
+        """Iterates through each BadRegion and
+           sets them in the right place in the image.
 
         Raises
         ------
         ValueError
             If wrong bad_place position.
         """
-        try:
-            self.matrix[bad_place.max_y: bad_place.max_y + bad_place.shape[0],
-                        bad_place.min_x: bad_place.min_x +
-                        bad_place.array.shape[1]] = bad_place.get_array()
-        except ValueError:
-            LOGGER.critical("Wrong mask position: {}".format(bad_place.name))
-            sys.exit(1)
-
-    def arrangement_bad_places(self):
-        """Iterates through each bad pixel (?) region and positions it to the
-        correct place on the image.
-        """
         for name_bad_place in self.bad_places:
             bad_place = self.bad_places[name_bad_place]
-            self.set_bad_place_in_view(bad_place)
+            try:
+                self.matrix[bad_place.max_y: bad_place.max_y +
+                            bad_place.shape[0],
+                            bad_place.min_x: bad_place.min_x +
+                            bad_place.array.shape[1]] = bad_place.get_array()
+            except ValueError:
+                LOGGER.critical(
+                    "Wrong mask position: {}".format(bad_place.name))
+                sys.exit(1)
 
     def arrangement_panels(self, center_x, center_y):
-        """Iterates through each detector (?) and positions them.
-
+        """Iterates through each detector and
+           sets them in the right place in the image.
         Parameters
         ----------
         center_x : int
@@ -287,7 +293,19 @@ class Image:
         """
         for key in self.detectors:
             detector = self.detectors[key]
-            self.set_panel_in_view(detector, center_x, center_y)
+        # Trying to reposition the panels.
+            try:
+                self.matrix[detector.position[0]: detector.position[0] +
+                            detector.array.shape[0],
+                            detector.position[1]: detector.position[1] +
+                            detector.array.shape[1]] = (
+                                detector.get_array_rotated(center_x, center_y))
+            except ValueError:
+                text = " ".join(["Wrong panel position",
+                                 "{}, Position: {}".format(detector.name,
+                                                           detector.position)])
+                LOGGER.critical(text)
+                sys.exit(1)
 
     def local_range(self, panel):
         """Calculates the location of the two extreme corners of the panel.
@@ -358,8 +376,11 @@ class Image:
             columns, rows : Matrix size used in imshow.
             center_x, center_y : Displacement of centre.
         """
-        # current length and height.
-        x_min = x_max = y_min = y_max = 0
+        # first panel name
+        panel_name = list(geom["panels"].keys())[0]
+        # current length and height are from first panel.
+        x_min, x_max, y_min, y_max = self.local_range(
+            geom["panels"][panel_name])
         # I am looking for the most remote panel points.
         for name in geom["panels"]:
             local_xmin, local_xmax, local_ymin, local_ymax = self.local_range(
@@ -386,6 +407,7 @@ class Image:
 
 
 def main(argv=None):
+    # Creating arguments for parsing.
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', nargs=1, metavar="name.H5",
                         help='Display this image.')
@@ -395,9 +417,10 @@ def main(argv=None):
     parser.add_argument('-p', '--peaks', nargs=1, metavar='name.STREAM',
                         help='use to display peaks' +
                         ' from stream is used only witch geom')
+    parser.add_argument('-e', '--event', nargs=1, metavar='name.EVENT',
+                        help='Event to show from multi-event file.')
     # Parsing command line arguments.
     args = parser.parse_args()
-    # Variable for running mode.
     # Variable for filename.
     path = args.filename[0]
     if args.geomfile:
@@ -408,15 +431,24 @@ def main(argv=None):
         else:
             # Only the geometry file was provided.
             streamfile = None
+        if args.event:
+            event = args.event[0]
+        else:
+            event = None
     # Image file without geometry.
     else:
+        if args.event:
+            LOGGER.warning(
+                'Can not use without geometry reconstruction.')
         if args.peaks:
             LOGGER.warning(
                 'Displaying panels without geometry reconstruction.')
         streamfile = None
         geomfile = None
+        event = None
 
-    Image(path=path, geomfile=geomfile, streamfile=streamfile)
+    IMAGE = Image(path=path, geomfile=geomfile,
+                  streamfile=streamfile, event=event)
 
 
 if __name__ == '__main__':

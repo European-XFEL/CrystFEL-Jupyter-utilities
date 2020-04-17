@@ -221,7 +221,7 @@ def search_crystals_parameters(file_name):
     return crystals
 
 
-def search_peaks(file_stream, file_h5):
+def search_peaks(file_stream, line_name, look_for):
     """Searching peaks in indexing stream file.
     The function parses the file.
 
@@ -230,10 +230,14 @@ def search_peaks(file_stream, file_h5):
     file_stream : Python unicode str (on py3)
 
         Path to stream file.
-    file_h5 : Python unicode str (on py3)
+    line_name : Python unicode str (on py3)
 
-        Image filename.
+        The name I am looking for:
+        `Image filename` or `Event number`.
+    look_for : Python unicode str (on py3)
 
+        The line in which I am looking.
+        `Image filename: ` or `Event:`
     Returns
     -------
     peaks_search, peaks_reflection : tuple
@@ -261,15 +265,14 @@ def search_peaks(file_stream, file_h5):
         with open(file_stream) as file:
             for line in file:
                 # Check if line contains
-                if line.startswith("Image filename:"):
+                if line.startswith(look_for):
                     # a h5 filename.
                     line = line.strip()  # Remove whitespace.
-                    line2 = line.split(' ')
                     # Parsing to have Image and filename.
-                    line3 = line2[2].split('/')
+                    line2 = line.split('/')
                     # Parsing to leave only the filename.
-                    name_h5_stream = line3[-1]
-                    if name_h5_stream in file_h5:
+                    name_found_line = line2[-1]
+                    if name_found_line == line_name:
                         name_h5_flag = True  # If it is a name witha filename.
                         found_h5_in_stream = True
                     else:

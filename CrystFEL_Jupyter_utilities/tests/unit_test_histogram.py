@@ -16,9 +16,14 @@ class TestHistogram(unittest.TestCase):
         self.fig = mock_plt.figure()
         self.fig.add_subplot(1, 1, 1)
         self.mock_ax = mock_ax()
-        self.patch = mock_patch()
+        self.patch = mock_patch
         self.mock_ax.get_xlim.return_value = "current_xlim"
-        self.mock_ax.hist.return_value = [None, None, self.patch]
+        self.colors = ['magenta', 'magenta', 'magenta', 'olive', 'olive',
+                       'olive', 'magenta', 'firebrick', 'lightgray']
+        self.patches = [[self.patch], [self.patch], [self.patch], [self.patch],
+                        [self.patch], [self.patch], [self.patch], [self.patch],
+                        [self.patch]]
+        self.mock_ax.hist.return_value = [None, None, self.patches]
         self.data = {'P': [1, 2, 3, 4, 5, 10], 'B': [2, 2, 3, 4, 4, 4],
                      'I': [6, 6, 5, 4, 5, 3], 'A': [1, 1, 1, 1]}
         self.dict_color = {'P': 'gray', 'A': 'cyan', 'B': 'darkblue',
@@ -51,15 +56,16 @@ class TestHistogram(unittest.TestCase):
             stacked=True, x=[[1, 2, 3, 4, 5, 10], [1, 1, 1, 1],
                              [2, 2, 3, 4, 4, 4], [], [6, 6, 5, 4, 5, 3],
                              [], [], [], []])
-        self.assertEqual(self.patch, self.hist.patches)
+        self.assertEqual(self.patches, self.hist.patches)
         assert self.mock_ax.get_xlim.called
 
     def test_bool_crystal_exluded_green_space(self):
+        self.hist.range_green_space = [None, None]
         self.assertEqual(self.hist.bool_crystal_exluded_green_space(1111),
                          False)
         self.hist.range_green_space = [0, 2]
         self.assertEqual(self.hist.bool_crystal_exluded_green_space(3), True)
-        self.hist.range_green_space = [None, None]
+        self.assertEqual(self.hist.bool_crystal_exluded_green_space(1), False)
 
     def test_set_range_green_space(self):
         self.assertEqual(self.hist.range_green_space, [None, None])
@@ -114,15 +120,25 @@ class TestHistogram(unittest.TestCase):
                            'C': 'olive', 'I': 'olive', 'F': "olive",
                            'H': "magenta", 'R': 'firebrick'}
         self.hist.list_colors = self.dict_color
-        list_test = ['magenta', 'magenta', 'magenta', 'olive', 'olive',
-                     'olive', 'magenta', 'firebrick', 'lightgray']
-        self.assertListEqual(self.hist.list_colors, list_test)
+        self.assertListEqual(self.hist.list_colors, self.colors)
 
     def test_current_xlim(self):
         self.assertEqual(self.hist.current_xlim, 'current_xlim')
         self.mock_ax.get_xlim.reset_mock()
         self.hist.update_current_xlim()
         assert self.mock_ax.get_xlim.called
+
+    def test_reset(self):
+        self.hist.was_clicked_before = True
+        self.hist.range_green_space = 0, 0
+        self.hist.reset()
+        self.assertEqual(self.hist.was_clicked_before, False)
+        self.assertEqual(self.hist.range_green_space, (None, None))
+
+    def test_update_colors(self):
+        self.hist.update_colors()
+        self.assertEqual(self.patch.set_facecolor.call_count, 9)
+        self.patch.set_facecolor.assert_called_with(self.colors[-1])
 
 
 if __name__ == '__main__':
