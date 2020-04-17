@@ -54,7 +54,9 @@ or
     `hdfsee_py <filename> -g <geometry file>`  
 3. Displaying the image with geometry reconstruction and peaks written in the CrystFEL indexing output file:  
     `hdfsee_py <filename> -g <geometry file> -p <stream file>`
-4. Run from code cell in jupyter-notebook:  
+4. Displaying the image from multi-event H5 file with geometry reconstruction and event:  
+    `hdfsee_py <filename> -g <geometry file> -e <event id>`  
+5. Run from code cell in jupyter-notebook:  
    ```
    from CrystFEL_Jupyter_utilities.hdfsee import Image
    %matplotlib notebook
