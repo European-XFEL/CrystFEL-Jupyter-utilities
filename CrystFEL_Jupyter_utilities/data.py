@@ -6,18 +6,7 @@ import sys
 import h5py
 import numpy as np
 
-# remove all the handlers.
-for handler in logging.root.handlers[:]:
-    logging.root.removeHandler(handler)
 LOGGER = logging.getLogger(__name__)
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-# create formatter and add it to the handlers
-formatter = logging.Formatter(
-    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
-ch.setFormatter(formatter)
-# add the handlers to logger
-LOGGER.addHandler(ch)
 
 
 def list_datasets(dictionary, list_dataset):

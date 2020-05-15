@@ -18,20 +18,7 @@ from .peak_h5 import get_list_peaks
 from .stream_read import search_peaks
 from .widget import ContrastSlider, PeakButtons, Radio
 
-
-# remove all the handlers.
-for handler in logging.root.handlers[:]:
-    logging.root.removeHandler(handler)
 LOGGER = logging.getLogger(__name__)
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-# create formatter and add it to the handlers
-formatter = logging.Formatter(
-    '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
-ch.setFormatter(formatter)
-# add the handlers to logger
-LOGGER.addHandler(ch)
-LOGGER.setLevel("INFO")
 
 __all__ = ['Image']
 
@@ -385,7 +372,20 @@ class Image:
         return columns, rows, center_x, center_y
 
 
+def setup_log_handler():
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    # create formatter and add it to the handlers
+    formatter = logging.Formatter(
+        '%(levelname)s | %(filename)s | %(funcName)s | %(lineno)d | %(message)s\n')
+    ch.setFormatter(formatter)
+    # add the handlers to logger
+    LOGGER.parent.addHandler(ch)
+    LOGGER.parent.setLevel("INFO")
+
 def main(argv=None):
+    setup_log_handler()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', nargs=1, metavar="name.H5",
                         help='Display this image.')
