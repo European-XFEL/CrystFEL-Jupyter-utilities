@@ -156,22 +156,14 @@ def get_diction_data(file):
     """
     # the variable contains all dataset from H5
     list_dataset = []
-    try:
-        with h5py.File(file, "r") as fileh5:
-            dictionary = {x: fileh5[x] for x in fileh5}
-            dictionary = catalog(dictionary)
-            # create a list of all datasets
-            list_datasets(dictionary, list_dataset)
-            # copies the necessary matrices data
-            data = np.copy(get_data_image(list_dataset))
-            peaks = np.copy(get_data_peaks(list_dataset))
-            # create a data dictionary
-            dictionary = {"Panels": data, "Peaks": peaks}
-            return dictionary
-    except OSError:
-        LOGGER.critical("Error opening the file H5")
-        sys.exit(1)
-    except Exception:
-        exc_value = sys.exc_info()[1]
-        LOGGER.critical(str(exc_value))
-        sys.exit(1)
+    with h5py.File(file, "r") as fileh5:
+        dictionary = {x: fileh5[x] for x in fileh5}
+        dictionary = catalog(dictionary)
+        # create a list of all datasets
+        list_datasets(dictionary, list_dataset)
+        # copies the necessary matrices data
+        data = np.copy(get_data_image(list_dataset))
+        peaks = np.copy(get_data_peaks(list_dataset))
+        # create a data dictionary
+        dictionary = {"Panels": data, "Peaks": peaks}
+        return dictionary
