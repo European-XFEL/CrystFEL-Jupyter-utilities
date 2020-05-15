@@ -217,18 +217,11 @@ class Image:
             If wrong panel position.
         """
         # Trying to reposition the panels.
-        try:
-            self.matrix[detector.position[0]: detector.position[0] +
-                        detector.array.shape[0],
-                        detector.position[1]: detector.position[1] +
-                        detector.array.shape[1]] = detector.get_array_rotated(
-                            center_x, center_y)
-        except ValueError:
-            text = " ".join(["Wrong panel position",
-                             "{}, Position: {}".format(detector.name,
-                                                       detector.position)])
-            LOGGER.critical(text)
-            sys.exit(1)
+        self.matrix[detector.position[0]: detector.position[0] +
+                    detector.array.shape[0],
+                    detector.position[1]: detector.position[1] +
+                    detector.array.shape[1]] = detector.get_array_rotated(
+                        center_x, center_y)
 
     def set_bad_place_in_view(self, bad_place):
         """Copying the bad pixel ranges to the image.
@@ -244,13 +237,9 @@ class Image:
         ValueError
             If wrong bad_place position.
         """
-        try:
-            self.matrix[bad_place.max_y: bad_place.max_y + bad_place.shape[0],
-                        bad_place.min_x: bad_place.min_x +
-                        bad_place.array.shape[1]] = bad_place.get_array()
-        except ValueError:
-            LOGGER.critical("Wrong mask position: {}".format(bad_place.name))
-            sys.exit(1)
+        self.matrix[bad_place.max_y: bad_place.max_y + bad_place.shape[0],
+                    bad_place.min_x: bad_place.min_x +
+                    bad_place.array.shape[1]] = bad_place.get_array()
 
     def arrangement_bad_places(self):
         """Iterates through each bad pixel (?) region and positions it to the

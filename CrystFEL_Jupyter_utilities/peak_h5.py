@@ -68,11 +68,8 @@ def get_list_peaks(matrix, image_size):
 
         List of class Peak object.
     """
-    try:
-        # array[:,] next rows
-        peaks = [Peak(posx=(row[0] + image_size[1]/2.0),
-                      posy=(-row[1] + image_size[0]/2.0),
-                      intensive=row[2], offset=row[3]) for row in matrix[:, ]]
-        return peaks
-    except IndexError:
-        LOGGER.warning("Problem with peaks from the h5 file.")
+    # array[:,] next rows
+    peaks = [Peak(posx=(row[0] + image_size[1]/2.0),
+                  posy=(-row[1] + image_size[0]/2.0),
+                  intensive=row[2], offset=row[3]) for row in matrix[:, ]]
+    return peaks
