@@ -150,9 +150,9 @@ def get_diction_data(file):
         dictionary = catalog(dictionary)
         # create a list of all datasets
         list_datasets(dictionary, list_dataset)
-        # copies the necessary matrices data
-        data = np.copy(get_data_image(list_dataset))
-        peaks = np.copy(get_data_peaks(list_dataset))
-        # create a data dictionary
-        dictionary = {"Panels": data, "Peaks": peaks}
-        return dictionary
+
+        d = {"Panels": get_data_image(list_dataset)[()]}
+        peaks_ds = get_data_peaks(list_dataset)
+        if peaks_ds is not None:
+            d['Peaks'] =  peaks_ds[()]
+        return d

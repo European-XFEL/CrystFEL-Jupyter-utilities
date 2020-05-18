@@ -94,7 +94,7 @@ class Image:
         # Following initialized depending on the execution arguments.
         self.matrix = None
         self.image = None
-        self.peaks = None
+        self.peaks = []
         self.detectors = None
         self.bad_places = None
         # For displaying the image in the right orientation (?).
@@ -184,8 +184,9 @@ class Image:
                                        (columns, rows), self.geom,
                                        peaks_search, peaks_reflections)
         # Creating a peak list from the h5 file.
-        self.peaks = get_list_peaks(self.dict_witch_data["Peaks"],
-                                    (columns, rows))
+        if 'Peaks' in self.dict_witch_data:
+            self.peaks = get_list_peaks(self.dict_witch_data["Peaks"],
+                                        (columns, rows))
         # Creating a bad pixel mask (?).
         self.bad_places = bad_places((columns, rows), self.geom)
         # Arranging the panels.
