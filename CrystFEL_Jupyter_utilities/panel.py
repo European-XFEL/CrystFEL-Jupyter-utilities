@@ -127,8 +127,11 @@ class Detector:
         self.yfs = yfs
         self.xss = xss
         self.yss = yss
+        self.fs_vec = np.array([xfs, yfs])
+        self.ss_vec = np.array([xss, yss])
         self.corner_x = corner_x
         self.corner_y = corner_y
+        self.corner_coord = np.array([corner_x, corner_y])
         self.array = np.copy(data[self.min_ss: self.max_ss + 1,
                                   self.min_fs: self.max_fs + 1])
         # my position in matrix
@@ -159,6 +162,15 @@ class Detector:
             The peaks_reflection list.
         """
         return self.peaks_reflection
+
+    def _transform_peak(self, peak_d):
+        fs_offset = peak_d['fs_px'] - self.min_fs
+        ss_offset = peak_d['ss_px'] - self.min_ss
+        return (
+            self.corner_coord
+            + self.fs_vec * fs_offset
+            + self.ss_vec * ss_offset
+        )
 
     def get_array_rotated(self, center_x, center_y):
         """Returns array data for each panel after rotation.
