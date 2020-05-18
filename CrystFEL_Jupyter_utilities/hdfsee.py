@@ -9,6 +9,7 @@ import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
 from cfelpyutils.crystfel_utils import load_crystfel_geometry
+from cfelpyutils.geometry_utils import apply_geometry_to_data
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -175,7 +176,9 @@ class Image:
         """
         columns, rows, center_x, center_y = self.find_image_size(self.geom)
         # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = np.ones((columns, rows))
+        self.matrix = apply_geometry_to_data(
+            self.dict_witch_data["Panels"], self.geom
+        )
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
         peaks_search, peaks_reflections = search_peaks(self.streamfile,
@@ -190,7 +193,7 @@ class Image:
         # Creating a bad pixel mask (?).
         self.bad_places = bad_places((columns, rows), self.geom)
         # Arranging the panels.
-        self.arrangement_panels(center_x, center_y)
+        # self.arrangement_panels(center_x, center_y)
         # Masking the bad pixels (?).
         self.arrangement_bad_places()
         # Displaying the image.
