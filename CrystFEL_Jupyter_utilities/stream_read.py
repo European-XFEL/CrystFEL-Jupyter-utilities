@@ -253,40 +253,42 @@ def search_peaks(file_stream, file_h5):
                     found_h5_in_stream = True
                 else:
                     name_h5_flag = False
-            if name_h5_flag and line.startswith('End of peak list'):
-                #  Last line with the peaks.
+
+            elif line.startswith('Peaks from peak search'):
+                peaks_from_peak_search = True
+            elif line.startswith('End of peak list'):
                 peaks_from_peak_search = False
+
             elif peaks_from_peak_search:
+                if line.strip().startswith('fs/px'):  # Column headers
+                    continue
+
                 # Check if lines still contain peak info.
-                line2 = line.strip().split(' ')  # Dividing to columns.
-                while '' in line2:
-                    line2.remove('')  # Remove empty chars.
-                fs_px = float(line2[0])  # Fast scan/pixel.
-                ss_px = float(line2[1])  # Slow scan/pixel.
-                recip = float(line2[2])  # Value `(1/d)/nm^-1`.
-                intensity = float(line2[3])  # Intensity
-                # The name of the panel to which the peak belongs.
+                line2 = line.split()  # Dividing to columns.
                 panel_name = line2[4]
-                # dictionary representing peak data
-                # from the peak search in the stream file.
-                peak = {'fs_px': fs_px, 'ss_px': ss_px, 'recip': recip,
-                        'intensity': intensity, 'panel_name': panel_name,
-                        'position': None}
+                peak = {
+                    'fs_px': float(line2[0]),  # Fast scan/pixel.
+                    'ss_px': float(line2[1]),  # Slow scan/pixel.
+                    'recip': float(line2[2]),  # Value `(1/d)/nm^-1`.
+                    'intensity': float(line2[3]),
+                    'panel_name': panel_name,
+                    'position': None,
+                }
+
                 # Create an object with peak information.
                 if panel_name not in peaks_search.keys():
                     peaks_search[panel_name] = list()
-                    peaks_search[panel_name].append(peak)
-                else:
-                    peaks_search[panel_name].append(peak)
-            if name_h5_flag and line.startswith('  fs/px   ss/px' +
-                                                ' (1/d)/nm^-1   ' +
-                                                'Intensity  Panel'):
-                # Check for the peak beginning line.
-                peaks_from_peak_search = True
-            if name_h5_flag and line.startswith('End of reflections'):
-                # Check for the last line.
+                peaks_search[panel_name].append(peak)
+
+            elif line.startswith('Reflections measured after indexing'):
+                reflections_measured_after_indexing_flag = True
+            elif line.startswith('End of reflections'):
                 reflections_measured_after_indexing_flag = False
+
             elif reflections_measured_after_indexing_flag:
+                if line.split()[:3] == ['h', 'k', 'l']:  # Column headings
+                    continue
+
                 line2 = line.strip().split(' ')  # Splitting to columns.
                 while '' in line2:
                     line2.remove('')  # Remove empty chars.
@@ -326,12 +328,7 @@ def search_peaks(file_stream, file_h5):
                     peaks_reflection[panel_name] = list()
                     # Dictionary with a panel name as key and near_bragg
                     # peaks as value.
-                    peaks_reflection[panel_name].append(peak)
-                else:
-                    peaks_reflection[panel_name].append(peak)
-            if name_h5_flag and line.startswith('   h    k    l  '):
-                # Check for the near_bragg info.
-                reflections_measured_after_indexing_flag = True
+                peaks_reflection[panel_name].append(peak)
 
     if not found_h5_in_stream:
         LOGGER.warning("No peaks for file in the stream file.")
