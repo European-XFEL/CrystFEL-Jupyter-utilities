@@ -9,7 +9,7 @@ import sys
 # Module for parsing geometry file and determining size of the
 # image after panel arrangement.
 from cfelpyutils.crystfel_utils import load_crystfel_geometry
-from cfelpyutils.geometry_utils import apply_geometry_to_data
+from cfelpyutils.geometry_utils import compute_pix_maps
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -170,15 +170,27 @@ class Image:
         # Display the image:
         plt.show()
 
+    def apply_geom(self, data):
+        pixel_maps = compute_pix_maps(self.geom)
+        # Make an image with (0,0) in the centre, -extent to +extent in x & y
+        y_extent = int(np.abs(pixel_maps.x).max()) + 1
+        x_extent = int(np.abs(pixel_maps.y).max()) + 1
+        min_shape = (y_extent * 2, x_extent * 2)
+        out = np.zeros(min_shape, dtype=data.dtype)
+
+        arr_x_map = pixel_maps.x.astype(np.int) + x_extent
+        arr_y_map = pixel_maps.y.astype(np.int) + y_extent
+        out[arr_y_map.ravel(), arr_x_map.ravel()] = data.ravel()
+        return out, (x_extent, y_extent)
+
     def display_arrangement_view(self):
         """Creating the image filled with ones (?)
         and applies bad pixel mask (?). Then adds panels (?).
         """
-        columns, rows, center_x, center_y = self.find_image_size(self.geom)
-        # Creating an 'empty' matrix ready to be filled with pixel data.
-        self.matrix = apply_geometry_to_data(
-            self.dict_witch_data["Panels"], self.geom
+        self.matrix, (centre_x, centre_y) = self.apply_geom(
+            self.dict_witch_data["Panels"]
         )
+        rows, columns = self.matrix.shape
         # Creates a detector dictionary with keys as panels name and values
         # as class Panel objects.
         peaks_search, peaks_reflections = search_peaks(self.streamfile,
@@ -197,8 +209,14 @@ class Image:
         # Masking the bad pixels (?).
         self.arrangement_bad_places()
         # Displaying the image.
-        self.image = plt.imshow(self.matrix, cmap=self.cmap, vmax=self.vmax,
-                                vmin=self.vmin, animated=True)
+        self.image = plt.imshow(
+            self.matrix,
+            extent=(-centre_x, centre_x, -centre_y, centre_y),
+            cmap=self.cmap,
+            vmax=self.vmax,
+            vmin=self.vmin,
+            animated=True
+        )
 
     def set_panel_in_view(self, detector, center_x, center_y):
         """Positions (?) the detector in the right place on the matrix.
