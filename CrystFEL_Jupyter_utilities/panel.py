@@ -149,6 +149,8 @@ class Detector:
 
             The peaks_search list.
         """
+        for peak in self.peaks_search:
+            peak['position'] = self._transform_peak(peak)
         return self.peaks_search
 
     def get_peaks_reflection(self):
